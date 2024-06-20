@@ -14,7 +14,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
@@ -22,6 +21,8 @@ import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.JpomApplication;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
+import org.dromara.jpom.common.i18n.I18nThreadUtil;
 import org.dromara.jpom.configuration.AgentConfig;
 import org.dromara.jpom.configuration.ProjectConfig;
 import org.dromara.jpom.model.data.DslYmlDto;
@@ -113,8 +114,9 @@ public class ProjectFileBackupService {
             return null;
         }
         String backupId = DateTime.now().toString(DatePattern.PURE_DATETIME_MS_FORMAT);
+        log.debug(I18nMessageUtil.get("i18n.prepare_backup.7970"), projectInfoModel.getId(), backupId);
         File projectFileBackup = this.pathProjectBackup(infoModel, backupId);
-        Assert.state(!FileUtil.exist(projectFileBackup), "备份目录冲突：" + projectFileBackup.getName());
+        Assert.state(!FileUtil.exist(projectFileBackup), I18nMessageUtil.get("i18n.backup_directory_conflict.c13e") + projectFileBackup.getName());
         FileUtil.copyContent(file, projectFileBackup, true);
         //
         return backupId;
@@ -180,11 +182,12 @@ public class ProjectFileBackupService {
             // 备份ID 不存在
             return;
         }
+        log.debug(I18nMessageUtil.get("i18n.start_checking_backup_project_files.baa7"), projectInfoModel.getId(), backupId);
         NodeProjectInfoModel infoModel = projectInfoService.resolveModel(projectInfoModel);
         File projectPath = projectInfoService.resolveLibFile(infoModel);
         DslYmlDto dslYmlDto = infoModel.dslConfig();
         // 考虑到大文件对比，比较耗时。需要异步对比文件
-        ThreadUtil.execute(() -> {
+        I18nThreadUtil.execute(() -> {
             try {
                 //String useBackupPath = resolveBackupPath(dslYmlDto);
                 File backupItemPath = this.pathProjectBackup(infoModel, backupId);
@@ -227,7 +230,7 @@ public class ProjectFileBackupService {
                 // 合并之前备份目录
                 margeBackupPath(infoModel);
             } catch (Exception e) {
-                log.warn("对比清空项目文件备份失败", e);
+                log.warn(I18nMessageUtil.get("i18n.compare_backup_failure.303e"), e);
             }
         });
     }

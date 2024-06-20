@@ -1,8 +1,8 @@
 <template>
   <div>
-    <a-drawer
+    <CustomDrawer
       destroy-on-close
-      :title="`查看 ${name} 状态`"
+      :title="`${$t('i18n_607e7a4f37')} ${name} ${$t('i18n_3fea7ca76c')}`"
       placement="right"
       width="85vw"
       :open="true"
@@ -13,7 +13,7 @@
       "
     >
       <a-tabs v-model:activeKey="tabKey" tab-position="left">
-        <a-tab-pane key="1" tab="状态">
+        <a-tab-pane key="1" :tab="$t('i18n_3fea7ca76c')">
           <!-- 嵌套表格 -->
           <a-table
             :loading="childLoading"
@@ -30,25 +30,32 @@
             <template #title>
               <a-space>
                 <div>
-                  当前状态：
-                  <a-tag v-if="data.status === 2" color="green">{{ statusMap[data.status] || '未知' }}</a-tag>
+                  {{ $t('i18n_e703c7367c') }}
+                  <a-tag v-if="data.status === 2" color="green">{{
+                    statusMap[data.status] || $t('i18n_1622dc9b6b')
+                  }}</a-tag>
                   <a-tag v-else-if="data.status === 1 || data.status === 0" color="orange">{{
-                    statusMap[data.status] || '未知'
+                    statusMap[data.status] || $t('i18n_1622dc9b6b')
                   }}</a-tag>
                   <a-tag v-else-if="data.status === 3 || data.status === 4" color="red">{{
-                    statusMap[data.status] || '未知'
+                    statusMap[data.status] || $t('i18n_1622dc9b6b')
                   }}</a-tag>
-                  <a-tag v-else>{{ statusMap[data.status] || '未知' }}</a-tag>
+                  <a-tag v-else>{{ statusMap[data.status] || $t('i18n_1622dc9b6b') }}</a-tag>
                 </div>
-                <div>状态描述：{{ data.statusMsg || '-' }}</div>
-                <a-button type="primary" size="small" :loading="childLoading" @click="loadData">刷新</a-button>
-
+                <div>{{ $t('i18n_fb3a2241bb') }}{{ data.statusMsg || '-' }}</div>
+                <a-button type="primary" size="small" :loading="childLoading" @click="loadData">{{
+                  $t('i18n_694fc5efa9')
+                }}</a-button>
                 <a-statistic-countdown
-                  format=" s 秒"
-                  title="刷新倒计时"
+                  format="s"
+                  :title="$t('i18n_0f8403d07e')"
                   :value="countdownTime"
                   @finish="silenceLoadData"
-                />
+                >
+                  <template #suffix>
+                    <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
+                  </template>
+                </a-statistic-countdown>
               </a-space>
             </template>
             <template #bodyCell="{ column, text, record }">
@@ -63,7 +70,7 @@
               <template v-else-if="column.dataIndex === 'projectName'">
                 <a-tooltip placement="topLeft" :title="text">
                   <template v-if="record.disabled">
-                    <a-tooltip title="当前项目被禁用">
+                    <a-tooltip :title="$t('i18n_f8b3165e0d')">
                       <EyeInvisibleOutlined />
                     </a-tooltip>
                   </template>
@@ -71,14 +78,14 @@
                 </a-tooltip>
               </template>
               <template v-else-if="column.dataIndex === 'outGivingStatus'">
-                <a-tag v-if="text === 2" color="green">{{ dispatchStatusMap[text] || '未知' }}</a-tag>
+                <a-tag v-if="text === 2" color="green">{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
                 <a-tag v-else-if="text === 1 || text === 0 || text === 5" color="orange">{{
-                  dispatchStatusMap[text] || '未知'
+                  dispatchStatusMap[text] || $t('i18n_1622dc9b6b')
                 }}</a-tag>
                 <a-tag v-else-if="text === 3 || text === 4 || text === 6" color="red">{{
-                  dispatchStatusMap[text] || '未知'
+                  dispatchStatusMap[text] || $t('i18n_1622dc9b6b')
                 }}</a-tag>
-                <a-tag v-else>{{ dispatchStatusMap[text] || '未知' }}</a-tag>
+                <a-tag v-else>{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
               </template>
               <template v-else-if="column.dataIndex === 'outGivingResultMsg'">
                 <a-tooltip placement="topLeft" :title="readJsonStrField(record.outGivingResult, 'msg')">
@@ -117,15 +124,17 @@
                   :checked="text"
                   :disabled="true"
                   size="small"
-                  checked-children="运行中"
-                  un-checked-children="未运行"
+                  :checked-children="$t('i18n_d679aea3aa')"
+                  :un-checked-children="$t('i18n_4f8a2f0b28')"
                 />
               </template>
 
               <template v-else-if="column.dataIndex === 'projectPid'">
                 <a-tooltip
                   placement="topLeft"
-                  :title="`进程号：${record.projectPid || '-'} / 端口号：${record.projectPort || '-'}`"
+                  :title="`${$t('i18n_2b04210d33')}${record.projectPid || '-'} / ${$t('i18n_4c096c51a3')}${
+                    record.projectPort || '-'
+                  }`"
                 >
                   <span>{{ record.projectPid || '-' }}/{{ record.projectPort || '-' }}</span>
                 </a-tooltip>
@@ -133,18 +142,22 @@
 
               <template v-else-if="column.dataIndex === 'child-operation'">
                 <a-space>
-                  <a-button size="small" :disabled="!record.projectName" type="primary" @click="handleFile(record)"
-                    >文件</a-button
-                  >
-                  <a-button size="small" :disabled="!record.projectName" type="primary" @click="handleConsole(record)"
-                    >控制台</a-button
+                  <a-button size="small" :disabled="!record.projectName" type="primary" @click="handleFile(record)">{{
+                    $t('i18n_2a0c4740f1')
+                  }}</a-button>
+                  <a-button
+                    size="small"
+                    :disabled="!record.projectName"
+                    type="primary"
+                    @click="handleConsole(record)"
+                    >{{ $t('i18n_b5c3770699') }}</a-button
                   >
                 </a-space>
               </template>
             </template>
           </a-table>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="配置">
+        <a-tab-pane key="2" :tab="$t('i18n_224e2ccda8')">
           <!-- 配置分发 -->
           <div style="width: 50vw">
             <!-- list -->
@@ -152,14 +165,14 @@
               <Draggable v-for="(element, index) in list" :key="index">
                 <a-row class="item-row">
                   <a-col :span="18">
-                    <span> 节点名： {{ element.nodeName }} </span>
-                    <span> 项目名： {{ element.cacheProjectName }} </span>
+                    <span> {{ $t('i18n_dc2961a26f') }} {{ element.nodeName }} </span>
+                    <span> {{ $t('i18n_26ffe89a7f') }} {{ element.cacheProjectName }} </span>
                   </a-col>
                   <a-col :span="6">
                     <a-space>
                       <a-switch
-                        checked-children="启用"
-                        un-checked-children="禁用"
+                        :checked-children="$t('i18n_7854b52a88')"
+                        :un-checked-children="$t('i18n_710ad08b11')"
                         :checked="element.disabled ? false : true"
                         @change="
                           (checked) => {
@@ -180,9 +193,9 @@
                         :disabled="!list || list.length <= 1"
                         @click="handleRemoveProject(element)"
                       >
-                        解绑
+                        {{ $t('i18n_663393986e') }}
                       </a-button>
-                      <a-tooltip placement="left" :title="`长按可以拖动排序`" class="move">
+                      <a-tooltip placement="left" :title="`${$t('i18n_181e1ad17d')}`" class="move">
                         <MenuOutlined />
                       </a-tooltip>
                     </a-space>
@@ -192,16 +205,19 @@
             </Container>
             <a-col style="margin-top: 10px">
               <a-space>
-                <a-button type="primary" size="small" @click="viewDispatchManagerOk">保存</a-button>
+                <a-button type="primary" size="small" @click="viewDispatchManagerOk">{{
+                  $t('i18n_be5fbbe34c')
+                }}</a-button>
               </a-space>
             </a-col>
           </div>
         </a-tab-pane>
       </a-tabs>
-    </a-drawer>
+    </CustomDrawer>
 
     <!-- 项目文件组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerFileVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -217,9 +233,10 @@
         @go-console="goConsole"
         @go-read-file="goReadFile"
       />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 项目控制台组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerConsoleVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -234,9 +251,10 @@
         :project-id="temp.projectId"
         @go-file="goFile"
       />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 项目跟踪文件组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerReadFileVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -252,10 +270,9 @@
         :project-id="temp.projectId"
         @go-file="goFile"
       />
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import {
   getDispatchProject,
@@ -316,65 +333,65 @@ export default {
 
       childColumns: [
         {
-          title: '节点名称',
+          title: this.$t('i18n_b1785ef01e'),
           dataIndex: 'nodeId',
           width: 120,
           ellipsis: true
         },
         {
-          title: '项目名称',
+          title: this.$t('i18n_738a41f965'),
           dataIndex: 'projectName',
           width: 120,
           ellipsis: true
         },
         {
-          title: '项目状态',
+          title: this.$t('i18n_3b94c70734'),
           dataIndex: 'projectStatus',
           width: 120,
           ellipsis: true
         },
         {
-          title: '进程/端口',
+          title: this.$t('i18n_30849b2e10'),
           dataIndex: 'projectPid',
           width: '120px',
           ellipsis: true
         },
         {
-          title: '分发状态',
+          title: this.$t('i18n_da99dbfe1f'),
           dataIndex: 'outGivingStatus',
           width: '120px'
         },
         {
-          title: '分发结果',
+          title: this.$t('i18n_0ef396cbcc'),
           dataIndex: 'outGivingResultMsg',
           ellipsis: true,
           width: 120
         },
         {
-          title: '分发状态消息',
+          title: this.$t('i18n_543de6ff04'),
           dataIndex: 'outGivingResultMsgData',
           ellipsis: true,
           width: 120
         },
         {
-          title: '分发耗时',
+          title: this.$t('i18n_4cd49caae4'),
           dataIndex: 'outGivingResultTime',
           width: '120px'
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'outGivingResultSize',
           width: '100px'
         },
         {
-          title: '最后分发时间',
+          title: this.$t('i18n_fbd7ba1d9b'),
           dataIndex: 'lastTime',
           width: '170px',
           ellipsis: true,
           customRender: ({ text }) => parseTime(text)
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'child-operation',
           fixed: 'right',
 
@@ -455,6 +472,7 @@ export default {
               this.data = res.data?.data || {}
               let oldProjectList = this.list
               let oldProjectMap = oldProjectList.groupBy((item) => item.id)
+              //console.log(oldProjectList, oldProjectMap)
               projectList = projectList.map((item) => {
                 return Object.assign({}, oldProjectMap[item.id], item)
               })
@@ -540,7 +558,7 @@ export default {
                       ...element,
                       projectStatus: false,
                       projectPid: '-',
-                      errorMsg: '网络异常'
+                      errorMsg: this.$t('i18n_44ed625b19')
                     }
                   }
                   return element
@@ -555,7 +573,7 @@ export default {
     // 文件管理
     handleFile(record) {
       this.temp = Object.assign({}, record)
-      this.drawerTitle = `文件管理(${this.temp.projectId})`
+      this.drawerTitle = `${this.$t('i18n_8780e6b3d1')}(${this.temp.projectId})`
       this.drawerFileVisible = true
     },
     // 关闭文件管理对话框
@@ -565,7 +583,7 @@ export default {
     // 控制台
     handleConsole(record) {
       this.temp = Object.assign({}, record)
-      this.drawerTitle = `控制台(${this.temp.projectId})`
+      this.drawerTitle = `${this.$t('i18n_b5c3770699')}(${this.temp.projectId})`
       this.drawerConsoleVisible = true
     },
     // 关闭控制台
@@ -590,7 +608,7 @@ export default {
       this.onFileClose()
       this.drawerReadFileVisible = true
       this.temp.readFilePath = (path + '/' + filename).replace(new RegExp('//', 'gm'), '/')
-      this.drawerTitle = `跟踪文件(${filename})`
+      this.drawerTitle = `${this.$t('i18n_5854370b86')}(${filename})`
     },
     onReadFileClose() {
       this.drawerReadFileVisible = false
@@ -609,21 +627,24 @@ export default {
     },
     // 删除项目
     handleRemoveProject(item) {
-      const html =
-        "<b style='font-size: 20px;'>真的要释放(删除)当前项目么？</b>" +
-        "<ul style='font-size: 20px;color:red;font-weight: bold;'>" +
-        '<li>不会真实请求节点删除项目信息</b></li>' +
-        '<li>一般用于服务器无法连接且已经确定不再使用</li>' +
-        '<li>如果误操作会产生冗余数据！！！</li>' +
-        ' </ul>'
+      const html = `
+      <b style='font-size: 20px;'>
+        ${this.$t('i18n_0d44f4903a')}
+      </b>
+      <ul style='font-size: 20px;color:red;font-weight: bold;'>
+        <li>this.$t('i18n_7cc3bb7068')</b></li>
+        <li>this.$t('i18n_5c93055d9c')</li>
+        <li>this.$t('i18n_27d0c8772c')</li>
+      </ul>
+      `
       $confirm({
-        title: '危险操作！！！',
+        title: this.$t('i18n_9362e6ddf8'),
         zIndex: 1009,
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
         okButtonProps: { type: 'primary', size: 'small', danger: true },
         cancelButtonProps: { type: 'primary' },
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return removeProject({
             nodeId: item.nodeId,
@@ -664,7 +685,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 :deep(.ant-progress-text) {
   width: auto;

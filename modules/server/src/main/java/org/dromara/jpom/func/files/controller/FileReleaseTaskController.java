@@ -16,6 +16,8 @@ import cn.keepbx.jpom.IJsonMessage;
 import cn.keepbx.jpom.model.JsonMessage;
 import com.alibaba.fastjson2.JSONObject;
 import org.dromara.jpom.common.BaseServerController;
+import org.dromara.jpom.common.ServerConst;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.validator.ValidatorItem;
 import org.dromara.jpom.common.validator.ValidatorRule;
 import org.dromara.jpom.controller.outgiving.OutGivingWhitelistService;
@@ -24,10 +26,12 @@ import org.dromara.jpom.func.files.service.FileReleaseTaskService;
 import org.dromara.jpom.model.PageResultDto;
 import org.dromara.jpom.model.data.AgentWhitelist;
 import org.dromara.jpom.model.data.ServerWhitelist;
+import org.dromara.jpom.model.script.ScriptModel;
 import org.dromara.jpom.permission.ClassFeature;
 import org.dromara.jpom.permission.Feature;
 import org.dromara.jpom.permission.MethodFeature;
 import org.dromara.jpom.service.node.NodeService;
+import org.dromara.jpom.service.script.ScriptServer;
 import org.dromara.jpom.util.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -52,12 +56,15 @@ public class FileReleaseTaskController extends BaseServerController {
 
     private final FileReleaseTaskService fileReleaseTaskService;
     private final OutGivingWhitelistService outGivingWhitelistService;
+    private final ScriptServer scriptServer;
 
     public FileReleaseTaskController(FileReleaseTaskService fileReleaseTaskService,
                                      OutGivingWhitelistService outGivingWhitelistService,
-                                     NodeService nodeService) {
+                                     NodeService nodeService,
+                                     ScriptServer scriptServer) {
         this.fileReleaseTaskService = fileReleaseTaskService;
         this.outGivingWhitelistService = outGivingWhitelistService;
+        this.scriptServer = scriptServer;
         this.nodeService = nodeService;
     }
 
@@ -77,8 +84,19 @@ public class FileReleaseTaskController extends BaseServerController {
         // 判断参数
         ServerWhitelist configDeNewInstance = outGivingWhitelistService.getServerWhitelistData(request);
         List<String> whitelistServerOutGiving = configDeNewInstance.getOutGiving();
-        Assert.state(AgentWhitelist.checkPath(whitelistServerOutGiving, releasePathParent), "请选择正确的项目路径,或者还没有配置授权");
-        Assert.hasText(releasePathSecondary, "请填写发布文件的二级目录");
+        Assert.state(AgentWhitelist.checkPath(whitelistServerOutGiving, releasePathParent), I18nMessageUtil.get("i18n.select_correct_project_path_or_no_auth_configured.366a"));
+        Assert.hasText(releasePathSecondary, I18nMessageUtil.get("i18n.publish_file_second_level_directory_required.2f65"));
+
+        if (StrUtil.startWith(beforeScript, ServerConst.REF_SCRIPT)) {
+            String scriptId = StrUtil.removePrefix(beforeScript, ServerConst.REF_SCRIPT);
+            ScriptModel keyAndGlobal = scriptServer.getByKeyAndGlobal(scriptId, request, I18nMessageUtil.get("i18n.select_correct_pre_publish_script.d230"));
+            Assert.notNull(keyAndGlobal, I18nMessageUtil.get("i18n.select_correct_pre_publish_script.d230"));
+        }
+        if (StrUtil.startWith(afterScript, ServerConst.REF_SCRIPT)) {
+            String scriptId = StrUtil.removePrefix(afterScript, ServerConst.REF_SCRIPT);
+            ScriptModel keyAndGlobal = scriptServer.getByKeyAndGlobal(scriptId, request, I18nMessageUtil.get("i18n.select_correct_post_publish_script.49d2"));
+            Assert.notNull(keyAndGlobal, I18nMessageUtil.get("i18n.select_correct_post_publish_script.49d2"));
+        }
 
         String releasePath = FileUtil.normalize(releasePathParent + StrUtil.SLASH + releasePathSecondary);
 
@@ -110,7 +128,7 @@ public class FileReleaseTaskController extends BaseServerController {
                                        String afterScript,
                                        HttpServletRequest request) {
         FileReleaseTaskLogModel parentTask = fileReleaseTaskService.getByKey(parentTaskId, request);
-        Assert.notNull(parentTask, "父任务不存在");
+        Assert.notNull(parentTask, I18nMessageUtil.get("i18n.parent_task_not_exist.ca1b"));
         Integer fileType = parentTask.getFileType();
         fileType = ObjectUtil.defaultIfNull(fileType, 1);
         return fileReleaseTaskService.addTask(fileId, fileType, name, taskType, taskDataIds, parentTask.getReleasePath(), beforeScript, afterScript, null, request);
@@ -139,9 +157,9 @@ public class FileReleaseTaskController extends BaseServerController {
     @Feature(method = MethodFeature.EDIT)
     public IJsonMessage<String> hasFile(@ValidatorItem String id, HttpServletRequest request) {
         FileReleaseTaskLogModel taskLogModel = fileReleaseTaskService.getByKey(id, request);
-        Assert.notNull(taskLogModel, "不存在对应的任务");
+        Assert.notNull(taskLogModel, I18nMessageUtil.get("i18n.task_not_exist.47e9"));
         fileReleaseTaskService.cancelTask(taskLogModel.getId());
-        return JsonMessage.success("取消成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.cancel_success.285f"));
     }
 
     /**
@@ -154,14 +172,14 @@ public class FileReleaseTaskController extends BaseServerController {
     @Feature(method = MethodFeature.LIST)
     public IJsonMessage<JSONObject> details(@ValidatorItem String id, HttpServletRequest request) {
         FileReleaseTaskLogModel taskLogModel = fileReleaseTaskService.getByKey(id, request);
-        Assert.notNull(taskLogModel, "不存在对应的任务");
+        Assert.notNull(taskLogModel, I18nMessageUtil.get("i18n.task_not_exist.47e9"));
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("taskData", taskLogModel);
         FileReleaseTaskLogModel fileReleaseTaskLogModel = new FileReleaseTaskLogModel();
         fileReleaseTaskLogModel.setTaskId(taskLogModel.getId());
         List<FileReleaseTaskLogModel> logModels = fileReleaseTaskService.listByBean(fileReleaseTaskLogModel);
         jsonObject.put("taskList", logModels);
-        return JsonMessage.success("取消成功", jsonObject);
+        return JsonMessage.success(I18nMessageUtil.get("i18n.cancel_success.285f"), jsonObject);
     }
 
     /**
@@ -174,7 +192,7 @@ public class FileReleaseTaskController extends BaseServerController {
     @Feature(method = MethodFeature.EDIT)
     public IJsonMessage<JSONObject> delete(@ValidatorItem String id, HttpServletRequest request) {
         FileReleaseTaskLogModel taskLogModel = fileReleaseTaskService.getByKey(id, request);
-        Assert.notNull(taskLogModel, "不存在对应的任务");
+        Assert.notNull(taskLogModel, I18nMessageUtil.get("i18n.task_not_exist.47e9"));
 
         FileReleaseTaskLogModel fileReleaseTaskLogModel = new FileReleaseTaskLogModel();
         fileReleaseTaskLogModel.setTaskId(taskLogModel.getId());
@@ -193,7 +211,7 @@ public class FileReleaseTaskController extends BaseServerController {
         FileUtil.del(taskDir);
         //
         fileReleaseTaskService.delByKey(taskLogModel.getId());
-        return JsonMessage.success("删除成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.delete_success.0007"));
     }
 
     /**
@@ -205,14 +223,14 @@ public class FileReleaseTaskController extends BaseServerController {
      */
     @GetMapping(value = "log-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @Feature(method = MethodFeature.LIST)
-    public IJsonMessage<JSONObject> log(@ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "没有数据") String id,
-                                        @ValidatorItem(value = ValidatorRule.POSITIVE_INTEGER, msg = "line") int line,
+    public IJsonMessage<JSONObject> log(@ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "i18n.no_data.1ac0") String id,
+                                        @ValidatorItem(value = ValidatorRule.POSITIVE_INTEGER, msg = "i18n.line_number_error.c65d") int line,
                                         HttpServletRequest request) {
         FileReleaseTaskLogModel item = fileReleaseTaskService.getByKey(id, request);
-        Assert.notNull(item, "没有对应数据");
+        Assert.notNull(item, I18nMessageUtil.get("i18n.no_data_found.4ffb"));
         File file = fileReleaseTaskService.logFile(item);
         if (!FileUtil.isFile(file)) {
-            return new JsonMessage<>(405, "还没有日志信息或者日志文件错误");
+            return new JsonMessage<>(405, I18nMessageUtil.get("i18n.no_log_info_or_log_file_error.2c25"));
         }
 
         JSONObject data = FileUtils.readLogFile(file, line);

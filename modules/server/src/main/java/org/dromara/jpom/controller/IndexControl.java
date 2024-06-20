@@ -32,6 +32,7 @@ import org.dromara.jpom.common.BaseServerController;
 import org.dromara.jpom.common.JpomManifest;
 import org.dromara.jpom.common.ServerConst;
 import org.dromara.jpom.common.UrlRedirectUtil;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.NotLogin;
 import org.dromara.jpom.configuration.NodeConfig;
 import org.dromara.jpom.configuration.WebConfig;
@@ -122,7 +123,7 @@ public class IndexControl extends BaseServerController {
                 html = StrUtil.replace(html, item, jsCommonContext);
             }
         }
-
+        String language = I18nMessageUtil.tryGetSystemLanguage();
         // <routerBase>
         String proxyPath = UrlRedirectUtil.getHeaderProxyPath(request, ServerConst.PROXY_PATH);
         html = StrUtil.replace(html, "<routerBase>", proxyPath);
@@ -135,6 +136,7 @@ public class IndexControl extends BaseServerController {
         html = StrUtil.replace(html, "<uploadFileConcurrent>", String.valueOf(nodeConfig.getUploadFileConcurrent()));
         html = StrUtil.replace(html, "<oauth2Provide>", oauth2Provide);
         html = StrUtil.replace(html, "<transportEncryption>", webConfig.getTransportEncryption());
+        html = StrUtil.replace(html, "<jpomDefaultLocale>", language);
         // 修改网页标题
         String title = ReUtil.get("<title>.*?</title>", html, 0);
         if (StrUtil.isNotEmpty(title)) {
@@ -262,13 +264,13 @@ public class IndexControl extends BaseServerController {
                 extendPlugins.add("system-git");
             }
         } catch (Exception e) {
-            log.warn("检查 git 客户端异常", e);
+            log.warn(I18nMessageUtil.get("i18n.check_git_client_exception.42a3"), e);
         }
         data.put("extendPlugins", extendPlugins);
         if (userService.canUse()) {
-            return JsonMessage.success("success", data);
+            return new JsonMessage<>(200, "", data);
         }
-        return new JsonMessage<>(222, "需要初始化系统", data);
+        return new JsonMessage<>(222, I18nMessageUtil.get("i18n.need_initialize_system.fb62"), data);
     }
 
 
@@ -285,8 +287,9 @@ public class IndexControl extends BaseServerController {
         UserModel userModel = getUserModel();
         String workspaceId = nodeService.getCheckUserWorkspace(request);
         JSONObject config = systemParametersServer.getConfigDefNewInstance(StrUtil.format("menus_config_{}", workspaceId), JSONObject.class);
+        String language = I18nMessageUtil.tryGetNormalLanguage();
         // 菜单
-        InputStream inputStream = ResourceUtil.getStream("classpath:/menus/index.json");
+        InputStream inputStream = ResourceUtil.getStream("classpath:/menus/" + language + "/index.json");
         JSONArray showArray = config.getJSONArray("serverMenuKeys");
 
 
@@ -310,7 +313,7 @@ public class IndexControl extends BaseServerController {
             }
             return true;
         }).collect(Collectors.toList());
-        Assert.notEmpty(jsonArray, "没有任何菜单,请联系管理员");
+        Assert.notEmpty(jsonArray, I18nMessageUtil.get("i18n.no_menus_contact_admin.cfec"));
         return JsonMessage.success("", collect1);
     }
 
@@ -326,8 +329,9 @@ public class IndexControl extends BaseServerController {
     @SystemPermission
     public IJsonMessage<List<Object>> systemMenusData(HttpServletRequest request) {
         UserModel userModel = getUserModel();
+        String language = I18nMessageUtil.tryGetNormalLanguage();
         // 菜单
-        InputStream inputStream = ResourceUtil.getStream("classpath:/menus/system.json");
+        InputStream inputStream = ResourceUtil.getStream("classpath:/menus/" + language + "/system.json");
         String json = IoUtil.read(inputStream, CharsetUtil.CHARSET_UTF_8);
         JSONArray jsonArray = JSONArray.parseArray(json);
         List<Object> collect1 = jsonArray.stream().filter(o -> {
@@ -348,7 +352,7 @@ public class IndexControl extends BaseServerController {
             }
             return true;
         }).collect(Collectors.toList());
-        Assert.notEmpty(jsonArray, "没有任何菜单,请联系管理员");
+        Assert.notEmpty(jsonArray, I18nMessageUtil.get("i18n.no_menus_contact_admin.cfec"));
         return JsonMessage.success("", collect1);
     }
 
@@ -394,7 +398,7 @@ public class IndexControl extends BaseServerController {
     public IJsonMessage<String> generateShardingId() {
         Cache<String, String> shardingIds = BaseServerController.SHARDING_IDS;
         int size = shardingIds.size();
-        Assert.state(size <= 100, "分片id最大同时使用 100 个");
+        Assert.state(size <= 100, I18nMessageUtil.get("i18n.max_concurrent_shard_ids.f89c"));
         String uuid = IdUtil.fastSimpleUUID();
         shardingIds.put(uuid, uuid);
         return JsonMessage.success(uuid, uuid);

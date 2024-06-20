@@ -1,13 +1,10 @@
 <template>
   <div>
     <template v-if="useSuggestions">
-      <a-result
-        title="当前工作空间还没有SSH"
-        sub-title="请到【系统管理】-> 【资产管理】-> 【SSH管理】新增SSH，或者将已新增的SSH授权关联、分配到此工作空间"
-      >
+      <a-result :title="$t('i18n_ce043fac7d')" :sub-title="$t('i18n_ace71047a0')">
         <template #extra>
           <router-link to="/system/assets/ssh-list">
-            <a-button key="console" type="primary">现在就去</a-button></router-link
+            <a-button key="console" type="primary">{{ $t('i18n_6dcf6175d8') }}</a-button></router-link
           >
         </template>
       </a-result>
@@ -19,7 +16,7 @@
       default-auto-refresh
       :auto-refresh-time="5"
       table-name="ssh-list"
-      empty-description="没有SSH"
+      :empty-description="$t('i18n_a9795c06c8')"
       :active-page="activePage"
       :data-source="list"
       :columns="columns"
@@ -39,7 +36,7 @@
           <a-input
             v-model:value="listQuery['%name%']"
             class="search-input-item"
-            placeholder="ssh名称"
+            :placeholder="$t('i18n_46ad87708f')"
             @press-enter="loadData"
           />
           <a-select
@@ -56,19 +53,22 @@
               }
             "
             allow-clear
-            placeholder="分组"
+            :placeholder="$t('i18n_829abe5a8d')"
             class="search-input-item"
           >
             <a-select-option v-for="item in groupList" :key="item">{{ item }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
 
-          <a-button type="primary" :disabled="!tableSelections || !tableSelections.length" @click="syncToWorkspaceShow"
-            >工作空间同步</a-button
+          <a-button
+            type="primary"
+            :disabled="!tableSelections || !tableSelections.length"
+            @click="syncToWorkspaceShow"
+            >{{ $t('i18n_398ce396cd') }}</a-button
           >
-          <a-button type="primary" @click="toSshTabs">管理面板</a-button>
+          <a-button type="primary" @click="toSshTabs">{{ $t('i18n_848c07af9b') }}</a-button>
         </a-space>
       </template>
       <template #tableHelp>
@@ -76,9 +76,9 @@
           <template #title>
             <div>
               <ul>
-                <li>关联节点数据是异步获取有一定时间延迟</li>
-                <li>关联节点会自动识别服务器中是否存在 java 环境,如果没有 Java 环境不能快速安装节点</li>
-                <li>关联节点如果服务器存在 java 环境,但是插件端未运行则会显示快速安装按钮</li>
+                <li>{{ $t('i18n_a13d8ade6a') }}</li>
+                <li>{{ $t('i18n_fda92d22d9') }}</li>
+                <li>{{ $t('i18n_1278df0cfc') }}</li>
               </ul>
             </div>
           </template>
@@ -107,29 +107,31 @@
               {{
                 (statusMap[record.machineSsh && record.machineSsh.status] &&
                   statusMap[record.machineSsh && record.machineSsh.status].desc) ||
-                '未知'
+                $t('i18n_1622dc9b6b')
               }}
             </a-tag>
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osName')">
-          <a-popover title="系统信息">
+          <a-popover :title="$t('i18n_b7ea5e506c')">
             <template #content>
-              <p>系统名：{{ record.machineSsh && record.machineSsh.osName }}</p>
-              <p>系统版本：{{ record.machineSsh && record.machineSsh.osVersion }}</p>
-              <p>CPU型号：{{ record.machineSsh && record.machineSsh.osCpuIdentifierName }}</p>
-              <p>主机名：{{ record.machineSsh && record.machineSsh.hostName }}</p>
-              <p>开机时间：{{ formatDuration(record.machineSsh && record.machineSsh.osSystemUptime) }}</p>
+              <p>{{ $t('i18n_c17aefeebf') }}{{ record.machineSsh && record.machineSsh.osName }}</p>
+              <p>{{ $t('i18n_f425f59044') }}{{ record.machineSsh && record.machineSsh.osVersion }}</p>
+              <p>CPU{{ $t('i18n_045cd62da3') }}{{ record.machineSsh && record.machineSsh.osCpuIdentifierName }}</p>
+              <p>{{ $t('i18n_07a0e44145') }}{{ record.machineSsh && record.machineSsh.hostName }}</p>
+              <p>
+                {{ $t('i18n_8a745296f4') }}{{ formatDuration(record.machineSsh && record.machineSsh.osSystemUptime) }}
+              </p>
             </template>
-            {{ text || '未知' }}
+            {{ text || $t('i18n_1622dc9b6b') }}
           </a-popover>
         </template>
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osOccupyMemory')">
           <a-tooltip
             placement="topLeft"
-            :title="`内存使用率：${formatPercent(
+            :title="`${$t('i18n_ca32cdfd59')}${formatPercent(
               record.machineSsh && record.machineSsh.osOccupyMemory
-            )},总内存：${renderSize(record.machineSsh && record.machineSsh.osMoneyTotal)}`"
+            )},${$t('i18n_a0a3d583b9')}${renderSize(record.machineSsh && record.machineSsh.osMoneyTotal)}`"
           >
             <span
               >{{ formatPercent(record.machineSsh && record.machineSsh.osOccupyMemory) }}/{{
@@ -142,9 +144,9 @@
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osOccupyCpu')">
           <a-tooltip
             placement="topLeft"
-            :title="`CPU使用率：${formatPercent2Number(record.machineSsh && record.machineSsh.osOccupyCpu)}%,CPU数：${
-              record.machineSsh && record.machineSsh.osCpuCores
-            }`"
+            :title="`CPU${$t('i18n_afb9fe400b')}${formatPercent2Number(
+              record.machineSsh && record.machineSsh.osOccupyCpu
+            )}%,CPU${$t('i18n_40349f5514')}${record.machineSsh && record.machineSsh.osCpuCores}`"
           >
             <span
               >{{ (formatPercent2Number(record.machineSsh && record.machineSsh.osOccupyCpu) || '-') + '%' }} /
@@ -154,11 +156,15 @@
         </template>
 
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osMaxOccupyDisk')">
-          <a-popover title="硬盘信息">
+          <a-popover :title="$t('i18n_a74b62f4bb')">
             <template #content>
-              <p>硬盘总量：{{ renderSize(record.machineSsh && record.machineSsh.osFileStoreTotal) }}</p>
-              <p>硬盘最大的使用率：{{ formatPercent(record.machineSsh && record.machineSsh.osMaxOccupyDisk) }}</p>
-              <p>使用率最大的分区：{{ record.machineSsh && record.machineSsh.osMaxOccupyDiskName }}</p>
+              <p>
+                {{ $t('i18n_7e359f4b71') }}{{ renderSize(record.machineSsh && record.machineSsh.osFileStoreTotal) }}
+              </p>
+              <p>
+                {{ $t('i18n_de17fc0b78') }}{{ formatPercent(record.machineSsh && record.machineSsh.osMaxOccupyDisk) }}
+              </p>
+              <p>{{ $t('i18n_ba452d57f2') }}{{ record.machineSsh && record.machineSsh.osMaxOccupyDiskName }}</p>
             </template>
             <span
               >{{ formatPercent(record.machineSsh && record.machineSsh.osMaxOccupyDisk) }}
@@ -170,7 +176,7 @@
 
         <template v-else-if="column.dataIndex === 'nodeId'">
           <template v-if="record.linkNode">
-            <a-tooltip placement="topLeft" :title="`节点名称：${record.linkNode.name}`">
+            <a-tooltip placement="topLeft" :title="`${$t('i18n_5d83794cfa')}${record.linkNode.name}`">
               <a-button
                 size="small"
                 style="width: 90px; padding: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
@@ -187,13 +193,13 @@
           <a-space>
             <a-dropdown>
               <a-button size="small" type="primary" @click="handleTerminal(record, false)"
-                >终端<DownOutlined
+                >{{ $t('i18n_4722bc0c56') }}<DownOutlined
               /></a-button>
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
                     <a-button size="small" type="primary" @click="handleTerminal(record, true)"
-                      ><FullscreenOutlined />全屏终端</a-button
+                      ><FullscreenOutlined />{{ $t('i18n_a3296ef4f6') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item key="2">
@@ -204,39 +210,44 @@
                         query: { id: record.id, wid: getWorkspaceId() }
                       }"
                     >
-                      <a-button size="small" type="primary"> <FullscreenOutlined />新标签终端</a-button>
+                      <a-button size="small" type="primary">
+                        <FullscreenOutlined />{{ $t('i18n_0934f7777a') }}</a-button
+                      >
                     </router-link>
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
             <template v-if="record.fileDirs">
-              <a-button size="small" type="primary" @click="handleFile(record)">文件</a-button>
+              <a-button size="small" type="primary" @click="handleFile(record)">{{ $t('i18n_2a0c4740f1') }}</a-button>
             </template>
             <template v-else>
-              <a-tooltip
-                placement="topLeft"
-                title="如果按钮不可用,请去资产管理 ssh 列表的关联中新增当前工作空间允许管理的授权文件夹"
-              >
-                <a-button size="small" type="primary" :disabled="true">文件</a-button>
+              <a-tooltip placement="topLeft" :title="$t('i18n_46c8ba7b7f')">
+                <a-button size="small" type="primary" :disabled="true">{{ $t('i18n_2a0c4740f1') }}</a-button>
               </a-tooltip>
             </template>
 
             <a-dropdown>
               <a @click="(e) => e.preventDefault()">
-                更多
+                {{ $t('i18n_0ec9eaf9c3') }}
                 <DownOutlined />
               </a>
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
-                    <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
+                    <a-button size="small" type="primary" @click="handleEdit(record)">{{
+                      $t('i18n_95b351c862')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+                    <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+                      $t('i18n_2f4aaddde3')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" @click="handleViewLog(record)">终端日志</a-button>
+                    <a-button size="small" type="primary" @click="handleViewLog(record)">{{
+                      $t('i18n_3ed3733078')
+                    }}</a-button>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -246,11 +257,12 @@
       </template>
     </CustomTable>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editSshVisible"
       v-model:open="editSshVisible"
       destroy-on-close
       width="600px"
-      title="编辑 SSH"
+      :title="$t('i18n_7a30792e2a')"
       :mask-closable="false"
       :confirm-loading="confirmLoading"
       @ok="handleEditSshOk"
@@ -260,36 +272,34 @@
           <a-alert type="info" show-icon style="width: 100%; margin-bottom: 10px">
             <template #message>
               <ul>
-                <li>此编辑仅能编辑当前 SSH 在此工作空间的名称信息</li>
-                <li>如果要配置 SSH 请到【系统管理】-> 【资产管理】-> 【SSH 管理】中去配置。</li>
-                <li>
-                  当前 SSH 的授权目录（文件目录、文件后缀、禁止命令）需要请到 【系统管理】-> 【资产管理】-> 【SSH
-                  管理】-> 操作栏中->关联按钮->对应工作空间->操作栏中->配置按钮
-                </li>
+                <li>{{ $t('i18n_d0b7462bdc') }}</li>
+                <li>{{ $t('i18n_dc3356300f') }}</li>
+                <li>{{ $t('i18n_0b2fab7493') }}</li>
               </ul>
             </template>
           </a-alert>
         </template>
-        <a-form-item label="SSH 名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="SSH 名称" />
+        <a-form-item :label="$t('i18n_10f6fc171a')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_10f6fc171a')" />
         </a-form-item>
-        <a-form-item label="分组名称" name="group">
+        <a-form-item :label="$t('i18n_1014b33d22')" name="group">
           <custom-select
             v-model:value="temp.group"
             :data="groupList"
-            input-placeholder="新增分组"
-            select-placeholder="选择分组名"
+            :input-placeholder="$t('i18n_bd0362bed3')"
+            :select-placeholder="$t('i18n_9cac799f2f')"
           >
           </custom-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
 
     <!-- 文件管理 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerVisible"
       destroy-on-close
       :open="drawerVisible"
-      :title="`${temp.name} 文件管理`"
+      :title="`${temp.name} ${$t('i18n_8780e6b3d1')}`"
       placement="right"
       width="90vw"
       @close="
@@ -299,9 +309,10 @@
       "
     >
       <ssh-file v-if="drawerVisible" :ssh-id="temp.id" />
-    </a-drawer>
+    </CustomDrawer>
     <!-- Terminal -->
-    <a-modal
+    <CustomModal
+      v-if="terminalVisible"
       v-model:open="terminalVisible"
       destroy-on-close
       :style="{
@@ -323,39 +334,41 @@
       <!-- <div :style="`height: ${this.terminalFullscreen ? 'calc(100vh - 70px - 20px)' : 'calc(70vh - 20px)'}`"> -->
       <terminal1 v-if="terminalVisible" :ssh-id="temp.id" />
       <!-- </div> -->
-    </a-modal>
+    </CustomModal>
     <!-- 操作日志 -->
-    <a-modal
+    <CustomModal
+      v-if="viewOperationLog"
       v-model:open="viewOperationLog"
       destroy-on-close
-      title="操作日志"
+      :title="$t('i18n_cda84be2f6')"
       width="80vw"
       :footer="null"
       :mask-closable="false"
     >
       <OperationLog v-if="viewOperationLog" :ssh-id="temp.id"></OperationLog>
-    </a-modal>
+    </CustomModal>
     <!-- 同步到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="syncToWorkspaceVisible"
       v-model:open="syncToWorkspaceVisible"
       destroy-on-close
-      title="同步到其他工作空间"
+      :title="$t('i18n_1a44b9e2f7')"
       :confirm-loading="confirmLoading"
       :mask-closable="false"
       @ok="handleSyncToWorkspace"
     >
-      <a-alert message="温馨提示" type="warning" show-icon>
+      <a-alert :message="$t('i18n_947d983961')" type="warning" show-icon>
         <template #description>
           <ul>
-            <li>同步机制采用 IP+PORT+连接方式 确定是同一个服务器</li>
-            <li>当目标工作空间不存在对应的 SSH 时候将自动创建一个新的 SSH</li>
-            <li>当目标工作空间已经存在 SSH 时候将自动同步 SSH 账号、密码、私钥等信息</li>
+            <li>{{ $t('i18n_59a15a0848') }}</li>
+            <li>{{ $t('i18n_412504968d') }}</li>
+            <li>{{ $t('i18n_57b7990b45') }}</li>
           </ul>
         </template>
       </a-alert>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -369,7 +382,7 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id" :disabled="getWorkspaceId() === item.id">{{
               item.name
@@ -377,10 +390,9 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { deleteSsh, editSsh, getSshList, syncToWorkspace, getSshGroupAll } from '@/api/ssh'
 import { statusMap } from '@/api/system/assets-ssh'
@@ -433,7 +445,7 @@ export default {
 
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           sorter: true,
           width: 100,
@@ -449,14 +461,14 @@ export default {
         },
         // { title: "Port", dataIndex: "machineSsh.port", sorter: true, width: 80, ellipsis: true, },
         {
-          title: '用户名',
+          title: this.$t('i18n_819767ada1'),
           dataIndex: ['machineSsh', 'user'],
           width: '100px',
           ellipsis: true
         },
 
         {
-          title: '系统名',
+          title: this.$t('i18n_cdc478d90c'),
           dataIndex: ['machineSsh', 'osName'],
           width: 80,
           ellipsis: true
@@ -469,20 +481,20 @@ export default {
           ellipsis: true
         },
         {
-          title: '内存',
+          title: this.$t('i18n_9932551cd5'),
           dataIndex: ['machineSsh', 'osOccupyMemory'],
           width: 80,
           ellipsis: true
         },
         {
-          title: '硬盘',
+          title: this.$t('i18n_1d650a60a5'),
           dataIndex: ['machineSsh', 'osMaxOccupyDisk'],
           width: 80,
           ellipsis: true
         },
         // { title: "编码格式", dataIndex: "charset", sorter: true, width: 120, ellipsis: true,  },
         {
-          title: '连接状态',
+          title: this.$t('i18n_7912615699'),
           dataIndex: ['machineSsh', 'status'],
           ellipsis: true,
           align: 'center',
@@ -490,14 +502,14 @@ export default {
         },
         // { title: "编码格式", dataIndex: "machineSsh.charset", sorter: true, width: 120, ellipsis: true, },
         {
-          title: '关联节点',
+          title: this.$t('i18n_222316382d'),
           dataIndex: 'nodeId',
 
           width: '100px',
           ellipsis: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -505,7 +517,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -513,7 +525,7 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
 
           width: '200px',
@@ -525,7 +537,7 @@ export default {
 
       // 表单校验规则
       rules: {
-        name: [{ required: true, message: '请输入 SSH 名称', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_9f6fa346d8'), trigger: 'blur' }]
       },
 
       groupList: [],
@@ -652,11 +664,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除 SSH 么？当前 ssh 关联的脚本在删除后均将失效',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_99cba05f94'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteSsh(record.id).then((res) => {
             if (res.code === 200) {
@@ -727,7 +739,7 @@ export default {
     handleSyncToWorkspace() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }

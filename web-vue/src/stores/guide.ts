@@ -7,6 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
+import { t, defaultLocale, normalLang } from '@/i18n'
 
 /**
  * 引导相关 store
@@ -142,6 +143,7 @@ export const useGuideStore = defineStore('guide', {
       const cache = this.getGuideCache
       cache.locale = locale || 'zh-cn'
       this.setGuideCache(cache)
+      //
       location.reload()
     }
   },
@@ -158,24 +160,33 @@ export const useGuideStore = defineStore('guide', {
     getCatchThemeView: (state) => {
       return () => {
         // 新用户未设置过为跟随系统
-        return state.guideCache.themeView || 'auto'
+        const theme = state.guideCache.themeView || 'auto'
+        return allowThemeView.includes(theme) ? theme : 'auto'
       }
+    },
+    getSupportThemes: () => {
+      return [
+        {
+          label: t('i18n_71bbc726ac'),
+          value: 'auto'
+        },
+        {
+          label: t('i18n_48d0a09bdd'),
+          value: 'light'
+        },
+        {
+          label: t('i18n_41e8e8b993'),
+          value: 'dark'
+        }
+      ]
     },
     getThemeView: (state) => {
       return () => {
-        const themeView = state?.getCatchThemeView ? state.getCatchThemeView() : 'light'
-        if (allowThemeView.includes(themeView)) {
-          if (themeView === 'auto') {
-            if (state.systemIsDark) {
-              return 'dark'
-            } else {
-              return 'light'
-            }
-          } else {
-            return themeView
-          }
+        const themeView = state?.getCatchThemeView ? state.getCatchThemeView() : 'auto'
+        if (themeView === 'auto') {
+          return state.systemIsDark ? 'dark' : 'light'
         } else {
-          return 'light'
+          return themeView
         }
       }
     },
@@ -247,13 +258,8 @@ export const useGuideStore = defineStore('guide', {
     },
     getLocale: (state) => {
       return () => {
-        const locale = state.guideCache.locale || 'zh-cn'
-        const array = ['zh-cn', 'en-us']
-        if (array.includes(locale)) {
-          // 避免非法字符串
-          return locale
-        }
-        return 'zh-cn'
+        const locale = state.guideCache.locale || navigator.language
+        return normalLang(locale, defaultLocale)
       }
     }
   }

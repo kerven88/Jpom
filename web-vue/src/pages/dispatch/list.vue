@@ -28,19 +28,19 @@
           <a-input
             v-model:value="listQuery['%id%']"
             class="search-input-item"
-            placeholder="分发id"
+            :placeholder="$t('i18n_83aa7f3123')"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%name%']"
             class="search-input-item"
-            placeholder="名称"
+            :placeholder="$t('i18n_d7ec2d3fea')"
             @press-enter="loadData"
           />
           <a-select
             v-model:value="listQuery.group"
             allow-clear
-            placeholder="请选择分组"
+            :placeholder="$t('i18n_ec22193ed1')"
             class="search-input-item"
             @change="loadData"
           >
@@ -49,20 +49,25 @@
           <a-select
             v-model:value="listQuery.outGivingProject"
             allow-clear
-            placeholder="分发类型"
+            :placeholder="$t('i18n_9e2e02ef08')"
             class="search-input-item"
           >
-            <a-select-option :value="1">独立</a-select-option>
-            <a-select-option :value="0">关联</a-select-option>
+            <a-select-option :value="1">{{ $t('i18n_0c1de8295a') }}</a-select-option>
+            <a-select-option :value="0">{{ $t('i18n_1c3cf7f5f0') }}</a-select-option>
           </a-select>
-          <a-select v-model:value="listQuery.status" allow-clear placeholder="请选择状态" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.status"
+            allow-clear
+            :placeholder="$t('i18n_e1c965efff')"
+            class="search-input-item"
+          >
             <a-select-option v-for="(name, key) in statusMap" :key="key">{{ name }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleLink">新增关联</a-button>
-          <a-button type="primary" @click="handleAdd">新增分发</a-button>
+          <a-button type="primary" @click="handleLink">{{ $t('i18n_30d9d4f5c9') }}</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_47e4123886') }}</a-button>
 
           <!-- <a-statistic-countdown format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="silenceLoadData" /> -->
         </a-space>
@@ -70,16 +75,12 @@
       <template #tableHelp>
         <a-tooltip>
           <template #title>
-            <div>
-              节点分发是指,一个项目运行需要在多个节点(服务器)中运行,使用节点分发来统一管理这个项目(可以实现分布式项目管理功能)
-            </div>
+            <div>{{ $t('i18n_3aa69a563b') }}</div>
 
             <div>
               <ul>
-                <li>新增关联项目是指,将已经在节点中创建好的项目关联为节点分发项目来实现统一管理</li>
-                <li>
-                  创建分发项目是指,全新创建一个属于节点分发到项目,创建成功后项目信息将自动同步到对应的节点中,修改节点分发信息也自动同步到对应的节点中
-                </li>
+                <li>{{ $t('i18n_5f5cd1bb1e') }}</li>
+                <li>{{ $t('i18n_9bf4e3c9de') }}</li>
               </ul>
             </div>
           </template>
@@ -117,16 +118,23 @@
 
         <template v-else-if="column.dataIndex === 'status'">
           <a-tooltip placement="topLeft" :title="`${record.statusMsg || ''}`">
-            <a-tag v-if="text === 2" color="green">{{ statusMap[text] || '未知' }}</a-tag>
-            <a-tag v-else-if="text === 1" color="orange">{{ statusMap[text] || '未知' }}</a-tag>
-            <a-tag v-else-if="text === 3 || text === 4" color="red">{{ statusMap[text] || '未知' }}</a-tag>
-            <a-tag v-else>{{ statusMap[text] || '未知' }}</a-tag>
+            <a-tag v-if="text === 2" color="green">{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
+            <a-tag v-else-if="text === 1" color="orange">{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
+            <a-tag v-else-if="text === 3 || text === 4" color="red">{{
+              statusMap[text] || $t('i18n_1622dc9b6b')
+            }}</a-tag>
+            <a-tag v-else>{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
           </a-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex === 'clearOld'">
           <a-tooltip>
-            <a-switch size="small" checked-children="是" un-checked-children="否" disabled :checked="text"
+            <a-switch
+              size="small"
+              :checked-children="$t('i18n_0a60ac8f02')"
+              :un-checked-children="$t('i18n_c9744f45e7')"
+              disabled
+              :checked="text"
           /></a-tooltip>
         </template>
 
@@ -153,25 +161,29 @@
         </template>
 
         <template v-else-if="column.dataIndex === 'outGivingProject'">
-          <span v-if="text">独立</span>
-          <span v-else>关联</span>
+          <span v-if="text">{{ $t('i18n_0c1de8295a') }}</span>
+          <span v-else>{{ $t('i18n_1c3cf7f5f0') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleDispatch(record)">分发文件</a-button>
+            <a-button size="small" type="primary" @click="handleDispatch(record)">
+              {{ $t('i18n_59c316e560') }}
+            </a-button>
 
             <a-button
               v-if="record.outGivingProject"
               size="small"
               type="primary"
               @click="handleEditDispatchProject(record)"
-              >编辑</a-button
+              >{{ $t('i18n_95b351c862') }}</a-button
             >
-            <a-button v-else size="small" type="primary" @click="handleEditDispatch(record)">编辑</a-button>
+            <a-button v-else size="small" type="primary" @click="handleEditDispatch(record)">
+              {{ $t('i18n_95b351c862') }}
+            </a-button>
 
             <a-dropdown>
               <a @click="(e) => e.preventDefault()">
-                更多
+                {{ $t('i18n_0ec9eaf9c3') }}
                 <DownOutlined />
               </a>
               <template #overlay>
@@ -183,21 +195,24 @@
                       size="small"
                       :disabled="record.status !== 1"
                       @click="handleCancel(record)"
-                      >取消分发</a-button
                     >
+                      {{ $t('i18n_30e855a053') }}
+                    </a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button type="primary" danger size="small" @click="handleDelete(record, '')">{{
-                      record.outGivingProject ? '删除' : '释放'
-                    }}</a-button>
+                    <a-button type="primary" danger size="small" @click="handleDelete(record, '')">
+                      {{ record.outGivingProject ? $t('i18n_2f4aaddde3') : $t('i18n_cbdcabad50') }}
+                    </a-button>
                   </a-menu-item>
                   <a-menu-item v-if="record.outGivingProject">
                     <a-button type="primary" danger size="small" @click="handleDelete(record, 'thorough')">
-                      彻底删除</a-button
-                    >
+                      {{ $t('i18n_7327966572') }}
+                    </a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button type="primary" danger size="small" @click="handleUnbind(record)">解绑</a-button>
+                    <a-button type="primary" danger size="small" @click="handleUnbind(record)">
+                      {{ $t('i18n_663393986e') }}
+                    </a-button>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -207,12 +222,13 @@
       </template>
     </CustomTable>
     <!-- 新增/编辑关联项目 -->
-    <a-modal
+    <CustomModal
+      v-if="linkDispatchVisible"
       v-model:open="linkDispatchVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="900px"
-      :title="temp.type === 'edit' ? '编辑关联项目' : '新增关联项目'"
+      :title="temp.type === 'edit' ? $t('i18n_5afe5e7ed4') : $t('i18n_c889b9f67d')"
       :mask-closable="false"
       @ok="handleLinkDispatchOk"
       @cancel="clearDispatchList"
@@ -221,8 +237,8 @@
         <a-form-item name="id">
           <template #label>
             <a-tooltip>
-              分发 ID
-              <template #title>分发 ID 等同于项目 ID</template>
+              {{ $t('i18n_f6dee0f3ff') }}
+              <template #title>{{ $t('i18n_b28836fe97') }}</template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
@@ -231,13 +247,13 @@
             v-model:value="temp.id"
             :max-length="50"
             :disabled="temp.type === 'edit'"
-            placeholder="创建之后不能修改"
+            :placeholder="$t('i18n_7ce511154f')"
           />
           <template v-else>
             <a-input-search
               v-model:value="temp.id"
               :max-length="50"
-              placeholder="创建之后不能修改"
+              :placeholder="$t('i18n_7ce511154f')"
               @search="
                 () => {
                   temp = { ...temp, id: randomStr(6) }
@@ -245,27 +261,29 @@
               "
             >
               <template #enterButton>
-                <a-button type="primary"> 随机生成 </a-button>
+                <a-button type="primary">
+                  {{ $t('i18n_6709f4548f') }}
+                </a-button>
               </template>
             </a-input-search>
           </template>
           <!-- <a-input v-model="temp.id" :maxLength="50" :disabled="temp.type === 'edit'" placeholder="创建之后不能修改" /> -->
         </a-form-item>
 
-        <a-form-item label="分发名称" name="name">
+        <a-form-item :label="$t('i18n_9d89cbf245')" name="name">
           <a-row>
             <a-col :span="10">
-              <a-input v-model:value="temp.name" :max-length="50" placeholder="分发名称" />
+              <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_9d89cbf245')" />
             </a-col>
-            <a-col :span="4" style="text-align: right">分组名称：</a-col>
+            <a-col :span="4" style="text-align: right">{{ $t('i18n_1b973fc4d1') }}</a-col>
             <a-col :span="10">
               <a-form-item-rest>
                 <custom-select
                   v-model:value="temp.group"
                   :max-length="50"
                   :data="groupList"
-                  input-placeholder="新增分组"
-                  select-placeholder="选择分组"
+                  :input-placeholder="$t('i18n_bd0362bed3')"
+                  :select-placeholder="$t('i18n_3e8c9c54ee')"
                 >
                 </custom-select>
               </a-form-item-rest>
@@ -273,12 +291,12 @@
           </a-row>
         </a-form-item>
 
-        <a-form-item label="分发节点" required>
+        <a-form-item :label="$t('i18n_6a6c857285')" required>
           <a-list
             item-layout="horizontal"
             :data-source="dispatchList"
             :locale="{
-              emptyText: '暂无数据,请先新增节点项目数据'
+              emptyText: $t('i18n_cfd482e5ef')
             }"
             :row-key="
               (item) => {
@@ -289,10 +307,10 @@
             <template #renderItem="{ item, index }">
               <a-list-item>
                 <a-space>
-                  <div>节点:</div>
+                  <div>{{ $t('i18n_9b280a6d2d') }}</div>
                   <a-select
-                    placeholder="请选择节点"
-                    not-found-content="暂无节点信息"
+                    :placeholder="$t('i18n_f8a613d247')"
+                    :not-found-content="$t('i18n_8f8f88654f')"
                     style="width: 140px"
                     :value="item.nodeId ? item.nodeId : undefined"
                     :disabled="
@@ -308,12 +326,12 @@
                       {{ nodeNameMap[nodeItemList.id] }}
                     </a-select-option>
                   </a-select>
-                  <span>项目: </span>
+                  <span>{{ $t('i18n_8198e4461a') }} </span>
                   <a-select
                     style="width: 300px"
                     :placeholder="item.placeholder"
                     :default-value="item.projectId ? item.projectId : undefined"
-                    not-found-content="此节点暂无项目"
+                    :not-found-content="$t('i18n_1d843d7b45')"
                     :disabled="dispatchList[index].disabled"
                     @change="(projectId) => handleProjectChange(projectId, index)"
                   >
@@ -331,8 +349,8 @@
                         }).length > 0
                       "
                     >
-                      <a-tooltip :title="`${project.outGivingProject ? '【独立分发】' : ''} ${project.name}`">
-                        {{ project.outGivingProject ? '【独立分发】' : '' }}
+                      <a-tooltip :title="`${project.outGivingProject ? $t('i18n_8e2ed8ae0d') : ''} ${project.name}`">
+                        {{ project.outGivingProject ? $t('i18n_8e2ed8ae0d') : '' }}
                         {{ project.name }}
                       </a-tooltip>
                     </a-select-option>
@@ -344,21 +362,20 @@
               </a-list-item>
             </template>
           </a-list>
-          <a-button type="primary" size="small" @click="addDispachList">新增</a-button>
+          <a-button type="primary" size="small" @click="addDispachList">{{ $t('i18n_66ab5e9f24') }}</a-button>
         </a-form-item>
-        <a-form-item label="分发后操作" name="afterOpt">
-          <a-select v-model:value="temp.afterOpt" placeholder="请选择发布后操作">
+        <a-form-item :label="$t('i18n_dfcc9e3c45')" name="afterOpt">
+          <a-select v-model:value="temp.afterOpt" :placeholder="$t('i18n_3322338140')">
             <a-select-option v-for="item in afterOptList" :key="item.value">{{ item.title }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item v-if="temp.afterOpt === 2 || temp.afterOpt === 3" name="intervalTime">
           <template #label>
             <a-tooltip>
-              间隔时间
+              {{ $t('i18n_a5d550f258') }}
               <template #title>
-                在执行多节点分发时候使用 顺序重启、完整顺序重启
-                时候需要保证项目能正常重启,并等待上一个项目启动完成才能关闭下一个项目,请根据自身项目启动时间来配置
-                <li>一般建议 10 秒以上</li>
+                {{ $t('i18n_55b2d0904f') }}, {{ $t('i18n_e9ec2b0bee') }},{{ $t('i18n_c8c45e8467') }}
+                <li>{{ $t('i18n_a0e31d89ff') }}</li>
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
@@ -366,41 +383,45 @@
           <a-input-number
             v-model:value="temp.intervalTime"
             :min="0"
-            placeholder="分发间隔时间 （顺序重启、完整顺序重启）方式才生效"
+            :placeholder="$t('i18n_d7ac764d3a')"
             style="width: 100%"
           />
         </a-form-item>
-        <a-form-item name="secondaryDirectory" label="二级目录">
-          <a-input v-model:value="temp.secondaryDirectory" placeholder="不填写则发布至项目的根目录" />
+        <a-form-item name="secondaryDirectory" :label="$t('i18n_871cc8602a')">
+          <a-input v-model:value="temp.secondaryDirectory" :placeholder="$t('i18n_9c99e8bec9')" />
         </a-form-item>
         <a-form-item name="clearOld">
           <template #label>
             <a-tooltip>
-              清空发布
+              {{ $t('i18n_2223ff647d') }}
               <template #title>
-                清空发布是指在上传新文件前,会将项目文件夹目录里面的所有文件先删除后再保存新文件
+                {{ $t('i18n_b343663a14') }}
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
           <a-row>
             <a-col :span="4">
-              <a-switch v-model:checked="temp.clearOld" checked-children="是" un-checked-children="否" />
+              <a-switch
+                v-model:checked="temp.clearOld"
+                :checked-children="$t('i18n_0a60ac8f02')"
+                :un-checked-children="$t('i18n_c9744f45e7')"
+              />
             </a-col>
 
             <a-col :span="4" style="text-align: right">
               <a-tooltip v-if="temp.type !== 'edit'">
-                <template #title>
-                  发布前停止是指在发布文件到项目文件时先将项目关闭，再进行文件替换。避免 windows
-                  环境下出现文件被占用的情况
-                </template>
+                <template #title> {{ $t('i18n_300fbf3891') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
-              发布前停止：
+              {{ $t('i18n_7b2cbfada9') }}
             </a-col>
             <a-col :span="4">
               <a-form-item-rest>
-                <a-switch v-model:checked="temp.uploadCloseFirst" checked-children="是" un-checked-children="否"
+                <a-switch
+                  v-model:checked="temp.uploadCloseFirst"
+                  :checked-children="$t('i18n_0a60ac8f02')"
+                  :un-checked-children="$t('i18n_c9744f45e7')"
               /></a-form-item-rest>
             </a-col>
           </a-row>
@@ -410,32 +431,32 @@
             <a-tooltip>
               <template #title>
                 <ul>
-                  <li>分发过程请求对应的地址,开始分发,分发完成,分发失败,取消分发</li>
-                  <li>传入参数有：outGivingId、outGivingName、status、statusMsg、executeTime</li>
-                  <li>status 的值有：1:分发中、2：分发结束、3：已取消、4：分发失败</li>
-                  <li>异步请求不能保证有序性</li>
+                  <li>{{ $t('i18n_b186c667dc') }}</li>
+                  <li>{{ $t('i18n_0bc45241af') }}</li>
+                  <li>status {{ $t('i18n_5d5fd4170f') }}:{{ $t('i18n_be3a4d368e') }}</li>
+                  <li>{{ $t('i18n_c96f47ec1b') }}</li>
                 </ul>
               </template>
               WebHooks
               <QuestionCircleOutlined v-show="!temp.id" />
             </a-tooltip>
           </template>
-          <a-input v-model:value="temp.webhook" placeholder="分发过程请求,非必填，GET请求" />
+          <a-input v-model:value="temp.webhook" :placeholder="$t('i18n_89a40a1a8b')" />
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 创建/编辑分发项目 -->
-    <a-modal
+    <CustomModal
+      v-if="editDispatchVisible"
       v-model:open="editDispatchVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      :z-index="900"
       width="60vw"
-      :title="temp.type === 'edit' ? '编辑分发项目' : '创建分发项目'"
+      :title="temp.type === 'edit' ? $t('i18n_6c72e9d9de') : $t('i18n_934156d92c')"
       :mask-closable="false"
       @ok="handleEditDispatchOk"
     >
-      <a-spin tip="加载数据中" :spinning="editDispatchLoading">
+      <a-spin :tip="$t('i18n_4360e5056b')" :spinning="editDispatchLoading">
         <a-form
           ref="editDispatchForm"
           :rules="rules"
@@ -445,18 +466,18 @@
         >
           <a-alert
             v-if="!nodeList || !nodeList.length"
-            message="提醒"
+            :message="$t('i18n_4b027f3979')"
             type="warning"
             show-icon
             style="margin-bottom: 10px"
           >
-            <template #description>当前工作空间还没有逻辑节点不能创建节点分发奥</template>
+            <template #description>{{ $t('i18n_c3aeddb10d') }}</template>
           </a-alert>
           <a-form-item name="id">
             <template #label>
               <a-tooltip>
-                分发 ID
-                <template #title>分发 ID 等同于项目 ID</template>
+                {{ $t('i18n_f6dee0f3ff') }}
+                <template #title>{{ $t('i18n_b28836fe97') }}</template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
@@ -465,13 +486,13 @@
               v-model:value="temp.id"
               :max-length="50"
               :disabled="temp.type === 'edit'"
-              placeholder="创建之后不能修改,分发 ID 等同于项目 ID"
+              :placeholder="$t('i18n_ef651d15b0')"
             />
             <template v-else>
               <a-input-search
                 v-model:value="temp.id"
                 :max-length="50"
-                placeholder="创建之后不能修改,分发 ID 等同于项目 ID"
+                :placeholder="$t('i18n_ef651d15b0')"
                 @search="
                   () => {
                     temp = { ...temp, id: randomStr(6) }
@@ -479,26 +500,28 @@
                 "
               >
                 <template #enterButton>
-                  <a-button type="primary"> 随机生成 </a-button>
+                  <a-button type="primary">
+                    {{ $t('i18n_6709f4548f') }}
+                  </a-button>
                 </template>
               </a-input-search>
             </template>
             <!-- <a-input v-model="temp.id" :maxLength="50" :disabled="temp.type === 'edit'" placeholder="创建之后不能修改,分发 ID 等同于项目 ID" /> -->
           </a-form-item>
-          <a-form-item label="分发名称" name="name">
+          <a-form-item :label="$t('i18n_9d89cbf245')" name="name">
             <a-row>
               <a-col :span="10">
-                <a-input v-model:value="temp.name" :max-length="50" placeholder="分发名称（项目名称）" />
+                <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_1ed46c4a59')" />
               </a-col>
-              <a-col :span="4" style="text-align: right">分组名称：</a-col>
+              <a-col :span="4" style="text-align: right">{{ $t('i18n_1b973fc4d1') }}</a-col>
               <a-col :span="10">
                 <a-form-item-rest>
                   <custom-select
                     v-model:value="temp.group"
                     :max-length="50"
                     :data="groupList"
-                    input-placeholder="新增分组"
-                    select-placeholder="选择分组"
+                    :input-placeholder="$t('i18n_bd0362bed3')"
+                    :select-placeholder="$t('i18n_3e8c9c54ee')"
                   >
                   </custom-select>
                 </a-form-item-rest>
@@ -509,24 +532,33 @@
           <a-form-item name="runMode">
             <template #label>
               <a-tooltip>
-                运行方式
+                {{ $t('i18n_17d444b642') }}
                 <template #title>
                   <ul>
-                    <li><b>Dsl</b> 配合脚本模版实现自定义项目管理</li>
-                    <li><b>ClassPath</b> java -classpath xxx 运行项目</li>
-                    <li><b>Jar</b> java -jar xxx 运行项目</li>
-                    <li><b>JarWar</b> java -jar Springboot war 运行项目</li>
-                    <li><b>JavaExtDirsCp</b> java -Djava.ext.dirs=lib -cp conf:run.jar $MAIN_CLASS 运行项目</li>
-                    <li><b>File</b> 项目为静态文件夹,没有项目状态以及控制等功能</li>
+                    <li><b>Dsl</b> {{ $t('i18n_2356fe4af2') }}</li>
+                    <li>
+                      <b>ClassPath</b> java -classpath xxx
+                      {{ $t('i18n_fa4aa1b93b') }}
+                    </li>
+                    <li><b>Jar</b> java -jar xxx {{ $t('i18n_fa4aa1b93b') }}</li>
+                    <li>
+                      <b>JarWar</b> java -jar Springboot war
+                      {{ $t('i18n_fa4aa1b93b') }}
+                    </li>
+                    <li>
+                      <b>JavaExtDirsCp</b> java -Djava.ext.dirs=lib -cp conf:run.jar $MAIN_CLASS
+                      {{ $t('i18n_fa4aa1b93b') }}
+                    </li>
+                    <li><b>File</b> {{ $t('i18n_5d6f47d670') }},{{ $t('i18n_61955b0e4b') }}</li>
                   </ul>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
 
-            <a-select v-model:value="temp.runMode" placeholder="请选择运行方式">
+            <a-select v-model:value="temp.runMode" :placeholder="$t('i18n_26a3378645')">
               <a-select-option v-for="item in runModeArray.filter((item) => item.onlyNode !== true)" :key="item.name">
-                <template v-if="item.desc.indexOf('不推荐') > -1">
+                <template v-if="item.desc.indexOf($t('i18n_888df7a89e')) > -1">
                   <s>
                     <b>[{{ item.name }}]</b> {{ item.desc }}
                   </s>
@@ -541,20 +573,22 @@
           <a-form-item name="whitelistDirectory" class="jpom-project-whitelist">
             <template #label>
               <a-tooltip>
-                项目路径
+                {{ $t('i18n_aabdc3b7c0') }}
                 <template #title>
                   <ul>
-                    <li>授权路径是指项目文件存放到服务中的文件夹</li>
-                    <li>可以到【节点分发】=>【分发授权配置】修改</li>
-                    <li>项目文件夹是项目实际存放的目录名称</li>
-                    <li>项目文件会存放到 <br />&nbsp;&nbsp;<b>项目授权路径+项目文件夹</b></li>
+                    <li>{{ $t('i18n_f89cc4807e') }}</li>
+                    <li>{{ $t('i18n_353707f491') }}</li>
+                    <li>{{ $t('i18n_fe828cefd9') }}</li>
+                    <li>
+                      {{ $t('i18n_556499017a') }} <br />&nbsp;&nbsp;<b>{{ $t('i18n_67141abed6') }}</b>
+                    </li>
                   </ul>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
             <a-input-group compact>
-              <a-select v-model:value="temp.whitelistDirectory" style="width: 50%" placeholder="请选择项目授权路径">
+              <a-select v-model:value="temp.whitelistDirectory" style="width: 50%" :placeholder="$t('i18n_1d38b2b2bc')">
                 <a-select-option v-for="access in accessList" :key="access">
                   <a-tooltip :title="access">
                     {{ access }}
@@ -562,12 +596,12 @@
                 </a-select-option>
               </a-select>
               <a-form-item-rest>
-                <a-input v-model:value="temp.lib" style="width: 50%" placeholder="项目存储的文件夹，jar 包存放的文件夹"
+                <a-input v-model:value="temp.lib" style="width: 50%" :placeholder="$t('i18n_d6937acda5')"
               /></a-form-item-rest>
             </a-input-group>
             <template #help>
               <div>
-                需要提前为工作空间配置授权目录
+                {{ $t('i18n_8e9bd127fb') }}
 
                 <a-button
                   size="small"
@@ -578,38 +612,35 @@
                     }
                   "
                 >
-                  <InfoCircleOutlined /> 配置目录
+                  <InfoCircleOutlined /> {{ $t('i18n_1e5533c401') }}
                 </a-button>
               </div>
             </template>
           </a-form-item>
 
-          <a-form-item v-show="filePath !== ''" label="项目完整目录">
+          <a-form-item v-show="filePath !== ''" :label="$t('i18n_8283f063d7')">
             <a-alert :message="filePath" type="success" />
           </a-form-item>
           <a-form-item v-show="temp.runMode === 'Dsl'" name="dslContent">
             <template #label>
               <a-tooltip>
-                DSL 内容
+                DSL {{ $t('i18n_2d711b09bd') }}
                 <template #title>
-                  <p>
-                    以 yaml/yml 格式配置,scriptId
-                    为项目路径下的脚本文件的相对路径或者服务端脚本模版ID，可以到服务端脚本模版编辑弹窗中查看 scriptId
-                  </p>
-                  <p>脚本里面支持的变量有：${PROJECT_ID}、${PROJECT_NAME}、${PROJECT_PATH}</p>
+                  <p>{{ $t('i18n_8d5956ca2a') }}</p>
+                  <p>{{ $t('i18n_3517aa30c2') }}</p>
                   <p>
                     <b>status</b>
-                    流程执行完脚本后，输出的内容最后一行必须为：running:$pid
-                    <b>$pid 为当前项目实际的进程ID</b>。如果输出最后一行不是预期格式项目状态将是未运行
+                    {{ $t('i18n_ca69dad8fc') }}:$pid <b>$pid {{ $t('i18n_07a8af8c03') }}</b
+                    >{{ $t('i18n_d2f484ff7e') }}
                   </p>
-                  <p>配置详情请参考配置示例</p>
+                  <p>{{ $t('i18n_9f52492fbc') }}</p>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
             <template #help>
               <div>
-                scriptId建议使用服务端脚本分发到脚本：
+                scriptId{{ $t('i18n_3241c7c05f') }}
                 <a-button
                   type="link"
                   size="small"
@@ -619,7 +650,7 @@
                     }
                   "
                 >
-                  查看服务端脚本
+                  {{ $t('i18n_6de1ecc549') }}
                 </a-button>
               </div>
             </template>
@@ -650,14 +681,14 @@
                 height="40vh"
                 :show-tool="true"
                 :options="{ mode: 'yaml', tabSize: 2 }"
-                placeholder="请填写项目 DSL 配置内容,可以点击上方切换 tab 查看配置示例"
+                :placeholder="$t('i18n_1c8190b0eb')"
               >
                 <template #tool_before>
                   <a-segmented
                     v-model:value="dslEditTabKey"
                     :options="[
-                      { label: 'DSL 配置', value: 'content' },
-                      { label: '配置示例', value: 'demo' }
+                      { label: `DSL ${$t('i18n_224e2ccda8')}`, value: 'content' },
+                      { label: $t('i18n_da79c2ec32'), value: 'demo' }
                     ]"
                   />
                 </template>
@@ -673,8 +704,8 @@
                   <a-segmented
                     v-model:value="dslEditTabKey"
                     :options="[
-                      { label: 'DSL 配置', value: 'content' },
-                      { label: '配置示例', value: 'demo' }
+                      { label: `DSL ${$t('i18n_224e2ccda8')}`, value: 'content' },
+                      { label: $t('i18n_da79c2ec32'), value: 'demo' }
                     ]"
                   />
                 </template>
@@ -684,19 +715,19 @@
           <a-form-item v-show="noFileModes.includes(temp.runMode)">
             <template #label>
               <a-tooltip>
-                日志目录
+                {{ $t('i18n_2ce44aba57') }}
                 <template #title>
                   <ul>
-                    <li>日志目录是指控制台日志存储目录</li>
-                    <li>默认是在插件端数据目录/${projectId}/${projectId}.log</li>
-                    <li>可选择的列表和项目授权目录是一致的，即相同配置</li>
+                    <li>{{ $t('i18n_12934d1828') }}</li>
+                    <li>{{ $t('i18n_138776a1dc') }}</li>
+                    <li>{{ $t('i18n_95c5c939e4') }}</li>
                   </ul>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
-            <a-select v-model:value="temp.logPath" placeholder="请选择日志目录">
-              <a-select-option key="" value="">默认是在插件端数据目录/${projectId}/${projectId}.log</a-select-option>
+            <a-select v-model:value="temp.logPath" :placeholder="$t('i18n_99f0996c0a')">
+              <a-select-option key="" value="">{{ $t('i18n_138776a1dc') }}</a-select-option>
               <a-select-option v-for="access in accessList" :key="access">{{ access }}</a-select-option>
             </a-select>
           </a-form-item>
@@ -705,28 +736,30 @@
             label="Main Class"
             name="mainClass"
           >
-            <a-input v-model:value="temp.mainClass" placeholder="程序运行的 main 类(jar 模式运行可以不填)" />
+            <a-input v-model:value="temp.mainClass" :placeholder="$t('i18n_ef800ed466')" />
           </a-form-item>
           <a-form-item
             v-show="javaModes.includes(temp.runMode) && temp.runMode === 'JavaExtDirsCp'"
             label="JavaExtDirsCp"
             name="javaExtDirsCp"
           >
-            <a-input v-model:value="temp.javaExtDirsCp" placeholder="-Dext.dirs=xxx: -cp xx  填写【xxx:xx】" />
+            <a-input
+              v-model:value="temp.javaExtDirsCp"
+              :placeholder="`-Dext.dirs=xxx: -cp xx  ${$t('i18n_c53021f06d')}:xx】`"
+            />
           </a-form-item>
-          <a-form-item label="分发后操作" name="afterOpt">
-            <a-select v-model:value="temp.afterOpt" placeholder="请选择发布后操作">
+          <a-form-item :label="$t('i18n_dfcc9e3c45')" name="afterOpt">
+            <a-select v-model:value="temp.afterOpt" :placeholder="$t('i18n_3322338140')">
               <a-select-option v-for="item in afterOptList" :key="item.value">{{ item.title }}</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item v-if="temp.afterOpt === 2 || temp.afterOpt === 3" name="intervalTime">
             <template #label>
               <a-tooltip>
-                间隔时间
+                {{ $t('i18n_a5d550f258') }}
                 <template #title>
-                  在执行多节点分发时候使用 顺序重启、完整顺序重启
-                  时候需要保证项目能正常重启,并等待上一个项目启动完成才能关闭下一个项目,请根据自身项目启动时间来配置
-                  <li>一般建议 10 秒以上</li>
+                  {{ $t('i18n_55b2d0904f') }},{{ $t('i18n_e9ec2b0bee') }},{{ $t('i18n_c8c45e8467') }}
+                  <li>{{ $t('i18n_a0e31d89ff') }}</li>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
               </a-tooltip>
@@ -734,40 +767,45 @@
             <a-input-number
               v-model:value="temp.intervalTime"
               :min="0"
-              placeholder="分发间隔时间 （顺序重启、完整顺序重启）方式才生效"
+              :placeholder="$t('i18n_d7ac764d3a')"
               style="width: 100%"
             />
           </a-form-item>
-          <a-form-item name="secondaryDirectory" label="二级目录">
-            <a-input v-model:value="temp.secondaryDirectory" placeholder="不填写则发布至项目的根目录" />
+          <a-form-item name="secondaryDirectory" :label="$t('i18n_871cc8602a')">
+            <a-input v-model:value="temp.secondaryDirectory" :placeholder="$t('i18n_9c99e8bec9')" />
           </a-form-item>
           <a-form-item name="clearOld">
             <template #label>
               <a-tooltip>
-                清空发布
+                {{ $t('i18n_2223ff647d') }}
                 <template #title>
-                  清空发布是指在上传新文件前,会将项目文件夹目录里面的所有文件先删除后再保存新文件
+                  {{ $t('i18n_b343663a14') }}
                 </template>
                 <QuestionCircleOutlined v-if="temp.type !== 'edit'" />
               </a-tooltip>
             </template>
             <a-row>
               <a-col :span="4">
-                <a-switch v-model:checked="temp.clearOld" checked-children="是" un-checked-children="否" />
+                <a-switch
+                  v-model:checked="temp.clearOld"
+                  :checked-children="$t('i18n_0a60ac8f02')"
+                  :un-checked-children="$t('i18n_c9744f45e7')"
+                />
               </a-col>
               <a-col :span="4" style="text-align: right">
                 <a-tooltip v-if="temp.type !== 'edit'">
-                  <template #title>
-                    发布前停止是指在发布文件到项目文件时先将项目关闭，再进行文件替换。避免 windows
-                    环境下出现文件被占用的情况
-                  </template>
+                  <template #title> {{ $t('i18n_300fbf3891') }} </template>
                   <QuestionCircleOutlined />
                 </a-tooltip>
-                发布前停止：
+                {{ $t('i18n_7b2cbfada9') }}
               </a-col>
               <a-col :span="4">
                 <a-form-item-rest>
-                  <a-switch v-model:checked="temp.uploadCloseFirst" checked-children="是" un-checked-children="否" />
+                  <a-switch
+                    v-model:checked="temp.uploadCloseFirst"
+                    :checked-children="$t('i18n_0a60ac8f02')"
+                    :un-checked-children="$t('i18n_c9744f45e7')"
+                  />
                 </a-form-item-rest>
               </a-col>
             </a-row>
@@ -778,19 +816,19 @@
                 WebHooks
                 <template #title>
                   <ul>
-                    <li>分发过程请求对应的地址,开始分发,分发完成,分发失败,取消分发</li>
-                    <li>传入参数有：outGivingId、outGivingName、status、statusMsg、executeTime</li>
-                    <li>status 的值有：1:分发中、2：分发结束、3：已取消、4：分发失败</li>
-                    <li>异步请求不能保证有序性</li>
+                    <li>{{ $t('i18n_b186c667dc') }}</li>
+                    <li>{{ $t('i18n_0bc45241af') }}</li>
+                    <li>status {{ $t('i18n_5d5fd4170f') }}:{{ $t('i18n_be3a4d368e') }}</li>
+                    <li>{{ $t('i18n_c96f47ec1b') }}</li>
                   </ul>
                 </template>
                 <QuestionCircleOutlined v-show="!temp.id" />
               </a-tooltip>
             </template>
-            <a-input v-model:value="temp.webhook" placeholder="分发过程请求,非必填，GET请求" />
+            <a-input v-model:value="temp.webhook" :placeholder="$t('i18n_89a40a1a8b')" />
           </a-form-item>
           <!-- 节点 -->
-          <a-form-item label="分发节点" name="nodeId">
+          <a-form-item :label="$t('i18n_6a6c857285')" name="nodeId">
             <a-select
               v-model:value="temp.nodeIdList"
               show-search
@@ -805,75 +843,91 @@
                 }
               "
               mode="multiple"
-              placeholder="请选择分发节点"
+              :placeholder="$t('i18n_b07a33c3a8')"
             >
               <a-select-option v-for="node in nodeList" :key="node.id">{{ `${node.name}` }}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-collapse v-show="noFileModes.includes(temp.runMode)">
+          <a-collapse>
             <a-collapse-panel v-for="nodeId in temp.nodeIdList" :key="nodeId" :header="nodeNameMap[nodeId] || nodeId">
-              <a-form-item v-show="javaModes.includes(temp.runMode)" label="JVM 参数" name="jvm">
+              <a-form-item v-show="javaModes.includes(temp.runMode)" :label="$t('i18n_497bc3532b')" name="jvm">
                 <a-textarea
                   v-model:value="temp[`${nodeId}_jvm`]"
                   :auto-size="{ minRows: 3, maxRows: 3 }"
-                  placeholder="jvm参数,非必填.如：-Xms512m -Xmx512m"
+                  :placeholder="$t('i18n_eef3653e9a', { slot1: $t('i18n_3d0a2df9ec'), slot2: $t('i18n_eb5bab1c31') })"
                 />
               </a-form-item>
-              <a-form-item v-show="javaModes.includes(temp.runMode)" label="args 参数" name="args">
+              <a-form-item v-show="javaModes.includes(temp.runMode)" :label="$t('i18n_e5098786d3')" name="args">
                 <a-textarea
                   v-model:value="temp[`${nodeId}_args`]"
                   :auto-size="{ minRows: 3, maxRows: 3 }"
-                  placeholder="Main 函数 args 参数，非必填. 如：--server.port=8080"
+                  :placeholder="`Main ${$t('i18n_6a9231c3ba')}. ${$t('i18n_848e4e21da')}.port=8080`"
                 />
               </a-form-item>
               <a-form-item v-show="noFileModes.includes(temp.runMode)" name="autoStart">
                 <template #label>
                   <a-tooltip>
-                    自启动
-                    <template #title>插件端启动的时候检查项目状态，如果项目状态是未运行则尝试执行启动项目</template>
+                    {{ $t('i18n_8388c637f6') }}
+                    <template #title>{{ $t('i18n_d4e03f60a9') }}</template>
                     <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
                   </a-tooltip>
                 </template>
                 <template #help>
-                  <div>非服务器开机自启,如需开机自启建议配置<b>插件端开机自启</b>并开启此开关</div>
+                  <div>
+                    {{ $t('i18n_71584de972') }}<b>{{ $t('i18n_1e4a59829d') }}</b
+                    >{{ $t('i18n_0360fffb40') }}
+                  </div>
                 </template>
                 <a-switch
                   v-model:checked="temp[`${nodeId}_autoStart`]"
-                  checked-children="开"
-                  un-checked-children="关"
+                  :checked-children="$t('i18n_8493205602')"
+                  :un-checked-children="$t('i18n_d58a55bcee')"
                 />
-                插件端启动时自动检查项目如未启动将尝试启动
+                {{ $t('i18n_1022c545d1') }}
               </a-form-item>
-              <a-form-item v-if="temp.runMode === 'Dsl'" name="dslEnv" label="DSL环境变量">
-                <a-input
+              <a-form-item name="disableScanDir">
+                <template #label>
+                  <a-tooltip> {{ $t('i18n_df59a2804d') }} </a-tooltip>
+                </template>
+                <template #help>
+                  <div>{{ $t('i18n_b7c139ed75') }}</div>
+                </template>
+                <div>
+                  <a-switch
+                    v-model:checked="temp[`${nodeId}_disableScanDir`]"
+                    :checked-children="$t('i18n_ced3d28cd1')"
+                    :un-checked-children="$t('i18n_56525d62ac')"
+                  />
+                </div>
+              </a-form-item>
+              <a-form-item v-if="temp.runMode === 'Dsl'" name="dslEnv" :label="$t('i18n_fba5f4f19a')">
+                <!-- <a-input
                   v-model:checked="temp[`${nodeId}_dslEnv`]"
-                  placeholder="DSL环境变量,如：key1=values1&keyvalue2"
-                />
+                  placeholder="DSL{{$t('i18n_3867e350eb')}},{{$t('i18n_9324290bfe')}}=values1&keyvalue2"
+                /> -->
+                <parameter-widget v-model:value="temp[`${nodeId}_dslEnv`]"></parameter-widget>
               </a-form-item>
               <a-form-item v-show="noFileModes.includes(temp.runMode)" name="token">
                 <template #label>
                   <a-tooltip>
                     <template #title>
                       <ul>
-                        <li>项目启动,停止,重启都将请求对应的地址</li>
-                        <li>传入参数有：projectId、projectName、type、result</li>
-                        <li>type 的值有：stop、beforeStop、start、beforeRestart</li>
+                        <li>{{ $t('i18n_f7b9764f0f') }}</li>
+                        <li>{{ $t('i18n_b91961bf0b') }}</li>
+                        <li>type {{ $t('i18n_b10b082c25') }}</li>
                       </ul>
                     </template>
                     WebHooks
                     <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
                   </a-tooltip>
                 </template>
-                <a-input
-                  v-model:value="temp[`${nodeId}_token`]"
-                  placeholder="项目启动,停止,重启,文件变动都将请求对应的地址,非必填，GET请求"
-                />
+                <a-input v-model:value="temp[`${nodeId}_token`]" :placeholder="$t('i18n_6c776e9d91')" />
               </a-form-item>
             </a-collapse-panel>
           </a-collapse>
         </a-form>
       </a-spin>
-    </a-modal>
+    </CustomModal>
     <!-- 分发项目 -->
     <start-dispatch
       v-if="dispatchVisible"
@@ -898,10 +952,11 @@
       "
     />
     <!-- 配置工作空间授权目录 -->
-    <a-modal
+    <CustomModal
+      v-if="configDir"
       v-model:open="configDir"
       destroy-on-close
-      :title="`配置授权目录`"
+      :title="`${$t('i18n_eee6510292')}`"
       :footer="null"
       width="50vw"
       :mask-closable="false"
@@ -920,15 +975,15 @@
           }
         "
       ></whiteList>
-    </a-modal>
+    </CustomModal>
     <!-- 查看服务端脚本 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="viewScriptVisible"
       destroy-on-close
-      :title="`查看脚本`"
+      :title="`${$t('i18n_dd1d14efd6')}`"
       placement="right"
       :open="viewScriptVisible"
       width="70vw"
-      :z-index="1109"
       @close="
         () => {
           viewScriptVisible = false
@@ -944,10 +999,9 @@
           }
         "
       ></scriptPage>
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import Status from './status'
 import codeEditor from '@/components/codeEditor'
@@ -970,11 +1024,11 @@ import {
   CHANGE_PAGE,
   COMPUTED_PAGINATION,
   PAGE_DEFAULT_LIST_QUERY,
-  PROJECT_DSL_DEFATUL,
   randomStr,
   itemGroupBy,
   parseTime
 } from '@/utils/const'
+import { PROJECT_DSL_DEFATUL } from '@/utils/const-i18n'
 import scriptPage from '@/pages/script/script-list'
 import CustomSelect from '@/components/customSelect'
 import whiteList from '@/pages/dispatch/white-list'
@@ -1022,19 +1076,19 @@ export default {
       totalProjectNum: 0,
       columns: [
         {
-          title: '分发 ID',
+          title: this.$t('i18n_f6dee0f3ff'),
           dataIndex: 'id',
           ellipsis: true,
           width: 110
         },
         {
-          title: '分发名称',
+          title: this.$t('i18n_9d89cbf245'),
           dataIndex: 'name',
           ellipsis: true,
           width: 200
         },
         {
-          title: '项目分组',
+          title: this.$t('i18n_d438e83c16'),
           dataIndex: 'group',
           sorter: true,
           width: '100px',
@@ -1042,46 +1096,46 @@ export default {
           tooltip: true
         },
         {
-          title: '分发类型',
+          title: this.$t('i18n_9e2e02ef08'),
           dataIndex: 'outGivingProject',
           width: '90px',
           ellipsis: true
         },
         {
-          title: '分发后',
+          title: this.$t('i18n_c71a67ab03'),
           dataIndex: 'afterOpt',
           ellipsis: true,
           width: '150px'
         },
         {
-          title: '清空发布',
+          title: this.$t('i18n_2223ff647d'),
           dataIndex: 'clearOld',
           align: 'center',
           ellipsis: true,
           width: '100px'
         },
         {
-          title: '间隔时间',
+          title: this.$t('i18n_a5d550f258'),
           dataIndex: 'intervalTime',
           width: 90,
           ellipsis: true
         },
 
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           ellipsis: true,
           width: 110
         },
         {
-          title: '二级目录',
+          title: this.$t('i18n_871cc8602a'),
           dataIndex: 'secondaryDirectory',
           ellipsis: true,
           width: 110,
           tooltip: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -1089,7 +1143,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -1097,30 +1151,30 @@ export default {
           width: '170px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           width: '130px',
           ellipsis: true,
           sorter: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
 
           fixed: 'right',
-          width: '200px',
+          width: '210px',
           align: 'center'
         }
       ],
 
       rules: {
-        id: [{ required: true, message: '请输入项目ID', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-        projectId: [{ required: true, message: '请选择项目', trigger: 'blur' }],
-        runMode: [{ required: true, message: '请选择项目运行方式', trigger: 'blur' }],
-        whitelistDirectory: [{ required: true, message: '请选择项目授权路径', trigger: 'blur' }],
-        lib: [{ required: true, message: '请输入项目文件夹', trigger: 'blur' }],
-        afterOpt: [{ required: true, message: '请选择发布后操作', trigger: 'blur' }]
+        id: [{ required: true, message: this.$t('i18n_646a518953'), trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_4371e2b426'), trigger: 'blur' }],
+        projectId: [{ required: true, message: this.$t('i18n_9fc2e26bfa'), trigger: 'blur' }],
+        runMode: [{ required: true, message: this.$t('i18n_4310e9ed7d'), trigger: 'blur' }],
+        whitelistDirectory: [{ required: true, message: this.$t('i18n_1d38b2b2bc'), trigger: 'blur' }],
+        lib: [{ required: true, message: this.$t('i18n_d9657e2b5f'), trigger: 'blur' }],
+        afterOpt: [{ required: true, message: this.$t('i18n_3322338140'), trigger: 'blur' }]
       },
       // countdownTime: Date.now(),
       // refreshInterval: 5,
@@ -1287,7 +1341,7 @@ export default {
       this.$refs['linkDispatchForm'].validate().then(() => {
         // 校验分发节点数据
         if (this.dispatchList.length < 1) {
-          $notification.error({ message: '至少选择1个节点项目' })
+          $notification.error({ message: this.$t('i18n_637c9a8819') })
           return false
         }
         this.dispatchList.forEach((item, index) => {
@@ -1389,6 +1443,7 @@ export default {
             this.temp[`${ele.nodeId}_token`] = res.data.token || ''
             this.temp[`${ele.nodeId}_args`] = res.data.args || ''
             this.temp[`${ele.nodeId}_autoStart`] = res.data.autoStart
+            this.temp[`${ele.nodeId}_disableScanDir`] = res.data.disableScanDir
             this.temp[`${ele.nodeId}_dslEnv`] = res.data.dslEnv || ''
 
             this.temp = { ...this.temp }
@@ -1411,7 +1466,7 @@ export default {
         // 检查
         if (tempData.nodeIdList.length < 1) {
           $notification.warn({
-            message: '请至少选择 1 个节点'
+            message: this.$t('i18n_b8545de30e')
           })
           return false
         }
@@ -1450,13 +1505,11 @@ export default {
     handleDelete(record, thorough) {
       if (record.outGivingProject) {
         $confirm({
-          title: '系统提示',
+          title: this.$t('i18n_c4535759ee'),
           zIndex: 1009,
-          content: thorough
-            ? '真的要彻底删除分发信息么？删除后节点下面的项目也都将彻底删除，彻底项目会自动删除项目相关文件奥(包含项目日志，日志备份，项目文件)'
-            : '真的要删除分发信息么？删除后节点下面的项目也都将删除',
-          okText: '确认',
-          cancelText: '取消',
+          content: thorough ? this.$t('i18n_78ba02f56b') : this.$t('i18n_1125c4a50b'),
+          okText: this.$t('i18n_e83a256e4f'),
+          cancelText: this.$t('i18n_625fb26b4b'),
           onOk: () => {
             return delDisPatchProject({ id: record.id, thorough: thorough }).then((res) => {
               if (res.code === 200) {
@@ -1471,11 +1524,11 @@ export default {
         return
       }
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要释放分发信息么？释放之后节点下面的项目信息还会保留，如需删除项目还需要到节点管理中操作',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_2f8dc4fb66'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return releaseDelDisPatch(record.id).then((res) => {
             if (res.code === 200) {
@@ -1490,21 +1543,24 @@ export default {
     },
     // 解绑
     handleUnbind(record) {
-      const html =
-        "<b style='font-size: 20px;'>真的要解绑当前节点分发么？</b>" +
-        "<ul style='font-size: 20px;color:red;font-weight: bold;'>" +
-        '<li>解绑会检查数据关联性,不会真实请求节点删除项目信息</b></li>' +
-        '<li>一般用于服务器无法连接且已经确定不再使用</li>' +
-        '<li>如果误操作会产生冗余数据！！！</li>' +
-        ' </ul>'
+      const html = `
+      <b style='font-size: 20px;'>
+        ${this.$t('i18n_efe71e9bec')}
+      </b>
+      <ul style='font-size: 20px;color:red;font-weight: bold;'>
+          <li>${this.$t('i18n_46aca09f01')}</b></li>
+          <li>${this.$t('i18n_5c93055d9c')}</li>
+          <li>${this.$t('i18n_27d0c8772c')}</li>
+      </ul>`
+
       $confirm({
-        title: '危险操作！！！',
+        title: this.$t('i18n_9362e6ddf8'),
         zIndex: 1009,
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
         okButtonProps: { type: 'primary', size: 'small', danger: true },
         cancelButtonProps: { type: 'primary' },
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return unbindOutgiving(record.id).then((res) => {
             if (res.code === 200) {
@@ -1547,10 +1603,10 @@ export default {
     handleNodeListChange(nodeId, index) {
       const nodeData = this.nodeProjectsList.filter((item) => item.id === nodeId)[0]
       if (nodeData.projects.length === 0) {
-        this.dispatchList[index].placeholder = '此节点暂无项目'
+        this.dispatchList[index].placeholder = this.$t('i18n_1d843d7b45')
         this.dispatchList[index].disabled = true
       } else {
-        this.dispatchList[index].placeholder = '请选择项目'
+        this.dispatchList[index].placeholder = this.$t('i18n_9fc2e26bfa')
         this.dispatchList[index].disabled = false
       }
       this.dispatchList[index].nodeId = nodeId
@@ -1563,13 +1619,13 @@ export default {
     addDispachList() {
       if (this.dispatchList.length >= this.totalProjectNum) {
         $notification.error({
-          message: '已无更多节点项目，请先创建项目'
+          message: this.$t('i18n_d35a9990f4')
         })
         return false
       }
       this.dispatchList.push({
         index: this.dispatchList.length,
-        placeholder: '请先选择节点',
+        placeholder: this.$t('i18n_3ee7756087'),
         disabled: true
       })
     },
@@ -1585,11 +1641,11 @@ export default {
     // 取消
     handleCancel(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的取消当前分发吗？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_b1192f8f8e'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return cancelOutgiving({ id: record.id }).then((res) => {
             if (res.code === 200) {
@@ -1603,7 +1659,6 @@ export default {
         }
       })
     },
-
     // 查看项目状态
     handleViewStatus(item) {
       this.drawerStatusVisible = true
@@ -1612,7 +1667,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 :deep(.ant-statistic div) {
   display: inline-block;

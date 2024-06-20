@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import { IResponse } from '@/interface/request'
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { NO_NOTIFY_KEY, TOKEN_HEADER_KEY, CACHE_WORKSPACE_ID } from '@/utils/const'
@@ -48,7 +48,8 @@ const instance: AxiosInstance = axios.create({
   responseType: 'json'
 })
 
-let refreshTokenIng = false
+// 续签状态
+let isRefreshing = false
 
 const obj2base64 = (obj: any) => {
   if (obj instanceof Object && obj.constructor === Object) {
@@ -92,6 +93,8 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const { headers } = config
   headers[TOKEN_HEADER_KEY] = userStore.getToken()
   headers[CACHE_WORKSPACE_ID] = appStore.getWorkspaceId()
+  const useGuideStore = guideStore()
+  headers['Accept-Language'] = useGuideStore.getLocale()
 
   if (routerBase) {
     // 防止 url 出现 //
@@ -127,7 +130,7 @@ instance.interceptors.response.use(
       $notification.error({
         key: 'network-error-no-response',
         message: 'Network Error No response',
-        description: '网络开了小差！请重试...:' + error
+        description: t('i18n_9ee0deb3c8') + error
       })
     } else if (!error.response.config.headers[NO_NOTIFY_KEY]) {
       const { status, statusText, data } = error.response
@@ -135,12 +138,12 @@ instance.interceptors.response.use(
         $notification.error({
           key: 'network-error-no-response',
           message: 'Network Error',
-          description: '网络开了小差！请重试...:' + error
+          description: t('i18n_9ee0deb3c8') + error
         })
       } else {
         $notification.error({
           key: 'network-error-status-' + status,
-          message: '状态码错误 ' + status,
+          message: t('i18n_cc9a708364') + status,
           description: (statusText || '') + (data || '')
         })
       }
@@ -155,7 +158,6 @@ instance.interceptors.response.use(
  * @param config AxiosRequestConfig
  * @returns IResponse<T>
  */
-
 async function request<T = any>(url: string, config?: AxiosRequestConfig): Promise<IResponse<T>>
 // eslint-disable-next-line no-redeclare
 async function request<T = any>(config: AxiosRequestConfig): Promise<IResponse<T>>
@@ -179,18 +181,8 @@ async function request<T = any>(arg: string | AxiosRequestConfig, config?: Axios
 
   // 需要续签
   if (data.code === 801) {
-    if (refreshTokenIng) {
-      return Promise.reject(data)
-    }
-    $notification.info({
-      key: 'login-timeout',
-      message: '登录信息过期',
-      description: '尝试自动续签...'
-    })
-    refreshTokenIng = true
-    await redoRequest(response.config)
-    refreshTokenIng = false
-    return Promise.reject(data)
+    const data2 = await handleRefreshTokenAndRetryQueue(response.config)
+    return data2 as any
   }
 
   // 账号禁用
@@ -203,8 +195,8 @@ async function request<T = any>(arg: string | AxiosRequestConfig, config?: Axios
   if (data.code === 999) {
     $notification.error({
       key: 'prohibit-access',
-      message: '禁止访问',
-      description: '禁止访问,当前IP限制访问'
+      message: t('i18n_bb9ef827bf'),
+      description: t('i18n_f05e3ec44d')
     })
     window.location.href = jpomWindow_.routerBase + '/prohibit-access'
     return Promise.reject(data)
@@ -215,7 +207,7 @@ async function request<T = any>(arg: string | AxiosRequestConfig, config?: Axios
     // 如果 headers 里面配置了 tip: no 就不用弹出提示信息
     if (!response.config.headers[NO_NOTIFY_KEY]) {
       $notification.error({
-        message: '提示信息 ' + (pro ? '' : response.config.url),
+        message: t('i18n_1a8f90122f') + (pro ? '' : response.config.url),
         description: data.msg
       })
       console.error(response.config.url, data)
@@ -226,36 +218,99 @@ async function request<T = any>(arg: string | AxiosRequestConfig, config?: Axios
 
 export default request
 
-// 刷新 jwt token 并且重试上次请求
-async function redoRequest() {
-  const result = await refreshToken()
-  if (result.code === 200) {
-    // 调用 store action 存储当前登录的用户名和 token
-    const userStore = useUserStore()
-
-    await userStore.login(result.data)
-    // 刷新页面
-    $notification.success({
-      message: '提示',
-      description: '自动续签成功,页面将在 2 秒后自动刷新'
+// 异步续签并处理队列
+async function handleRefreshTokenAndRetryQueue(config: InternalAxiosRequestConfig) {
+  if (!isRefreshing) {
+    isRefreshing = true
+    return new Promise(async (resolve, reject) => {
+      try {
+        $notification.info({
+          key: 'login-timeout',
+          message: t('i18n_72d46ec2cf'),
+          description: t('i18n_f652d8cca7')
+        })
+        // 执行续签操作
+        const result = await refreshToken()
+        if (result.code === 200) {
+          // 更新用户登录状态或token
+          const userStore = useUserStore()
+          await userStore.login(result.data)
+          $notification.success({
+            key: 'login-timeout',
+            message: t('i18n_72d46ec2cf'),
+            description: t('i18n_a7c8eea801')
+          })
+          // 更新token到config中，以便于后续请求使用新token
+          config.headers[TOKEN_HEADER_KEY] = userStore.getToken()
+          const result2 = await request(config)
+          resolve(result2)
+          isRefreshing = false
+        } else {
+          toLoginOnly(t('i18n_72d46ec2cf'), t('i18n_edc1185b8e') + result.msg + t('i18n_d3fb6a7c83'))
+          return
+        }
+      } catch (error) {
+        //reject('Failed to refresh token:' + error)
+        toLoginOnly(t('i18n_72d46ec2cf'), t('i18n_edc1185b8e') + error + t('i18n_d3fb6a7c83'))
+      } finally {
+      }
     })
-    setTimeout(() => {
-      location.reload()
-    }, 2000)
-    //return await request(config)
+  } else {
+    return new Promise(async (resolve) => {
+      const interval = setInterval(async () => {
+        if (!isRefreshing) {
+          clearInterval(interval)
+          const userStore = useUserStore()
+          config.headers[TOKEN_HEADER_KEY] = userStore.getToken()
+          const result2 = await request(config)
+          resolve(result2)
+        } else {
+          //
+        }
+      }, 100) // 检查间隔设置为100毫秒
+    })
   }
-  return Promise.reject()
 }
 
 function toLogin(res: IResponse<any>, response: AxiosResponse<IResponse<any>>) {
+  return toLogin2(t('i18n_1a8f90122f') + (pro ? '' : response.config.url), res.msg)
+}
+
+function toLogin2(message: any, description: any) {
   $notification.warn({
-    message: '提示信息 ' + (pro ? '' : response.config.url),
-    description: res.msg,
+    message: message,
+    description: description,
     key: 'to-login'
   })
   const userStore = useUserStore()
 
   userStore.logOut().then(() => {
+    const index = location.hash.indexOf('?')
+    let params = {}
+    if (index > -1) {
+      params = Qs.parse(location.hash.substring(index + 1))
+    }
+    const pageUrl = router.resolve({
+      path: '/login',
+      query: params
+    })
+
+    setTimeout(() => {
+      ;(location.href as any) = pageUrl.href
+    }, 2000)
+  })
+  return false
+}
+
+function toLoginOnly(message: any, description: any) {
+  $notification.warn({
+    message: message,
+    description: description,
+    key: 'to-login'
+  })
+  const userStore = useUserStore()
+
+  userStore.logOutOnly().then(() => {
     const index = location.hash.indexOf('?')
     let params = {}
     if (index > -1) {
@@ -292,5 +347,7 @@ export function loadRouterBase(url: string, params: any) {
 export function getWebSocketUrl(url: string, parameter: any) {
   const protocol: string = location.protocol === 'https:' ? 'wss://' : 'ws://'
   const fullUrl: string = (baseURL + routerBase + url).replace(new RegExp('//', 'gm'), '/')
+  const useGuideStore = guideStore()
+  parameter += `&lang=${useGuideStore.getLocale()}`
   return `${protocol}${location.host}${fullUrl}?${parameter}`
 }

@@ -1,52 +1,51 @@
 <template>
   <div>
     <a-space direction="vertical" style="width: 100%">
-      <a-alert message="温馨提醒" type="info" show-icon>
+      <a-alert :message="$t('i18n_c8c6e37071')" type="info" show-icon>
         <template #description>
           <ul>
-            <li>当前为节点分发的授权路径配置</li>
-            <li>路径需要配置绝对路径</li>
+            <li>{{ $t('i18n_cf38e8f9fd') }}</li>
+            <li>{{ $t('i18n_a4f629041c') }}</li>
           </ul>
         </template>
       </a-alert>
       <!-- <a-alert message=",不支持软链" type="info" /> -->
 
       <a-form ref="editForm" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }" @finish="onSubmit">
-        <a-form-item label="授权路径" name="outGiving">
-          <template #help>用于创建节点分发项目、文件中心发布文件</template>
+        <a-form-item :label="$t('i18n_28e1eec677')" name="outGiving">
+          <template #help>{{ $t('i18n_5b1f0fd370') }}</template>
           <a-textarea
             v-model:value="temp.outGiving"
             :rows="5"
             style="resize: none"
-            placeholder="请输入授权路径，回车支持输入多个路径，系统会自动过滤 ../ 路径、不允许输入根路径"
+            :placeholder="$t('i18n_9b78491b25')"
           />
         </a-form-item>
-        <a-form-item label="静态目录" name="staticDir">
-          <template #help>用于静态文件绑定和读取(不建议配置大目录，避免扫描消耗过多资源)</template>
+        <a-form-item :label="$t('i18n_6f7ee71e77')" name="staticDir">
+          <template #help>{{ $t('i18n_3f8cedd1d7') }}</template>
           <a-textarea
             v-model:value="temp.staticDir"
             :rows="5"
             style="resize: none"
-            placeholder="请输入静态，回车支持输入多个路径，系统会自动过滤 ../ 路径、不允许输入根路径"
+            :placeholder="$t('i18n_ec7ef29bdf')"
           />
         </a-form-item>
-        <a-form-item label="远程下载安全HOST" name="allowRemoteDownloadHost">
-          <template #help>用于下载远程文件来进行节点分发和文件上传</template>
+        <a-form-item :label="$t('i18n_95dbee0207')" name="allowRemoteDownloadHost">
+          <template #help>{{ $t('i18n_aadf9d7028') }}</template>
           <a-textarea
             v-model:value="temp.allowRemoteDownloadHost"
             :rows="5"
             style="resize: none"
-            placeholder="请输入远程下载安全HOST，回车支持输入多个路径，示例 https://www.test.com 等"
+            :placeholder="$t('i18n_c32e7adb20')"
           />
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 14, offset: 6 }">
-          <a-button type="primary" html-type="submit" :disabled="submitAble">提交</a-button>
+          <a-button type="primary" html-type="submit" :disabled="submitAble">{{ $t('i18n_939d5345ad') }}</a-button>
         </a-form-item>
       </a-form>
     </a-space>
   </div>
 </template>
-
 <script>
 import { getDispatchWhiteList, editDispatchWhiteList } from '@/api/dispatch'
 export default {

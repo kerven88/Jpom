@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios, { loadRouterBase } from './config'
 
 // 命令列表
@@ -119,14 +119,14 @@ export function getTriggerUrl(data) {
 }
 
 export const statusMap = {
-  0: '执行中',
-  1: '执行结束',
-  2: '执行错误',
-  3: '会话异常'
+  0: t('i18n_46e3867956'),
+  1: t('i18n_ec219f99ee'),
+  2: t('i18n_05f6e923af'),
+  3: t('i18n_e2f942759e')
 }
 
 export const triggerExecTypeMap = {
-  0: '手动',
-  1: '自动',
-  2: '触发器'
+  0: t('i18n_2a3e7f5c38'),
+  1: t('i18n_3aed2c11e9'),
+  2: t('i18n_4696724ed3')
 }

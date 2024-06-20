@@ -15,11 +15,8 @@
         <a-space>
           <a-input ref="inputRef" v-model:value="selectInput" :max-length="maxLength" :placeholder="inputPlaceholder" />
           <a-button type="text" @click="addInput(selectInput)">
-            <template #icon>
-              <plus-outlined />
-            </template>
-            新增
-          </a-button>
+            <template #icon> <plus-outlined /> </template>{{ $t('i18n_66ab5e9f24') }}</a-button
+          >
         </a-space>
       </template>
       <a-select-option v-if="selectPlaceholder" value="">{{ selectPlaceholder }}</a-select-option>
@@ -27,10 +24,9 @@
     </a-select>
   </div>
 </template>
-
 <script>
 import { Select } from 'ant-design-vue'
-
+import { t } from '@/i18n/index'
 export default {
   components: {
     ASelect: Select,
@@ -55,11 +51,15 @@ export default {
     },
     inputPlaceholder: {
       type: String,
-      default: '请输入...'
+      default: function () {
+        return t('i18n_101a86bc84')
+      }
     },
     selectPlaceholder: {
       type: String,
-      default: '请选择'
+      default: function () {
+        return t('i18n_708c9d6d2a')
+      }
     },
     selStyle: { type: String, default: '' },
 

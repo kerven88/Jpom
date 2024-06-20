@@ -15,6 +15,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.model.BaseNodeModel;
 import org.dromara.jpom.model.data.NodeModel;
 import org.dromara.jpom.model.user.UserModel;
@@ -24,6 +25,7 @@ import org.dromara.jpom.system.init.OperateLogController;
 import org.dromara.jpom.util.SocketSessionUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -38,26 +40,54 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class BaseHandler extends TextWebSocketHandler {
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        Map<String, Object> attributes = session.getAttributes();
-        //
-        this.showHelloMsg(attributes, session);
-        //
-        String permissionMsg = (String) attributes.get("permissionMsg");
-        if (StrUtil.isNotEmpty(permissionMsg)) {
-            this.sendMsg(session, permissionMsg);
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            this.destroy(session);
+    protected void setLanguage(WebSocketSession session) {
+        if (session == null) {
             return;
         }
-        this.afterConnectionEstablishedImpl(session);
+        Map<String, Object> attributes = session.getAttributes();
+        String lang = (String) attributes.get("lang");
+        I18nMessageUtil.setLanguage(lang);
+    }
+
+    protected void clearLanguage() {
+        I18nMessageUtil.clearLanguage();
+    }
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        setLanguage(session);
+        try {
+            Map<String, Object> attributes = session.getAttributes();
+            //
+            this.showHelloMsg(attributes, session);
+            //
+            String permissionMsg = (String) attributes.get("permissionMsg");
+            if (StrUtil.isNotEmpty(permissionMsg)) {
+                this.sendMsg(session, permissionMsg);
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                this.destroy(session);
+                return;
+            }
+            this.afterConnectionEstablishedImpl(session);
+        } finally {
+            clearLanguage();
+        }
+    }
+
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        try {
+            setLanguage(session);
+            super.handleMessage(session, message);
+        } finally {
+            clearLanguage();
+        }
     }
 
     protected void showHelloMsg(Map<String, Object> attributes, WebSocketSession session) {
         UserModel userInfo = (UserModel) attributes.get("userInfo");
         if (userInfo != null) {
-            String payload = StrUtil.format("欢迎加入:{} 会话id:{} ", userInfo.getName(), session.getId() + StrUtil.CRLF);
+            String payload = StrUtil.format(I18nMessageUtil.get("i18n.welcome_join_session.1c16"), userInfo.getName(), session.getId() + StrUtil.CRLF);
             this.sendMsg(session, payload);
         }
     }
@@ -76,14 +106,14 @@ public abstract class BaseHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        log.error(session.getId() + "socket 异常", exception);
+        log.error("{}{}", session.getId(), I18nMessageUtil.get("i18n.socket_exception.d836"), exception);
         destroy(session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         destroy(session);
-        log.debug("会话[{}]关闭原因：{}", session.getId(), status);
+        log.debug(I18nMessageUtil.get("i18n.session_closed_reason.103a"), session.getId(), status);
     }
 
     /**
@@ -97,7 +127,7 @@ public abstract class BaseHandler extends TextWebSocketHandler {
         try {
             SocketSessionUtil.send(session, msg);
         } catch (Exception e) {
-            log.error("发送消息失败", e);
+            log.error(I18nMessageUtil.get("i18n.send_message_failure.9621"), e);
         }
     }
 
@@ -148,7 +178,7 @@ public abstract class BaseHandler extends TextWebSocketHandler {
             OperateLogController operateLogController = SpringUtil.getBean(OperateLogController.class);
             operateLogController.log(userInfo, JSONObject.toJSONString(attributes), cacheInfo);
         } catch (Exception e) {
-            log.error("记录操作日志异常", e);
+            log.error(I18nMessageUtil.get("i18n.record_operation_log_exception.8012"), e);
         } finally {
             if (proxySession != null) {
                 attributes.put("proxySession", proxySession);

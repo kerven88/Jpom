@@ -27,7 +27,8 @@ import org.dromara.jpom.util.StringUtil;
  * @author Hotstrip
  */
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "BUILD_INFO", name = "构建信息")
+@TableName(value = "BUILD_INFO",
+    nameKey = "i18n.build_info.224a")
 @Data
 @Builder
 public class BuildInfoModel extends BaseGroupModel {
@@ -155,5 +156,10 @@ public class BuildInfoModel extends BaseGroupModel {
 
     public static String getBuildIdStr(int buildId) {
         return String.format("#%s", buildId);
+    }
+
+    @Override
+    protected boolean hasCreateUser() {
+        return true;
     }
 }

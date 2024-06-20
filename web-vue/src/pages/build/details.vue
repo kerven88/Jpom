@@ -5,75 +5,75 @@
         <template #title>
           <a-space>
             {{ data.name }}
-            <a-tooltip :title="$tl('p.clickToRefreshBuildInfo')">
+            <a-tooltip :title="$t('i18n_f33db5e0b2')">
               <a-button type="link" size="small" @click="refresh"> <ReloadOutlined /></a-button>
             </a-tooltip>
           </a-space>
         </template>
 
-        <a-descriptions-item :label="$tl('p.grouping')">
+        <a-descriptions-item :label="$t('i18n_829abe5a8d')">
           {{ data.group }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.tag')">
+        <a-descriptions-item :label="$t('i18n_6f854129e9')">
           {{ data.branchName }} {{ data.branchTagName }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.buildMethod')">
+        <a-descriptions-item :label="$t('i18n_17a74824de')">
           <template v-if="data.buildMode === 1">
             <CloudOutlined />
-            {{ $tl('p.containerBuild') }}
+            {{ $t('i18n_685e5de706') }}
           </template>
           <template v-else>
             <CodeOutlined />
-            {{ $tl('p.localBuild') }}
+            {{ $t('i18n_69c3b873c1') }}
           </template>
         </a-descriptions-item>
 
-        <a-descriptions-item :label="$tl('p.latestBuildId')">
+        <a-descriptions-item :label="$t('i18n_66aafbdb72')">
           <span v-if="data.buildId <= 0"></span>
           <a-tag v-else color="#108ee9">#{{ data.buildId }}</a-tag>
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.buildStatus')">
+        <a-descriptions-item :label="$t('i18n_248c9aa7aa')">
           <a-tooltip :title="data.statusMsg">
             <a-tag :color="statusColor[data.status]">
-              {{ statusMap[data.status] || $tl('c.unknown') }}
+              {{ statusMap[data.status] || $t('i18n_1622dc9b6b') }}
 
               <InfoCircleOutlined v-if="data.statusMsg" />
             </a-tag>
           </a-tooltip>
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.publishMethod')"
+        <a-descriptions-item :label="$t('i18n_f98994f7ec')"
           >{{ releaseMethodMap[data.releaseMethod] }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.scheduleBuild')">
+        <a-descriptions-item :label="$t('i18n_db9296212a')">
           {{ data.autoBuildCron }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.aliasCode')">
+        <a-descriptions-item :label="$t('i18n_2f5e828ecd')">
           {{ data.aliasCode }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.buildDirectory')">
-          <a-tag>{{ data.sourceDirExist ? $tl('p.existence') : $tl('p.nonExistence') }}</a-tag>
+        <a-descriptions-item :label="$t('i18n_d175a854a6')">
+          <a-tag>{{ data.sourceDirExist ? $t('i18n_df9497ea98') : $t('i18n_d7d11654a7') }}</a-tag>
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.createTime')">
+        <a-descriptions-item :label="$t('i18n_eca37cb072')">
           {{ parseTime(data.createTimeMillis) }}
         </a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.lastModificationTime')">
+        <a-descriptions-item :label="$t('i18n_4b96762a7e')">
           {{ parseTime(data.modifyTimeMillis) }}</a-descriptions-item
         >
-        <a-descriptions-item :label="$tl('p.lastModifier')">{{ data.modifyUser }}</a-descriptions-item>
-        <a-descriptions-item :label="$tl('c.product')" :span="3">
+        <a-descriptions-item :label="$t('i18n_3bcc1c7a20')">{{ data.modifyUser }}</a-descriptions-item>
+        <a-descriptions-item :label="$t('i18n_7dfcab648d')" :span="3">
           {{ data.resultDirFile }}
         </a-descriptions-item>
-        <a-descriptions-item v-if="tempRepository" :label="$tl('p.sourceRepository')" :span="3">{{
+        <a-descriptions-item v-if="tempRepository" :label="$t('i18n_b3ef35a359')" :span="3">{{
           `${tempRepository ? tempRepository.name + '[' + tempRepository.gitUrl + ']' : ''}`
         }}</a-descriptions-item>
-        <a-descriptions-item :label="$tl('p.repositoryLastCommit')" :span="3">{{
+        <a-descriptions-item :label="$t('i18n_86e9e4dd58')" :span="3">{{
           data.repositoryLastCommitId
         }}</a-descriptions-item>
       </a-descriptions>
 
       <!-- <a-row type="flex" justify="center"> -->
       <!-- <a-divider v-if="listQuery.total > 0" dashed> 构建历史 </a-divider> -->
-      <a-card v-if="listQuery.total > 0" :title="$tl('p.buildHistory')" size="small">
+      <a-card v-if="listQuery.total > 0" :title="$t('i18n_a05c1667ca')" size="small">
         <template #extra>
           <a-pagination
             v-model:current="listQuery.page"
@@ -106,46 +106,50 @@
                   <span :style="`color: ${statusColor[item.status]};`" @click="handleBuildLog(item)"
                     >#{{ item.buildNumberId }} <EyeOutlined
                   /></span>
-                  <span v-if="item.buildRemark">{{ $tl('p.buildNote') }}{{ item.buildRemark }}</span>
+                  <span v-if="item.buildRemark">{{ $t('i18n_65571516e2') }}{{ item.buildRemark }}</span>
                 </a-space>
               </div>
               <div>
-                <a-tooltip :title="item.statusMsg || statusMap[item.status] || $tl('c.unknown')">
-                  {{ $tl('p.status')
-                  }}<a-tag :color="statusColor[item.status]">{{ statusMap[item.status] || $tl('c.unknown') }}</a-tag>
+                <a-tooltip :title="item.statusMsg || statusMap[item.status] || $t('i18n_1622dc9b6b')">
+                  {{ $t('i18n_bec98b4d6a')
+                  }}<a-tag :color="statusColor[item.status]">{{
+                    statusMap[item.status] || $t('i18n_1622dc9b6b')
+                  }}</a-tag>
                 </a-tooltip>
               </div>
               <div>
-                {{ $tl('p.time') }}{{ parseTime(item.startTime) }} ~
+                {{ $t('i18n_14e6d83ff5') }}{{ parseTime(item.startTime) }} ~
                 {{ parseTime(item.endTime) }}
               </div>
-              <div>{{ $tl('p.triggerType') }}{{ triggerBuildTypeMap[item.triggerBuildType] || $tl('c.unknown') }}</div>
               <div>
-                {{ $tl('p.occupiedSpace') }}{{ renderSize(item.resultFileSize) }}({{ $tl('c.product') }})/{{
+                {{ $t('i18n_b5a1e1f2d1') }}{{ triggerBuildTypeMap[item.triggerBuildType] || $t('i18n_1622dc9b6b') }}
+              </div>
+              <div>
+                {{ $t('i18n_8dbe0c2ffa') }}{{ renderSize(item.resultFileSize) }}({{ $t('i18n_7dfcab648d') }})/{{
                   renderSize(item.buildLogFileSize)
-                }}({{ $tl('c.log') }})
+                }}({{ $t('i18n_456d29ef8b') }})
               </div>
 
               <div>
-                {{ $tl('p.buildDuration') }}{{ formatDuration((item.endTime || 0) - (item.startTime || 0), '', 2) }}
+                {{ $t('i18n_3c014532b1') }}{{ formatDuration((item.endTime || 0) - (item.startTime || 0), '', 2) }}
               </div>
               <div>
-                {{ $tl('p.publishMethodDetail') }}
-                <a-tag> {{ releaseMethodMap[item.releaseMethod] || $tl('c.unknown') }}</a-tag>
+                {{ $t('i18n_e8321f5a61') }}
+                <a-tag> {{ releaseMethodMap[item.releaseMethod] || $t('i18n_1622dc9b6b') }}</a-tag>
               </div>
               <div>
-                {{ $tl('p.operation') }}
+                {{ $t('i18n_4a5ab3bc72') }}
                 <a-space>
-                  <a-tooltip :title="$tl('p.downloadBuildLog')">
+                  <a-tooltip :title="$t('i18n_b38d7db9b0')">
                     <a-button size="small" type="primary" :disabled="!item.hasLog" @click="handleDownload(item)"
-                      ><DownloadOutlined />{{ $tl('c.log') }}</a-button
+                      ><DownloadOutlined />{{ $t('i18n_456d29ef8b') }}</a-button
                     >
                   </a-tooltip>
 
-                  <a-tooltip :title="$tl('p.downloadProduct')">
+                  <a-tooltip :title="$t('i18n_02e35447d4')">
                     <a-button size="small" type="primary" :disabled="!item.hasFile" @click="handleFile(item)">
                       <DownloadOutlined />
-                      {{ $tl('c.product') }}
+                      {{ $t('i18n_7dfcab648d') }}
                     </a-button>
                   </a-tooltip>
                   <template v-if="item.releaseMethod !== 5">
@@ -155,12 +159,14 @@
                       type="primary"
                       danger
                       @click="handleRollback(item)"
-                      >{{ $tl('c.rollback') }}
+                      >{{ $t('i18n_d00b485b26') }}
                     </a-button>
                   </template>
                   <template v-else>
-                    <a-tooltip :title="$tl('p.dockerfileBuildNotSupported')">
-                      <a-button size="small" :disabled="true" type="primary" danger>{{ $tl('c.rollback') }} </a-button>
+                    <a-tooltip :title="$t('i18n_2d94b9cf0e')">
+                      <a-button size="small" :disabled="true" type="primary" danger
+                        >{{ $t('i18n_d00b485b26') }}
+                      </a-button>
                     </a-tooltip>
                   </template>
                 </a-space>
@@ -189,7 +195,6 @@
     />
   </div>
 </template>
-
 <script>
 import {
   getBuildGet,
@@ -244,9 +249,6 @@ export default {
     }
   },
   methods: {
-    $tl(key, ...args) {
-      return this.$t(`pages.build.details.${key}`, ...args)
-    },
     parseTime,
     formatDuration,
     PAGE_DEFAULT_SHOW_TOTAL,
@@ -307,11 +309,11 @@ export default {
     // 回滚
     handleRollback(record) {
       $confirm({
-        title: this.$tl('p.systemHint'),
-        content: this.$tl('p.confirmRollbackBuildHistory'),
-        okText: this.$tl('p.confirm'),
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_fb61d4d708'),
+        okText: this.$t('i18n_e83a256e4f'),
         zIndex: 1009,
-        cancelText: this.$tl('p.cancel'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return rollback(record.id).then((res) => {
             if (res.code === 200) {

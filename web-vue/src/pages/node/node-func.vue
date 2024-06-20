@@ -1,5 +1,5 @@
 <template>
-  <a-drawer
+  <CustomDrawer
     destroy-on-close
     placement="right"
     :width="`${getCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 200px)'}`"
@@ -26,9 +26,9 @@
               margin: '0'
             }"
           >
-            <a-tab-pane v-if="tabs.includes('project')" key="project" tab="项目管理"></a-tab-pane>
-            <a-tab-pane v-if="tabs.includes('scripct')" key="scripct" tab="脚本管理"></a-tab-pane>
-            <a-tab-pane v-if="tabs.includes('scripct-log')" key="scripct-log" tab="脚本日志"></a-tab-pane>
+            <a-tab-pane v-if="tabs.includes('project')" key="project" :tab="$t('i18n_436367b066')"></a-tab-pane>
+            <a-tab-pane v-if="tabs.includes('scripct')" key="scripct" :tab="$t('i18n_a1fb7f1606')"></a-tab-pane>
+            <a-tab-pane v-if="tabs.includes('scripct-log')" key="scripct-log" :tab="$t('i18n_7370bdf0d2')"></a-tab-pane>
           </a-tabs>
         </div>
       </a-space>
@@ -38,9 +38,8 @@
       <script-list v-else-if="current === 'scripct'" :node-id="id"></script-list>
       <script-log v-else-if="current === 'scripct-log'" :node-id="id"></script-log>
     </div>
-  </a-drawer>
+  </CustomDrawer>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import ScriptList from '@/pages/node/script-list'
@@ -80,7 +79,8 @@ export default {
   created() {
     //
     this.current = this.tabs[0]
-  }
+  },
+  methods: {}
 }
 </script>
 <style scoped>

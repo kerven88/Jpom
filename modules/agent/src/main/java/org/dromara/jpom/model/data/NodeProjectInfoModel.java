@@ -15,6 +15,7 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.jpom.common.commander.CommandOpResult;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.model.RunMode;
 import org.dromara.jpom.system.JpomRuntimeException;
 import org.springframework.util.Assert;
@@ -96,6 +97,10 @@ public class NodeProjectInfoModel extends BaseWorkspaceModel {
      * 最后一次执行 reload 结果
      */
     private CommandOpResult lastReloadResult;
+    /**
+     * 禁用扫描目录
+     */
+    private Boolean disableScanDir;
     //  ---------------- 中转字段 start
     /**
      * 是否可以重新加载
@@ -110,6 +115,10 @@ public class NodeProjectInfoModel extends BaseWorkspaceModel {
      */
     private String runCommand;
     //  ---------------- 中转字段 end
+
+    public boolean isDisableScanDir() {
+        return disableScanDir != null && disableScanDir;
+    }
 
 
     public String javaExtDirsCp() {
@@ -126,7 +135,7 @@ public class NodeProjectInfoModel extends BaseWorkspaceModel {
 
     public String whitelistDirectory() {
         if (StrUtil.isEmpty(whitelistDirectory)) {
-            throw new JpomRuntimeException("恢复授权数据异常或者没有选择授权目录");
+            throw new JpomRuntimeException(I18nMessageUtil.get("i18n.restore_authorization_data_exception.015a"));
         }
         return whitelistDirectory;
     }
@@ -173,7 +182,7 @@ public class NodeProjectInfoModel extends BaseWorkspaceModel {
      */
     public DslYmlDto mustDslConfig() {
         DslYmlDto dslYmlDto = this.dslConfig();
-        Assert.notNull(dslYmlDto, "未配置 dsl 信息（项目信息错误）");
+        Assert.notNull(dslYmlDto, I18nMessageUtil.get("i18n.dsl_info_not_configured.3487"));
         return dslYmlDto;
     }
 

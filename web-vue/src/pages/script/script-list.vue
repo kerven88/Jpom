@@ -7,7 +7,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="server-script-list"
-      empty-description="没有任何脚本"
+      :empty-description="$t('i18n_5badae1d90')"
       :data-source="list"
       size="middle"
       :columns="columns"
@@ -25,53 +25,53 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['id']"
-            placeholder="脚本ID"
+            :placeholder="$t('i18n_d18d658415')"
             allow-clear
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="名称"
+            :placeholder="$t('i18n_d7ec2d3fea')"
             allow-clear
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%description%']"
-            placeholder="描述"
+            :placeholder="$t('i18n_3bdd08adab')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%autoExecCron%']"
-            placeholder="定时执行"
+            :placeholder="$t('i18n_6b2e348a2b')"
             class="search-input-item"
             @press-enter="loadData"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button :loading="loading" type="primary" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="createScript">新增</a-button>
+          <a-button type="primary" @click="createScript">{{ $t('i18n_66ab5e9f24') }}</a-button>
           <a-button
             v-if="mode === 'manage'"
             type="primary"
             :disabled="!tableSelections || !tableSelections.length"
             @click="syncToWorkspaceShow"
-            >工作空间同步</a-button
+            >{{ $t('i18n_398ce396cd') }}</a-button
           >
         </a-space>
       </template>
       <template #tableHelp>
         <a-tooltip>
           <template #title>
-            <div>脚本模版是存储在服务端中的命令脚本用于在线管理一些脚本命令，如初始化软件环境、管理应用程序等</div>
+            <div>{{ $t('i18n_2f8fd34058') }}</div>
 
             <div>
               <ul>
-                <li>执行时候默认不加载全部环境变量、需要脚本里面自行加载</li>
-                <li>命令文件将在 ${数据目录}/script/xxxx.sh、bat 执行</li>
-                <li>分发节点是指在编辑完脚本后自动将脚本内容同步节点的脚本,一般用户节点分发功能中的 DSL 模式</li>
+                <li>{{ $t('i18n_5ecc709db7') }}</li>
+                <li>{{ $t('i18n_c600eda869') }}</li>
+                <li>{{ $t('i18n_05e6d88e29') }}</li>
               </ul>
             </div>
           </template>
@@ -95,28 +95,32 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'workspaceId'">
-          <a-tag v-if="text === 'GLOBAL'">全局</a-tag>
-          <a-tag v-else>工作空间</a-tag>
+          <a-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</a-tag>
+          <a-tag v-else>{{ $t('i18n_98d69f8b62') }}</a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
             <template v-if="mode === 'manage'">
-              <a-button size="small" type="primary" @click="handleExec(record)">执行</a-button>
-              <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-              <a-button size="small" type="primary" @click="handleLog(record)">日志</a-button>
+              <a-button size="small" type="primary" @click="handleExec(record)">{{ $t('i18n_1a6aa24e76') }}</a-button>
+              <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+              <a-button size="small" type="primary" @click="handleLog(record)">{{ $t('i18n_456d29ef8b') }}</a-button>
               <a-dropdown>
                 <a @click="(e) => e.preventDefault()">
-                  更多
+                  {{ $t('i18n_0ec9eaf9c3') }}
                   <DownOutlined />
                 </a>
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-button size="small" type="primary" @click="handleTrigger(record)">触发器</a-button>
+                      <a-button size="small" type="primary" @click="handleTrigger(record)">{{
+                        $t('i18n_4696724ed3')
+                      }}</a-button>
                     </a-menu-item>
 
                     <a-menu-item>
-                      <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+                      <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+                        $t('i18n_2f4aaddde3')
+                      }}</a-button>
                     </a-menu-item>
                     <a-menu-item>
                       <a-button
@@ -125,7 +129,7 @@
                         danger
                         :disabled="!record.nodeIds"
                         @click="handleUnbind(record)"
-                        >解绑</a-button
+                        >{{ $t('i18n_663393986e') }}</a-button
                       >
                     </a-menu-item>
                   </a-menu>
@@ -133,18 +137,18 @@
               </a-dropdown>
             </template>
             <template v-else>
-              <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
+              <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
             </template>
           </a-space>
         </template>
       </template>
     </CustomTable>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editScriptVisible"
       v-model:open="editScriptVisible"
       destroy-on-close
-      :z-index="1009"
-      title="编辑 Script"
+      :title="$t('i18n_c446efd80d')"
       :mask-closable="false"
       width="80vw"
       :confirm-loading="confirmLoading"
@@ -154,31 +158,37 @@
         <a-form-item v-if="temp.id" label="ScriptId" name="id">
           <a-input v-model:value="temp.id" disabled read-only />
         </a-form-item>
-        <a-form-item label="Script 名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="名称" />
+        <a-form-item :label="$t('i18n_e747635151')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_d7ec2d3fea')" />
         </a-form-item>
-        <a-form-item label="Script 内容" name="context">
+        <a-form-item :label="$t('i18n_4d9c3a0ed0')" name="context">
           <a-form-item-rest>
-            <code-editor v-model:content="temp.context" height="40vh" :options="{ mode: 'shell', tabSize: 2 }">
+            <code-editor
+              v-model:content="temp.context"
+              height="40vh"
+              :show-tool="true"
+              :options="{ mode: 'shell', tabSize: 2 }"
+            >
+              <template #tool_before>
+                <a-button type="link" @click="scriptLibraryVisible = true">{{ $t('i18n_f685377a22') }}</a-button>
+              </template>
             </code-editor>
           </a-form-item-rest>
         </a-form-item>
-        <!-- <a-form-item label="默认参数" name="defArgs">
-            <a-input v-model="temp.defArgs" placeholder="默认参数" />
-          </a-form-item> -->
-        <a-form-item label="默认参数">
+
+        <a-form-item :label="$t('i18n_2171d1b07d')">
           <a-space direction="vertical" style="width: 100%">
             <a-row v-for="(item, index) in commandParams" :key="item.key">
               <a-col :span="22">
                 <a-space direction="vertical" style="width: 100%">
                   <a-input
                     v-model:value="item.desc"
-                    :addon-before="`参数${index + 1}描述`"
-                    placeholder="参数描述,参数描述没有实际作用,仅是用于提示参数的含义" />
+                    :addon-before="$t('i18n_0390e2f548', { count: index + 1 })"
+                    :placeholder="$t('i18n_9e78f02aad')" />
                   <a-input
                     v-model:value="item.value"
-                    :addon-before="`参数${index + 1}值`"
-                    placeholder="参数值,新增默认参数后在手动执行脚本时需要填写参数值"
+                    :addon-before="$t('i18n_a1f58b7189', { count: index + 1 })"
+                    :placeholder="$t('i18n_2d9569bf45')"
                 /></a-space>
               </a-col>
               <a-col :span="2">
@@ -192,43 +202,43 @@
             <a-divider style="margin: 5px 0" />
           </a-space>
 
-          <a-button type="primary" @click="() => commandParams.push({})">新增参数</a-button>
+          <a-button type="primary" @click="() => commandParams.push({})">{{ $t('i18n_4c0eead6ff') }}</a-button>
         </a-form-item>
-        <a-form-item label="定时执行" name="autoExecCron">
+        <a-form-item :label="$t('i18n_6b2e348a2b')" name="autoExecCron">
           <a-auto-complete
             v-model:value="temp.autoExecCron"
-            placeholder="如果需要定时自动执行则填写,cron 表达式.默认未开启秒级别,需要去修改配置文件中:[system.timerMatchSecond]）"
+            :placeholder="$t('i18n_5dff0d31d0')"
             :options="CRON_DATA_SOURCE"
           >
             <template #option="item"> {{ item.title }} {{ item.value }} </template>
           </a-auto-complete>
         </a-form-item>
-        <a-form-item label="描述" name="description">
+        <a-form-item :label="$t('i18n_3bdd08adab')" name="description">
           <a-textarea
             v-model:value="temp.description"
             :max-length="200"
             :rows="3"
             style="resize: none"
-            placeholder="详细描述"
+            :placeholder="$t('i18n_ae653ec180')"
           />
         </a-form-item>
-        <a-form-item label="共享" name="global">
+        <a-form-item :label="$t('i18n_fffd3ce745')" name="global">
           <a-radio-group v-model:value="temp.global">
-            <a-radio :value="true"> 全局</a-radio>
-            <a-radio :value="false"> 当前工作空间</a-radio>
+            <a-radio :value="true"> {{ $t('i18n_2be75b1044') }}</a-radio>
+            <a-radio :value="false"> {{ $t('i18n_691b11e443') }}</a-radio>
           </a-radio-group>
         </a-form-item>
-        <a-form-item v-if="temp.prohibitSync" label="禁用分发节点">
-          <template #help>需要到原始工作空间中去控制节点分发</template>
+        <a-form-item v-if="temp.prohibitSync" :label="$t('i18n_b499798ec5')">
+          <template #help>{{ $t('i18n_06986031a7') }}</template>
           <a-tag v-for="(item, index) in temp.nodeList" :key="index"
-            >节点名称：{{ item.nodeName }} 工作空间：{{ item.workspaceName }}</a-tag
+            >{{ $t('i18n_5d83794cfa') }}{{ item.nodeName }} {{ $t('i18n_4d85c37f0d') }}{{ item.workspaceName }}</a-tag
           >
         </a-form-item>
         <a-form-item v-else>
           <template #label>
             <a-tooltip>
-              分发节点
-              <template #title> 分发节点是指在编辑完脚本后自动将脚本内容同步节点的脚本中 </template>
+              {{ $t('i18n_6a6c857285') }}
+              <template #title> {{ $t('i18n_d7ba18c360') }} </template>
               <QuestionCircleOutlined v-show="!temp.id" />
             </a-tooltip>
           </template>
@@ -245,7 +255,7 @@
                 )
               }
             "
-            placeholder="请选择分发到的节点"
+            :placeholder="$t('i18n_a03ea1e864')"
             mode="multiple"
           >
             <a-select-option v-for="item in nodeList" :key="item.id" :value="item.id">
@@ -254,9 +264,10 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 脚本控制台组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerConsoleVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -265,28 +276,32 @@
       @close="onConsoleClose"
     >
       <script-console v-if="drawerConsoleVisible" :id="temp.id" :def-args="temp.defArgs" />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 同步到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="syncToWorkspaceVisible"
       v-model:open="syncToWorkspaceVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="同步到其他工作空间"
+      :title="$t('i18n_1a44b9e2f7')"
       :mask-closable="false"
       @ok="handleSyncToWorkspace"
     >
-      <a-alert message="温馨提示" type="warning" show-icon>
+      <a-alert :message="$t('i18n_947d983961')" type="warning" show-icon>
         <template #description>
           <ul>
-            <li>同步机制采用<b>脚本名称</b>确定是同一个脚本</li>
-            <li>当目标工作空间不存在对应的 脚本 时候将自动创建一个新的 脚本</li>
-            <li>当目标工作空间已经存在 脚本 时候将自动同步 脚本内容、默认参数、定时执行、描述</li>
+            <li>
+              {{ $t('i18n_384f337da1') }}<b>{{ $t('i18n_50fb61ef9d') }}</b
+              >{{ $t('i18n_50d2671541') }}
+            </li>
+            <li>{{ $t('i18n_770a07d78f') }}</li>
+            <li>{{ $t('i18n_83ccef50cd') }}</li>
           </ul>
         </template>
       </a-alert>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -300,7 +315,7 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id" :disabled="getWorkspaceId() === item.id">{{
               item.name
@@ -308,12 +323,13 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 触发器 -->
-    <a-modal
+    <CustomModal
+      v-if="triggerVisible"
       v-model:open="triggerVisible"
       destroy-on-close
-      title="触发器"
+      :title="$t('i18n_4696724ed3')"
       width="50%"
       :footer="null"
       :mask-closable="false"
@@ -321,35 +337,30 @@
       <a-form ref="editTriggerForm" :rules="rules" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
         <a-tabs default-active-key="1">
           <template #rightExtra>
-            <a-tooltip title="重置触发器 token 信息,重置后之前的触发器 token 将失效">
-              <a-button type="primary" size="small" @click="resetTrigger">重置</a-button>
+            <a-tooltip :title="$t('i18n_01ad26f4a9')">
+              <a-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</a-button>
             </a-tooltip>
           </template>
-          <a-tab-pane key="1" tab="执行">
+          <a-tab-pane key="1" :tab="$t('i18n_1a6aa24e76')">
             <a-space direction="vertical" style="width: 100%">
-              <a-alert message="温馨提示" type="warning">
+              <a-alert :message="$t('i18n_947d983961')" type="warning">
                 <template #description>
                   <ul>
-                    <li>单个触发器地址中：第一个随机字符串为脚本ID，第二个随机字符串为 token</li>
-                    <li>
-                      重置为重新生成触发地址,重置成功后之前的触发器地址将失效,触发器绑定到生成触发器到操作人上,如果将对应的账号删除触发器将失效
-                    </li>
-                    <li>批量触发参数 BODY json： [ { "id":"1", "token":"a" } ]</li>
-                    <li>
-                      单个触发器请求支持将参数解析为环境变量传入脚本执行，比如传入参数名为 abc=efg
-                      在脚本中引入则为：${trigger_abc}
-                    </li>
+                    <li>{{ $t('i18n_9308f22bf6') }}</li>
+                    <li>{{ $t('i18n_632a907224') }}</li>
+                    <li>{{ $t('i18n_3fca26a684') }}</li>
+                    <li>{{ $t('i18n_a04b7a8f5d') }}</li>
                   </ul>
                 </template>
               </a-alert>
-              <a-alert type="info" :message="`单个触发器地址(点击可以复制)`">
+              <a-alert type="info" :message="`${$t('i18n_de78b73dab')}(${$t('i18n_00a070c696')})`">
                 <template #description>
                   <a-typography-paragraph :copyable="{ text: temp.triggerUrl }">
                     <a-tag>GET</a-tag> <span>{{ temp.triggerUrl }} </span>
                   </a-typography-paragraph>
                 </template>
               </a-alert>
-              <a-alert type="info" :message="`批量触发器地址(点击可以复制)`">
+              <a-alert type="info" :message="`${$t('i18n_8d202b890c')}(${$t('i18n_00a070c696')})`">
                 <template #description>
                   <a-typography-paragraph :copyable="{ text: temp.batchTriggerUrl }">
                     <a-tag>POST</a-tag> <span>{{ temp.batchTriggerUrl }} </span>
@@ -360,11 +371,12 @@
           </a-tab-pane>
         </a-tabs>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 脚本日志 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerLogVisible"
       destroy-on-close
-      title="脚本执行历史"
+      :title="$t('i18n_6863e2a7b5')"
       width="70vw"
       :open="drawerLogVisible"
       @close="
@@ -374,7 +386,70 @@
       "
     >
       <script-log v-if="drawerLogVisible" :script-id="temp.id" />
-    </a-drawer>
+    </CustomDrawer>
+    <!-- pages.script.script-list.a36f20d3 -->
+    <CustomDrawer
+      v-if="scriptLibraryVisible"
+      destroy-on-close
+      :title="$t('i18n_53bdd93fd6')"
+      placement="right"
+      :open="scriptLibraryVisible"
+      width="85vw"
+      :footer-style="{ textAlign: 'right' }"
+      @close="
+        () => {
+          scriptLibraryVisible = false
+        }
+      "
+    >
+      <ScriptLibraryNoPermission
+        v-if="scriptLibraryVisible"
+        ref="scriptLibraryRef"
+        @script-confirm="
+          (script) => {
+            temp = { ...temp, context: script }
+            scriptLibraryVisible = false
+          }
+        "
+        @tag-confirm="
+          (tag) => {
+            temp = { ...temp, context: (temp.context || '') + `\nG@(\&quot;${tag}\&quot;)` }
+            scriptLibraryVisible = false
+          }
+        "
+      ></ScriptLibraryNoPermission>
+      <template #footer>
+        <a-space>
+          <a-button
+            @click="
+              () => {
+                scriptLibraryVisible = false
+              }
+            "
+            >{{ $t('i18n_625fb26b4b') }}</a-button
+          >
+          <a-button
+            type="primary"
+            @click="
+              () => {
+                $refs['scriptLibraryRef'].handerScriptConfirm()
+              }
+            "
+            >{{ $t('i18n_f71316d0dd') }}</a-button
+          >
+          <a-button
+            type="primary"
+            @click="
+              () => {
+                $refs['scriptLibraryRef'].handerTagConfirm()
+              }
+            "
+            >{{ $t('i18n_9300692fac') }}</a-button
+          >
+        </a-space>
+      </template>
+    </CustomDrawer>
+
     <!-- <div style="padding-top: 50px" v-if="mode === 'choose'">
       <div
         :style="{
@@ -397,15 +472,14 @@
               }
             "
           >
-            取消
+           {{$t('i18n_625fb26b4b')}}
           </a-button>
-          <a-button type="primary" @click="handerConfirm"> 确定 </a-button>
+          <a-button type="primary" @click="handerConfirm"> {{$t('i18n_e83a256e4f')}} </a-button>
         </a-space>
       </div>
     </div> -->
   </div>
 </template>
-
 <script>
 import {
   deleteScript,
@@ -419,18 +493,19 @@ import {
 import codeEditor from '@/components/codeEditor'
 import { getNodeListAll } from '@/api/node'
 import ScriptConsole from '@/pages/script/script-console'
-import { CHANGE_PAGE, COMPUTED_PAGINATION, CRON_DATA_SOURCE, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
-
+import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
+import { CRON_DATA_SOURCE } from '@/utils/const-i18n'
 import { getWorkSpaceListAll } from '@/api/workspace'
-
 import ScriptLog from '@/pages/script/script-log'
+import ScriptLibraryNoPermission from '@/pages/system/assets/script-library/no-permission'
 import { mapState } from 'pinia'
 import { useAppStore } from '@/stores/app'
 export default {
   components: {
     ScriptConsole,
     codeEditor,
-    ScriptLog
+    ScriptLog,
+    ScriptLibraryNoPermission
   },
   props: {
     choose: {
@@ -471,14 +546,14 @@ export default {
           tooltip: true
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           sorter: true,
           width: 150
         },
         {
-          title: '共享',
+          title: this.$t('i18n_fffd3ce745'),
           dataIndex: 'workspaceId',
           sorter: true,
           ellipsis: true,
@@ -486,14 +561,14 @@ export default {
           width: '90px'
         },
         {
-          title: '描述',
+          title: this.$t('i18n_3bdd08adab'),
           dataIndex: 'description',
           ellipsis: true,
           width: 100,
           tooltip: true
         },
         {
-          title: '定时执行',
+          title: this.$t('i18n_6b2e348a2b'),
           dataIndex: 'autoExecCron',
           ellipsis: true,
           sorter: true,
@@ -501,7 +576,7 @@ export default {
           tooltip: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           width: '170px',
@@ -509,7 +584,7 @@ export default {
           customRender: ({ text }) => parseTime(text)
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           width: '170px',
@@ -517,21 +592,21 @@ export default {
           customRender: ({ text }) => parseTime(text)
         },
         {
-          title: '创建人',
+          title: this.$t('i18n_95a43eaa59'),
           dataIndex: 'createUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '最后执行人',
+          title: this.$t('i18n_f105c1d31d'),
           dataIndex: 'lastRunUser',
           ellipsis: true,
           width: '120px',
@@ -539,7 +614,7 @@ export default {
         },
         this.mode === 'manage'
           ? {
-              title: '操作',
+              title: this.$t('i18n_2b6bc0f293'),
               dataIndex: 'operation',
               align: 'center',
 
@@ -547,7 +622,7 @@ export default {
               width: '240px'
             }
           : {
-              title: '操作',
+              title: this.$t('i18n_2b6bc0f293'),
               dataIndex: 'operation',
               align: 'center',
 
@@ -555,9 +630,10 @@ export default {
               width: '100px'
             }
       ],
+
       rules: {
-        name: [{ required: true, message: '请输入脚本名称', trigger: 'blur' }],
-        context: [{ required: true, message: '请输入脚本内容', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_fb7b9876a6'), trigger: 'blur' }],
+        context: [{ required: true, message: this.$t('i18n_da1cb76e87'), trigger: 'blur' }]
       },
       tableSelections: [],
       syncToWorkspaceVisible: false,
@@ -565,7 +641,8 @@ export default {
       triggerVisible: false,
       commandParams: [],
       drawerLogVisible: false,
-      confirmLoading: false
+      confirmLoading: false,
+      scriptLibraryVisible: false
     }
   },
   computed: {
@@ -576,6 +653,7 @@ export default {
     activePage() {
       return this.$attrs.routerUrl === this.$route.path
     },
+
     rowSelection() {
       return {
         onChange: (selectedRowKeys) => {
@@ -668,7 +746,7 @@ export default {
           for (let i = 0; i < this.commandParams.length; i++) {
             if (!this.commandParams[i].desc) {
               $notification.error({
-                message: '请填写第' + (i + 1) + '个参数的描述'
+                message: this.$t('i18n_8ae2b9915c') + (i + 1) + this.$t('i18n_c583b707ba')
               })
               return false
             }
@@ -701,11 +779,11 @@ export default {
     },
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的要删除脚本么？',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_3b19b2a75c'),
         zIndex: 1009,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteScript({
             id: record.id
@@ -723,7 +801,7 @@ export default {
     // 执行 Script
     handleExec(record) {
       this.temp = Object.assign(record)
-      this.drawerTitle = `控制台(${this.temp.name})`
+      this.drawerTitle = `${this.$t('i18n_b5c3770699')}(${this.temp.name})`
       this.drawerConsoleVisible = true
     },
     // 关闭 console
@@ -738,20 +816,20 @@ export default {
     // 解绑
     handleUnbind(record) {
       const html =
-        "<b style='font-size: 20px;'>真的要解绑脚本关联的节点么？</b>" +
+        "<b style='font-size: 20px;'>this.$t('i18n_b57647c5aa')</b>" +
         "<ul style='font-size: 20px;color:red;font-weight: bold;'>" +
-        '<li>解绑不会真实请求节点删除脚本信息</b></li>' +
-        '<li>一般用于服务器无法连接且已经确定不再使用</li>' +
-        '<li>如果误操作会产生冗余数据！！！</li>' +
-        ' </ul>'
+        `<li>${this.$t('i18n_56230405ae')}</b></li>` +
+        `<li>${this.$t('i18n_5c93055d9c')}</li>` +
+        `<li>${this.$t('i18n_27d0c8772c')}</li>` +
+        '</ul>'
       $confirm({
-        title: '危险操作！！！',
+        title: this.$t('i18n_9362e6ddf8'),
         zIndex: 1009,
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
         okButtonProps: { type: 'primary', danger: true, size: 'small' },
         cancelButtonProps: { type: 'primary' },
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return unbindScript({
             id: record.id
@@ -786,7 +864,7 @@ export default {
     handleSyncToWorkspace() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }
@@ -851,7 +929,7 @@ export default {
     handerConfirm() {
       if (!this.tableSelections.length) {
         $notification.warning({
-          message: '请选择要使用的脚本'
+          message: this.$t('i18n_22670d3682')
         })
         return
       }

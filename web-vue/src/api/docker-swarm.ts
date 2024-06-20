@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from './config'
 import { loadRouterBase } from './config'
 /**
@@ -203,19 +203,19 @@ export function dockerSwarmServicesDownloaLog(urlPrefix, id) {
             <a-select-option key="ORPHANED">已失联</a-select-option>
  */
 export const TASK_STATE = {
-  NEW: '新建状态',
+  NEW: t('i18n_40da3fb58b'),
   // ALLOCATED: "已分配",
-  PENDING: '待处理',
-  ASSIGNED: '已分配',
-  ACCEPTED: '处理中',
-  PREPARING: '准备中',
-  READY: '准备',
-  STARTING: '开始执行任务',
-  RUNNING: '执行任务中',
-  COMPLETE: '执行成功',
-  SHUTDOWN: '停止',
-  FAILED: '执行失败',
-  REJECTED: '拒绝',
-  REMOVE: '移除',
-  ORPHANED: '已失联'
+  PENDING: t('i18n_047109def4'),
+  ASSIGNED: t('i18n_fbfa6c18bf'),
+  ACCEPTED: t('i18n_5d459d550a'),
+  PREPARING: t('i18n_f76540a92e'),
+  READY: t('i18n_424a2ad8f7'),
+  STARTING: t('i18n_a34c24719b'),
+  RUNNING: t('i18n_e9e9373c6f'),
+  COMPLETE: t('i18n_f56c1d014e'),
+  SHUTDOWN: t('i18n_095e938e2a'),
+  FAILED: t('i18n_1c83d79715'),
+  REJECTED: t('i18n_7173f80900'),
+  REMOVE: t('i18n_86048b4fea'),
+  ORPHANED: t('i18n_788a3afc90')
 }

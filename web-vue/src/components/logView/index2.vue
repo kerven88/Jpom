@@ -1,5 +1,11 @@
 <template>
-  <div :style="`margin-top:${marginTop}`">
+  <div
+    :style="{
+      marginTop: marginTop,
+      minHeight: height,
+      height: height
+    }"
+  >
     <div class="log-filter">
       <a-row type="flex" align="middle">
         <a-col>
@@ -8,17 +14,19 @@
 
         <a-col v-if="extendBar" style="padding-left: 10px">
           <a-space>
-            <a-tooltip title="清空当前缓冲区内容">
-              <a-button type="primary" size="small" @click="clearLogCache"><DeleteOutlined />清空</a-button>
+            <a-tooltip :title="$t('i18n_65f66dfe97')">
+              <a-button type="primary" size="small" @click="clearLogCache"
+                ><DeleteOutlined />{{ $t('i18n_288f0c404c') }}</a-button
+              >
             </a-tooltip>
             <!-- <a-tooltip title="内容超过边界自动换行">
                   <a-switch v-model="temp.wordBreak" checked-children="自动换行" un-checked-children="不换行" @change="onChange" />
                 </a-tooltip> -->
-            <a-tooltip title="有新内容后是否自动滚动到底部">
+            <a-tooltip :title="$t('i18n_0693e17fc1')">
               <a-switch
                 v-model:checked="temp.logScroll"
-                checked-children="自动滚动"
-                un-checked-children="不滚动"
+                :checked-children="$t('i18n_e0ce74fcac')"
+                :un-checked-children="$t('i18n_18b34cf50d')"
                 @change="onChange"
               />
             </a-tooltip>
@@ -27,10 +35,9 @@
       </a-row>
     </div>
     <!-- <pre class="log-view" :id="`${this.id}`" :style="`height:${this.height}`">{{ defText }}</pre> -->
-    <viewPre ref="viewPre" :height="height" :config="temp"></viewPre>
+    <viewPre ref="viewPre" :height="`calc(${height} - 35px - 20px)`" :config="temp"></viewPre>
   </div>
 </template>
-
 <script>
 import viewPre from './view-pre.vue'
 
@@ -89,7 +96,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .log-filter {
   padding: 0 10px;

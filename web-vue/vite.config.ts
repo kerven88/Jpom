@@ -21,12 +21,11 @@ import Components from 'unplugin-vue-components/vite'
 //ant-design-vue
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import postcss from 'postcss'
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }: ConfigEnv) => {
   // 加载环境配置
   const env: Record<string, string> = loadEnv(mode, __dirname, 'JPOM')
-  const { JPOM_PROXY_HOST: HOST, JPOM_BASE_URL, JPOM_PORT }: Record<string, string> = env
+  const { JPOM_PROXY_HOST: HOST = '', JPOM_BASE_URL = '', JPOM_PORT = '' }: Record<string, string> = env
   console.log(env, `当前为${mode}环境`)
 
   return {
@@ -64,7 +63,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       proxy: {
         // http
         '/api': {
-          target: `http://${HOST}`,
+          target: HOST.includes('http') ? HOST : `http://${HOST}`,
           changeOrigin: true,
           ws: true,
           rewrite: (path) => path.replace(/^\/api/, ''),

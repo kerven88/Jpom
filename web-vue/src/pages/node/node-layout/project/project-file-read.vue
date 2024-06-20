@@ -1,11 +1,12 @@
 <template>
   <div>
     <log-view1 :ref="`logView`" height="calc(100vh - 140px)">
-      <template #before> <a-button type="primary" size="small" @click="goFile">文件管理</a-button></template>
+      <template #before>
+        <a-button type="primary" size="small" @click="goFile">{{ $t('i18n_8780e6b3d1') }}</a-button></template
+      >
     </log-view1>
   </div>
 </template>
-
 <script>
 // import { getProjectData, getProjectLogSize, downloadProjectLogFile, getLogBackList, downloadProjectLogBackFile, deleteProjectLogBackFile } from "@/api/node-project";
 import { getWebSocketUrl } from '@/api/config'
@@ -94,7 +95,7 @@ export default {
       this.socket.onerror = (err) => {
         console.error(err)
         $notification.error({
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
         clearInterval(this.heart)
       }
@@ -102,7 +103,7 @@ export default {
         //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
         console.error(err)
         clearInterval(this.heart)
-        $message.warning('会话已经关闭[tail-file]')
+        $message.warning(this.$t('i18n_9255f9c68f'))
       }
       this.socket.onmessage = (msg) => {
         this.$refs.logView?.appendLine(msg.data)
@@ -132,7 +133,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .filter {
   margin: 0 0 10px;

@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from './config'
 import { loadRouterBase } from './config'
 
@@ -291,16 +291,16 @@ export function sortItem(params) {
 }
 
 export const statusMap = {
-  1: '构建中',
-  2: '构建完成',
-  3: '构建失败',
-  4: '发布中',
-  5: '发布成功',
-  6: '发布失败',
-  7: '取消构建',
-  8: '构建中断',
-  9: '队列等待',
-  10: '异常关闭'
+  1: t('i18n_32493aeef9'),
+  2: t('i18n_641796b655'),
+  3: t('i18n_41298f56a3'),
+  4: t('i18n_0baa0e3fc4'),
+  5: t('i18n_2fff079bc7'),
+  6: t('i18n_250688d7c9'),
+  7: t('i18n_b4fc1ac02c'),
+  8: t('i18n_979b7d10b0'),
+  9: t('i18n_81afd9e713'),
+  10: t('i18n_8160b4be4e')
 }
 export const statusColor = {
   1: 'orange',
@@ -316,22 +316,22 @@ export const statusColor = {
 }
 
 export const releaseMethodMap = {
-  0: '不发布',
-  1: '节点分发',
-  2: '项目',
+  0: t('i18n_a189314b9e'),
+  1: t('i18n_ae6838c0e6'),
+  2: t('i18n_31ecc0e65b'),
   3: 'SSH',
-  4: '本地命令',
-  5: 'Docker镜像'
+  4: t('i18n_b71a7e6aab'),
+  5: t('i18n_9136e1859a')
 }
 
 export const triggerBuildTypeMap = {
-  0: '手动',
-  1: '触发器',
-  2: '定时',
-  3: '手动回滚'
+  0: t('i18n_2a3e7f5c38'),
+  1: t('i18n_4696724ed3'),
+  2: t('i18n_72ebfe28b0'),
+  3: t('i18n_31070fd376')
 }
 
 export const buildModeMap = {
-  0: '本地构建',
-  1: '容器构建'
+  0: t('i18n_69c3b873c1'),
+  1: t('i18n_685e5de706')
 }

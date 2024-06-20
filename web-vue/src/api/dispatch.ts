@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from './config'
 
 // 分发列表
@@ -276,40 +276,40 @@ export function saveDispatchProjectConfig(data) {
 }
 
 export const afterOptList = [
-  { title: '不做任何操作', value: 0 },
-  { title: '并发执行', value: 1 },
-  { title: '完整顺序执行(有执行失败将结束本次)', value: 2 },
-  { title: '顺序执行(有执行失败将继续)', value: 3 }
+  { title: t('i18n_a2ebd000e4'), value: 0 },
+  { title: t('i18n_82915930eb'), value: 1 },
+  { title: t('i18n_0e1ecdae4a'), value: 2 },
+  { title: t('i18n_8887e94cb7'), value: 3 }
 ]
 
 export const afterOptListSimple = [
-  { title: '不做任何操作', value: 0 },
-  { title: '执行重启', value: 1 }
+  { title: t('i18n_a2ebd000e4'), value: 0 },
+  { title: t('i18n_913ef5d129'), value: 1 }
 ]
 
 export const dispatchStatusMap = {
-  0: '未分发',
-  1: '分发中',
-  2: '分发成功',
-  3: '分发失败',
-  4: '系统取消分发',
-  5: '准备分发',
-  6: '手动取消分发'
+  0: t('i18n_29efa328e5'),
+  1: t('i18n_5b3ffc2910'),
+  2: t('i18n_7e300e89b1'),
+  3: t('i18n_2a049f4f5b'),
+  4: t('i18n_036c0dc2aa'),
+  5: t('i18n_339097ba2e'),
+  6: t('i18n_7bf62f7284')
 }
 
 export const statusMap = {
-  0: '未分发',
-  1: '分发中',
-  2: '分发结束',
-  3: '取消分发',
-  4: '分发失败'
+  0: t('i18n_29efa328e5'),
+  1: t('i18n_5b3ffc2910'),
+  2: t('i18n_3ea6c5e8ec'),
+  3: t('i18n_30e855a053'),
+  4: t('i18n_2a049f4f5b')
 }
 
 export const dispatchMode = {
-  upload: '手动上传',
-  download: '远程下载',
-  'build-trigger': '构建触发',
-  'use-build': '构建产物',
-  'static-file-storage': '静态文件',
-  'file-storage': '文件中心'
+  upload: t('i18n_bd7c8c96bc'),
+  download: t('i18n_bd7043cae3'),
+  'build-trigger': t('i18n_74d5f61b9f'),
+  'use-build': t('i18n_c1af35d001'),
+  'static-file-storage': t('i18n_28f6e7a67b'),
+  'file-storage': t('i18n_26183c99bf')
 }

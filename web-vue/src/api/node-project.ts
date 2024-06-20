@@ -11,6 +11,7 @@
 /**
  * 节点管理 api
  */
+import { t } from '@/i18n'
 import axios from './config'
 import { loadRouterBase } from './config'
 
@@ -112,7 +113,8 @@ export function editProject(params) {
     autoStart: params.autoStart,
     dslContent: params.dslContent,
     dslEnv: params.dslEnv,
-    linkId: params.linkId
+    linkId: params.linkId,
+    disableScanDir: params.disableScanDir
   }
   return axios({
     url: '/node/manage/saveProject',
@@ -499,6 +501,32 @@ export function renameFileFolder(params) {
 }
 
 /**
+ * 复制文件
+ * @param params
+ * @returns {id, levelName, filename,newname} params x
+ */
+export function copyFileFolder(params) {
+  return axios({
+    url: '/node/manage/file/copy',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 压缩文件
+ * @param params
+ * @returns {id, levelName, filename,newname} params x
+ */
+export function compressFileFolder(params) {
+  return axios({
+    url: '/node/manage/file/compress',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 构建分组
  */
 export function getProjectGroupAll() {
@@ -514,18 +542,18 @@ export function getProjectGroupAll() {
 export const runModeList = ['Dsl', 'ClassPath', 'Jar', 'JarWar', 'JavaExtDirsCp', 'File', 'Link']
 
 export const runModeArray = [
-  { name: 'Dsl', desc: '自定义脚本项目（python、nodejs、go、接口探活、es）【推荐】' },
-  { name: 'ClassPath', desc: 'Java 项目（java -classpath）' },
-  { name: 'Jar', desc: 'Java 项目（java -jar xxx）' },
-  { name: 'JavaExtDirsCp', desc: 'Java 项目（java -Djava.ext.dirs=lib -cp conf:run.jar $MAIN_CLASS）' },
-  { name: 'File', desc: '静态文件项目（前端、日志等）' },
+  { name: 'Dsl', desc: t('i18n_386edb98a5') },
+  { name: 'ClassPath', desc: t('i18n_f9c9f95929') },
+  { name: 'Jar', desc: t('i18n_be24e5ffbe') },
+  { name: 'JavaExtDirsCp', desc: t('i18n_eef4dfe786') },
+  { name: 'File', desc: t('i18n_f282058f75') },
   {
     name: 'Link',
-    desc: '软链项目（类似于项目副本使用相关路径的文件）',
+    desc: t('i18n_c538b1db4a'),
     // 仅有节点有此项目（节点分发不支持）
     onlyNode: true
   },
-  { name: 'JarWar', desc: 'Java 项目（java -jar Springboot war）【不推荐】' }
+  { name: 'JarWar', desc: t('i18n_d6eab4107a') }
 ]
 
 /**

@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-tabs v-model:activeKey="tabKey">
-      <a-tab-pane :key="1" tab="操作日志">
+      <a-tab-pane :key="1" :tab="$t('i18n_cda84be2f6')">
         <!-- 数据表格 -->
         <a-table
           size="middle"
@@ -36,7 +36,7 @@
                   }
                 "
                 allow-clear
-                placeholder="操作功能"
+                :placeholder="$t('i18n_8432a98819')"
                 class="search-input-item"
               >
                 <a-select-option v-for="item in classFeature" :key="item.value">{{ item.title }}</a-select-option>
@@ -55,7 +55,7 @@
                   }
                 "
                 allow-clear
-                placeholder="操作方法"
+                :placeholder="$t('i18n_a9de52acb0')"
                 class="search-input-item"
               >
                 <a-select-option v-for="item in methodFeature" :key="item.value">{{ item.title }}</a-select-option>
@@ -69,8 +69,10 @@
                   }
                 "
               />
-              <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-                <a-button type="primary" :loading="operateloading" @click="operaterloadData">搜索</a-button>
+              <a-tooltip :title="$t('i18n_4838a3bd20')">
+                <a-button type="primary" :loading="operateloading" @click="operaterloadData">{{
+                  $t('i18n_e5f71fc31e')
+                }}</a-button>
               </a-tooltip>
             </a-space>
           </template>
@@ -95,7 +97,7 @@
             <template v-else-if="column.dataIndex === 'optStatus'">
               <a-tooltip
                 placement="topLeft"
-                :title="`默认状态码为 200 表示执行成功,部分操作状态码可能为 0,状态码为 0 的操作大部分为没有操作结果或者异步执行`"
+                :title="`${$t('i18n_be4b9241ec')},${$t('i18n_69056f4792')},${$t('i18n_27b36afd36')}`"
               >
                 <span>{{ text }}</span>
               </a-tooltip>
@@ -108,7 +110,7 @@
           </template>
         </a-table>
       </a-tab-pane>
-      <a-tab-pane :key="2" tab="登录日志">
+      <a-tab-pane :key="2" :tab="$t('i18n_3fb2e5ec7b')">
         <a-table
           size="middle"
           :data-source="loginlist"
@@ -130,13 +132,13 @@
             <a-space>
               <a-input
                 v-model:value="loginlistQuery['%username%']"
-                placeholder="用户名"
+                :placeholder="$t('i18n_819767ada1')"
                 class="search-input-item"
                 @press-enter="loginloadData"
               />
               <a-input
                 v-model:value="loginlistQuery['%ip%']"
-                placeholder="登录IP"
+                :placeholder="$t('i18n_b38d6077d6')"
                 class="search-input-item"
                 @press-enter="loginloadData"
               />
@@ -149,21 +151,23 @@
                   }
                 "
               />
-              <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-                <a-button type="primary" :loading="loginloading" @click="loginloadData">搜索</a-button>
+              <a-tooltip :title="$t('i18n_4838a3bd20')">
+                <a-button type="primary" :loading="loginloading" @click="loginloadData">{{
+                  $t('i18n_e5f71fc31e')
+                }}</a-button>
               </a-tooltip>
             </a-space>
           </template>
           <template #bodyCell="{ column, text }">
             <template v-if="column.dataIndex === 'success'">
-              <a-tooltip placement="topLeft" :title="text ? '成功' : '失败'">
-                <a-tag v-if="text" color="green">成功</a-tag>
-                <a-tag v-else color="pink">失败</a-tag>
+              <a-tooltip placement="topLeft" :title="text ? $t('i18n_330363dfc5') : $t('i18n_acd5cb847a')">
+                <a-tag v-if="text" color="green">{{ $t('i18n_330363dfc5') }}</a-tag>
+                <a-tag v-else color="pink">{{ $t('i18n_acd5cb847a') }}</a-tag>
               </a-tooltip>
             </template>
             <template v-else-if="column.dataIndex === 'useMfa'">
-              <a-tooltip placement="topLeft" :title="text ? '使用' : '未使用'">
-                <a-tag>{{ text ? '使用' : '未使用' }}</a-tag>
+              <a-tooltip placement="topLeft" :title="text ? $t('i18n_ecff77a8d4') : $t('i18n_869ec83e33')">
+                <a-tag>{{ text ? $t('i18n_ecff77a8d4') : $t('i18n_869ec83e33') }}</a-tag>
               </a-tooltip>
             </template>
 
@@ -174,8 +178,8 @@
             </template>
 
             <template v-else-if="column.dataIndex === 'operateCode'">
-              <a-tooltip placement="topLeft" :title="operateCode[text] || '未知'">
-                {{ operateCode[text] || '未知' }}
+              <a-tooltip placement="topLeft" :title="operateCode[text] || $t('i18n_1622dc9b6b')">
+                {{ operateCode[text] || $t('i18n_1622dc9b6b') }}
               </a-tooltip>
             </template>
           </template>
@@ -184,7 +188,6 @@
     </a-tabs>
   </div>
 </template>
-
 <script>
 import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
 import { listOperaterLog, listLoginLog } from '@/api/user/user'
@@ -208,26 +211,26 @@ export default {
       classFeatureMap: {},
       operatecolumns: [
         {
-          title: '操作者',
+          title: this.$t('i18n_6b0bc6432d'),
           dataIndex: 'username',
           ellipsis: true
         },
         { title: 'IP', dataIndex: 'ip', ellipsis: true, width: '130px' },
         {
-          title: '节点',
+          title: this.$t('i18n_3bf3c0a8d6'),
           dataIndex: 'nodeId',
           width: 120,
           ellipsis: true
         },
         {
-          title: '数据名称',
+          title: this.$t('i18n_5a1419b7a2'),
           dataIndex: 'dataName',
           /*width: 240,*/
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '工作空间名',
+          title: this.$t('i18n_4524ed750d'),
           dataIndex: 'workspaceName',
           /*width: 240,*/
           ellipsis: true,
@@ -235,24 +238,24 @@ export default {
         },
         // { title: "数据 ID", dataIndex: "dataId", /*width: 240,*/ ellipsis: true,},
         {
-          title: '操作功能',
+          title: this.$t('i18n_8432a98819'),
           dataIndex: 'classFeature',
           /*width: 240,*/
           ellipsis: true
         },
         {
-          title: '操作方法',
+          title: this.$t('i18n_a9de52acb0'),
           dataIndex: 'methodFeature',
           /*width: 240,*/
           ellipsis: true
         },
         {
-          title: '状态码',
+          title: this.$t('i18n_771d897d9a'),
           dataIndex: 'optStatus',
           width: 90
         },
         {
-          title: '操作时间',
+          title: this.$t('i18n_7e951d56d9'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text, item }) => {
@@ -261,19 +264,20 @@ export default {
           width: '170px'
         }
       ],
+
       loginloading: false,
       loginlist: [],
       operateCode: operateCodeMap,
       loginlistQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
       logincolumns: [
         {
-          title: '用户ID',
+          title: this.$t('i18n_30acd20d6e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '用户名称',
+          title: this.$t('i18n_dfb8d511c7'),
           dataIndex: 'username',
           ellipsis: true,
           tooltip: true
@@ -285,31 +289,31 @@ export default {
           tooltip: true
         },
         {
-          title: '浏览器',
+          title: this.$t('i18n_912302cb02'),
           dataIndex: 'userAgent',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '是否成功',
+          title: this.$t('i18n_5e9f2dedca'),
           dataIndex: 'success',
           ellipsis: true,
           width: '100px'
         },
         {
-          title: '是否使用MFA',
+          title: this.$t('i18n_ae0d608495'),
           dataIndex: 'useMfa',
           ellipsis: true,
           width: '130px'
         },
         {
-          title: '结果描述',
+          title: this.$t('i18n_64c083c0a9'),
           dataIndex: 'operateCode',
           /*width: 240,*/ ellipsis: true
         },
 
         {
-          title: '登录时间',
+          title: this.$t('i18n_9fca7c455f'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text, item }) => {
@@ -318,6 +322,7 @@ export default {
           width: '170px'
         }
       ],
+
       tabKey: 1
     }
   },

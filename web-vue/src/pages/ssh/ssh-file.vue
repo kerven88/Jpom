@@ -5,7 +5,7 @@
     <a-layout-sider theme="light" class="sider" width="25%">
       <a-row class="dir-container">
         <a-space>
-          <a-button size="small" type="primary" @click="loadData()">刷新</a-button>
+          <a-button size="small" type="primary" @click="loadData()">{{ $t('i18n_694fc5efa9') }}</a-button>
           <a-dropdown>
             <template #overlay>
               <a-menu>
@@ -38,7 +38,7 @@
                 sortMethodList.find((item) => {
                   return item.key === sortMethod.key
                 }).name
-              }}排序
+              }}{{ $t('i18n_c360e994db') }}
               <SortAscendingOutlined v-if="sortMethod.asc" />
               <SortDescendingOutlined v-else />
             </a-button>
@@ -71,65 +71,77 @@
         <template #title>
           <a-space>
             <a-dropdown :disabled="!tempNode.nextPath">
-              <a-button size="small" type="primary" @click="(e) => e.preventDefault()">上传小文件</a-button>
+              <a-button size="small" type="primary" @click="(e) => e.preventDefault()">{{
+                $t('i18n_01198a1673')
+              }}</a-button>
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="handleUpload">
-                    <a-space><FileAddOutlined />上传文件</a-space>
+                    <a-space><FileAddOutlined />{{ $t('i18n_a6fc9e3ae6') }}</a-space>
                   </a-menu-item>
                   <a-menu-item @click="handleUploadZip">
-                    <a-space><FileZipOutlined />上传压缩文件（自动解压）</a-space>
+                    <a-space><FileZipOutlined />{{ $t('i18n_66b71b06c6') }}</a-space>
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
             <a-dropdown :disabled="!tempNode.nextPath">
-              <a-button size="small" type="primary" @click="(e) => e.preventDefault()">新建</a-button>
+              <a-button size="small" type="primary" @click="(e) => e.preventDefault()">{{
+                $t('i18n_26bb841878')
+              }}</a-button>
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="handleAddFolder">
                     <a-space>
                       <FolderAddOutlined />
-                      <a-space>新建目录</a-space>
+                      <a-space>{{ $t('i18n_547ee197e5') }}</a-space>
                     </a-space>
                   </a-menu-item>
                   <a-menu-item @click="handleAddFile">
                     <a-space>
                       <FileAddOutlined />
-                      <a-space>新建空白文件</a-space>
+                      <a-space>{{ $t('i18n_497ddf508a') }}</a-space>
                     </a-space>
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
-            <a-button size="small" :disabled="!tempNode.nextPath" type="primary" @click="loadFileList()">刷新</a-button>
-            <a-button size="small" :disabled="!tempNode.nextPath" type="primary" danger @click="handleDeletePath()"
-              >删除</a-button
-            >
+            <a-button size="small" :disabled="!tempNode.nextPath" type="primary" @click="loadFileList()">{{
+              $t('i18n_694fc5efa9')
+            }}</a-button>
+            <a-button size="small" :disabled="!tempNode.nextPath" type="primary" danger @click="handleDeletePath()">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
             <div>
-              文件夹：
+              {{ $t('i18n_4cbc136874') }}
               <a-switch
                 v-model:checked="listShowDir"
                 :disabled="!tempNode.nextPath"
-                checked-children="显示"
-                un-checked-children="隐藏"
+                :checked-children="$t('i18n_4d775d4cd7')"
+                :un-checked-children="$t('i18n_dce5379cb9')"
                 @change="changeListShowDir"
               />
             </div>
-            <span v-if="nowPath">当前目录:{{ nowPath }}</span>
+            <span v-if="nowPath">{{ $t('i18n_4e33dde280') }}{{ nowPath }}</span>
             <!-- <span v-if="this.nowPath">{{ this.tempNode.parentDir }}</span> -->
           </a-space>
         </template>
 
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'name'">
-            <a-tooltip placement="topLeft" :title="` 名称：${text} 长名称：${record.longname}`">
+            <a-tooltip placement="topLeft">
+              <template #title>
+                <div>{{ $t('i18n_551e46c0ea') }}{{ text }}</div>
+                <div>{{ $t('i18n_964d939a96') }}{{ record.longname }}</div>
+              </template>
               <a-dropdown :trigger="['contextmenu']">
                 <div>{{ text }}</div>
                 <template #overlay>
                   <a-menu>
                     <a-menu-item key="2">
-                      <a-button type="link" @click="handleRenameFile(record)"><HighlightOutlined /> 重命名 </a-button>
+                      <a-button type="link" @click="handleRenameFile(record)"
+                        ><HighlightOutlined /> {{ $t('i18n_c8ce4b36cb') }}
+                      </a-button>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -139,8 +151,13 @@
             </a-tooltip>
           </template>
           <template v-else-if="column.dataIndex === 'dir'">
-            <a-tooltip placement="topLeft" :title="`${record.link ? '链接' : text ? '目录' : '文件'}`">
-              <span>{{ record.link ? '链接' : text ? '目录' : '文件' }}</span>
+            <a-tooltip
+              placement="topLeft"
+              :title="`${record.link ? $t('i18n_bfe68d5844') : text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1')}`"
+            >
+              <span>{{
+                record.link ? $t('i18n_bfe68d5844') : text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1')
+              }}</span>
             </a-tooltip>
           </template>
           <template v-else-if="column.dataIndex === 'size'">
@@ -155,28 +172,33 @@
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a-tooltip title="需要到 ssh 信息中配置允许编辑的文件后缀">
-                <a-button size="small" type="primary" :disabled="!record.textFileEdit" @click="handleEdit(record)"
-                  >编辑</a-button
-                >
+              <a-tooltip :title="$t('i18n_af0df2e295')">
+                <a-button size="small" type="primary" :disabled="!record.textFileEdit" @click="handleEdit(record)">{{
+                  $t('i18n_95b351c862')
+                }}</a-button>
               </a-tooltip>
-              <a-tooltip title="修改文件权限">
-                <a-button size="small" type="primary" @click="handleFilePermission(record)">权限</a-button>
+              <a-tooltip :title="$t('i18n_5cc7e8e30a')">
+                <a-button size="small" type="primary" @click="handleFilePermission(record)">{{
+                  $t('i18n_ba6e91fa9e')
+                }}</a-button>
               </a-tooltip>
-              <a-button size="small" type="primary" :disabled="record.dir" @click="handleDownload(record)"
-                >下载</a-button
-              >
-              <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+              <a-button size="small" type="primary" :disabled="record.dir" @click="handleDownload(record)">{{
+                $t('i18n_f26ef91424')
+              }}</a-button>
+              <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+                $t('i18n_2f4aaddde3')
+              }}</a-button>
             </a-space>
           </template>
         </template>
       </a-table>
       <!-- 上传文件 -->
-      <a-modal
+      <CustomModal
+        v-if="uploadFileVisible"
         v-model:open="uploadFileVisible"
         destroy-on-close
         width="300px"
-        title="上传文件"
+        :title="$t('i18n_a6fc9e3ae6')"
         :confirm-loading="confirmLoading"
         :footer="null"
         :mask-closable="true"
@@ -191,47 +213,53 @@
         >
           <a-button>
             <UploadOutlined />
-            选择文件
-            {{ uploadFileZip ? '压缩包' : '' }}
+            {{ $t('i18n_fd7e0c997d') }}
+            {{ uploadFileZip ? $t('i18n_c806d0fa38') : '' }}
           </a-button>
         </a-upload>
         <br />
-        <a-button type="primary" :disabled="uploadFileList.length === 0" :loading="confirmLoading" @click="startUpload"
-          >开始上传</a-button
+        <a-button
+          type="primary"
+          :disabled="uploadFileList.length === 0"
+          :loading="confirmLoading"
+          @click="startUpload"
+          >{{ $t('i18n_020f1ecd62') }}</a-button
         >
-      </a-modal>
+      </CustomModal>
       <!--  新增文件 目录    -->
-      <a-modal
+      <CustomModal
+        v-if="addFileFolderVisible"
         v-model:open="addFileFolderVisible"
         width="300px"
-        :title="temp.addFileOrFolderType === 1 ? '新增目录' : '新建文件'"
+        :title="temp.addFileOrFolderType === 1 ? $t('i18n_2d9e932510') : $t('i18n_e48a715738')"
         :footer="null"
         :mask-closable="true"
       >
         <a-space direction="vertical" style="width: 100%">
-          <span v-if="nowPath">当前目录:{{ nowPath }}</span>
+          <span v-if="nowPath">{{ $t('i18n_4e33dde280') }}{{ nowPath }}</span>
           <!-- <a-tag v-if="">目录创建成功后需要手动刷新右边树才能显示出来哟</a-tag> -->
-          <a-tooltip :title="temp.addFileOrFolderType === 1 ? '目录创建成功后需要手动刷新右边树才能显示出来哟' : ''">
-            <a-input v-model:value="temp.fileFolderName" placeholder="输入文件或者文件夹名" />
+          <a-tooltip :title="temp.addFileOrFolderType === 1 ? $t('i18n_fe1b192913') : ''">
+            <a-input v-model:value="temp.fileFolderName" :placeholder="$t('i18n_55939c108f')" />
           </a-tooltip>
           <a-row type="flex" justify="center">
             <a-button
               type="primary"
               :disabled="!temp.fileFolderName || temp.fileFolderName.length === 0"
               @click="startAddFileFolder"
-              >确认</a-button
+              >{{ $t('i18n_e83a256e4f') }}</a-button
             >
           </a-row>
         </a-space>
-      </a-modal>
+      </CustomModal>
 
-      <a-modal
+      <CustomModal
+        v-if="editFileVisible"
         v-model:open="editFileVisible"
         destroy-on-close
         :confirm-loading="confirmLoading"
         width="80vw"
-        title="编辑文件"
-        cancel-text="关闭"
+        :title="$t('i18n_47ff744ef6')"
+        :cancel-text="$t('i18n_b15d91274e')"
         :mask-closable="true"
         @ok="updateFileData"
       >
@@ -248,18 +276,19 @@
             </a-tag>
           </template>
         </code-editor>
-      </a-modal>
+      </CustomModal>
       <!-- 从命名文件/文件夹 -->
-      <a-modal
+      <CustomModal
+        v-if="renameFileFolderVisible"
         v-model:open="renameFileFolderVisible"
         destroy-on-close
         width="300px"
-        :title="`重命名`"
+        :title="`${$t('i18n_c8ce4b36cb')}`"
         :footer="null"
         :mask-closable="true"
       >
         <a-space direction="vertical" style="width: 100%">
-          <a-input v-model:value="temp.fileFolderName" placeholder="输入新名称" />
+          <a-input v-model:value="temp.fileFolderName" :placeholder="$t('i18n_f139c5cf32')" />
 
           <a-row v-if="temp.fileFolderName" type="flex" justify="center">
             <a-button
@@ -267,30 +296,39 @@
               type="primary"
               :disabled="temp.fileFolderName.length === 0 || temp.fileFolderName === temp.oldFileFolderName"
               @click="renameFileFolder"
-              >确认</a-button
+              >{{ $t('i18n_e83a256e4f') }}</a-button
             >
           </a-row>
         </a-space>
-      </a-modal>
+      </CustomModal>
 
       <!-- 修改文件权限 -->
-      <a-modal
+      <CustomModal
+        v-if="editFilePermissionVisible"
         v-model:open="editFilePermissionVisible"
         destroy-on-close
         width="400px"
-        :title="`修改文件权限`"
+        :title="`${$t('i18n_5cc7e8e30a')}`"
         :footer="null"
         :mask-closable="true"
       >
         <a-row>
-          <a-col :span="6"><span class="title">权限</span></a-col>
-          <a-col :span="6"><span class="title">所属用户</span></a-col>
-          <a-col :span="6"><span class="title">用户组</span></a-col>
-          <a-col :span="6"><span class="title">其他</span></a-col>
+          <a-col :span="6"
+            ><span class="title">{{ $t('i18n_ba6e91fa9e') }}</span></a-col
+          >
+          <a-col :span="6"
+            ><span class="title">{{ $t('i18n_8306971039') }}</span></a-col
+          >
+          <a-col :span="6"
+            ><span class="title">{{ $t('i18n_e72a0ba45a') }}</span></a-col
+          >
+          <a-col :span="6"
+            ><span class="title">{{ $t('i18n_0d98c74797') }}</span></a-col
+          >
         </a-row>
         <a-row>
           <a-col :span="6">
-            <span>读</span>
+            <span>{{ $t('i18n_75769d1ac8') }}</span>
           </a-col>
           <a-col :span="6">
             <a-checkbox v-model:checked="permissions.owner.read" />
@@ -304,7 +342,7 @@
         </a-row>
         <a-row>
           <a-col :span="6">
-            <span>写</span>
+            <span>{{ $t('i18n_4d7dc6c5f8') }}</span>
           </a-col>
           <a-col :span="6">
             <a-checkbox v-model:checked="permissions.owner.write" />
@@ -318,7 +356,7 @@
         </a-row>
         <a-row>
           <a-col :span="6">
-            <span>执行</span>
+            <span>{{ $t('i18n_1a6aa24e76') }}</span>
           </a-col>
           <a-col :span="6">
             <a-checkbox v-model:checked="permissions.owner.execute" />
@@ -331,16 +369,15 @@
           </a-col>
         </a-row>
         <a-row type="flex" style="margin-top: 20px">
-          <a-button type="primary" @click="updateFilePermissions">确认修改</a-button>
+          <a-button type="primary" @click="updateFilePermissions">{{ $t('i18n_49e56c7b90') }}</a-button>
         </a-row>
         <!-- <a-row>
             <a-alert style="margin-top: 20px" :message="permissionTips" type="success" />
           </a-row> -->
-      </a-modal>
+      </CustomModal>
     </a-layout-content>
   </a-layout>
 </template>
-
 <script>
 import {
   deleteFile,
@@ -396,7 +433,7 @@ export default {
       },
       columns: [
         {
-          title: '文件名称',
+          title: this.$t('i18n_d2e2560089'),
           dataIndex: 'name',
           width: 200,
           ellipsis: true,
@@ -404,13 +441,13 @@ export default {
           sorter: (a, b) => (a.name || '').localeCompare(b.name || '')
         },
         {
-          title: '文件类型',
+          title: this.$t('i18n_28b988ce6a'),
           dataIndex: 'dir',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'size',
           width: 120,
           ellipsis: true,
@@ -418,14 +455,14 @@ export default {
           sorter: (a, b) => Number(a.size) - new Number(b.size)
         },
         {
-          title: '权限',
+          title: this.$t('i18n_ba6e91fa9e'),
           dataIndex: 'permissions',
           width: 120,
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTime',
           width: '170px',
           ellipsis: true,
@@ -433,7 +470,7 @@ export default {
           sorter: (a, b) => Number(a.modifyTime) - new Number(b.modifyTime)
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           fixed: 'right',
@@ -441,6 +478,7 @@ export default {
           width: '220px'
         }
       ],
+
       editFileVisible: false,
       addFileFolderVisible: false,
       editFilePermissionVisible: false,
@@ -452,14 +490,15 @@ export default {
       // permissionTips: "",
       sortMethodList: [
         {
-          name: '文件名',
+          name: this.$t('i18n_29139c2a1a'),
           key: 'name'
         },
         {
-          name: '修改时间',
+          name: this.$t('i18n_1303e638b5'),
           key: 'modifyTime'
         }
       ],
+
       sortMethod: {
         key: 'name',
         asc: true
@@ -643,7 +682,7 @@ export default {
     loadFileList() {
       if (Object.keys(this.tempNode).length === 0) {
         $notification.warn({
-          message: '请选择一个节点'
+          message: this.$t('i18n_bcaf69a038')
         })
         return false
       }
@@ -683,7 +722,7 @@ export default {
     handleUpload() {
       if (Object.keys(this.tempNode).length === 0) {
         $notification.error({
-          message: '请选择一个节点'
+          message: this.$t('i18n_bcaf69a038')
         })
         return
       }
@@ -835,8 +874,7 @@ export default {
     renderFilePermissionsTips() {
       //const permissionsValue = calcFilePermissionValue(this.permissions);
       //this.permissionTips = `cd ${this.temp.nextPath} && chmod ${permissionsValue} ${this.temp.name}`;
-    },
-    // 确认修改文件权限
+    }, // 确认修改文件权限
     updateFilePermissions() {
       // 请求参数
       const params = {
@@ -872,11 +910,11 @@ export default {
     // 删除文件夹
     handleDeletePath() {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除当前文件夹么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_8756efb8f4'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: async () => {
           return deleteFile(this.baseUrl, {
             id: this.reqDataId,
@@ -908,11 +946,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除文件么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_3a6bc88ce0'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteFile(this.baseUrl, {
             id: this.reqDataId,
@@ -966,7 +1004,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .ssh-file-layout {
   padding: 0;

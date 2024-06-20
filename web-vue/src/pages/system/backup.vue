@@ -17,31 +17,31 @@
         <a-space>
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="请输入备份名称"
+            :placeholder="$t('i18n_a1b745fba0')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%version%']"
-            placeholder="请输入版本"
+            :placeholder="$t('i18n_0f4f503547')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-select
             v-model:value="listQuery.backupType"
             allow-clear
-            placeholder="请选择备份类型"
+            :placeholder="$t('i18n_43ebf364ed')"
             class="search-input-item"
           >
             <a-select-option v-for="backupTypeItem in backupTypeList" :key="backupTypeItem.key">
               {{ backupTypeItem.value }}
             </a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button :loading="loading" type="primary" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">创建备份</a-button>
-          <a-button type="primary" @click="handleSqlUpload">导入备份</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_a4006e5c1e') }}</a-button>
+          <a-button type="primary" @click="handleSqlUpload">{{ $t('i18n_90c0458a4c') }}</a-button>
         </a-space>
       </template>
       <template #bodyCell="{ column, text, record }">
@@ -61,14 +61,14 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'status'">
-          <a-tooltip v-if="record.fileExist" :title="`${backupStatusMap[text]} 点击复制文件路径`">
+          <a-tooltip v-if="record.fileExist" :title="`${backupStatusMap[text]} ${$t('i18n_ae12edc5bf')}`">
             <div>
               <a-typography-paragraph :copyable="{ tooltip: false, text: record.filePath }" style="margin-bottom: 0">
                 {{ backupStatusMap[text] }}
               </a-typography-paragraph>
             </div>
           </a-tooltip>
-          <a-tooltip v-else :title="`备份文件不存在:${record.filePath}`">
+          <a-tooltip v-else :title="`${$t('i18n_96283fc523')}:${record.filePath}`">
             <WarningOutlined />
           </a-tooltip>
         </template>
@@ -86,7 +86,7 @@
               type="primary"
               :disabled="!record.fileExist || record.status !== 1"
               @click="handleDownload(record)"
-              >下载</a-button
+              >{{ $t('i18n_f26ef91424') }}</a-button
             >
             <a-button
               size="small"
@@ -94,25 +94,28 @@
               danger
               :disabled="!record.fileExist || record.status !== 1"
               @click="handleRestore(record)"
-              >还原</a-button
+              >{{ $t('i18n_69de8d7f40') }}</a-button
             >
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 创建备份信息区 -->
-    <a-modal
+    <CustomModal
+      v-if="createBackupVisible"
       v-model:open="createBackupVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="创建备份信息"
+      :title="$t('i18n_adbec9b14d')"
       width="600px"
       :mask-closable="false"
       @ok="handleCreateBackupOk"
     >
       <a-form ref="editBackupForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-        <a-form-item label="备份类型" name="backupType">
+        <a-form-item :label="$t('i18n_8c61c92b4b')" name="backupType">
           <a-radio-group v-model:value="temp.backupType" name="backupType">
             <a-radio v-for="item in backupTypeList" v-show="!item.disabled" :key="item.key" :value="item.key">{{
               item.value
@@ -120,30 +123,39 @@
           </a-radio-group>
         </a-form-item>
         <!-- 部分备份 -->
-        <a-form-item v-if="temp.backupType === 1" label="勾选数据表" name="tableNameList" class="feature jpom-role">
+        <a-form-item
+          v-if="temp.backupType === 1"
+          :label="$t('i18n_b8ac664d98')"
+          name="tableNameList"
+          class="feature jpom-role"
+        >
           <a-transfer
             :data-source="tableNameList"
             show-search
             :filter-option="filterOption"
             :target-keys="targetKeys"
-            :render="(item) => item.title"
             @change="handleChange"
-          />
+          >
+            <template #render="item">
+              <a-tooltip :title="item.title">{{ item.title }} </a-tooltip>
+            </template>
+          </a-transfer>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 上传 SQL 备份文件 -->
-    <a-modal
+    <CustomModal
+      v-if="uploadSqlFileVisible"
       v-model:open="uploadSqlFileVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="300px"
-      title="上传 SQL 文件"
+      :title="$t('i18n_b5b51ff786')"
       :mask-closable="true"
       @ok="startSqlUpload"
     >
       <a-upload :file-list="uploadFileList" :before-upload="beforeSqlUpload" accept=".sql" @remove="handleSqlRemove">
-        <a-button><UploadOutlined />选择 SQL 文件</a-button>
+        <a-button><UploadOutlined />{{ $t('i18n_c8c452749e') }}</a-button>
       </a-upload>
       <!-- <br />
         <a-radio-group v-model="backupType" name="backupType">
@@ -151,10 +163,9 @@
           <a-radio :value="1">部分备份</a-radio>
         </a-radio-group>
         <br /> -->
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import {
   backupStatusMap,
@@ -192,37 +203,37 @@ export default {
 
       columns: [
         {
-          title: '备份名称',
+          title: this.$t('i18n_77b9ecc8b1'),
           dataIndex: 'name',
           ellipsis: true
         },
         {
-          title: '打包时间',
+          title: this.$t('i18n_2c014aeeee'),
           width: 170,
           dataIndex: 'baleTimeStamp',
           // ellipsis: true,
           sorter: true
         },
         {
-          title: '版本',
+          title: this.$t('i18n_fe2df04a16'),
           dataIndex: 'version',
           width: 100
           // ellipsis: true,
         },
         {
-          title: '备份类型',
+          title: this.$t('i18n_8c61c92b4b'),
           dataIndex: 'backupType',
           width: 100,
           ellipsis: true
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'fileSize',
           width: 100
           // ellipsis: true,
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           width: 120
         },
@@ -234,14 +245,14 @@ export default {
 
         // },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
 
           width: 120
         },
         {
-          title: '备份时间',
+          title: this.$t('i18n_ae0fd9b9d2'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text }) => {
@@ -250,7 +261,7 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           width: '180px',
 
@@ -258,6 +269,7 @@ export default {
           fixed: 'right'
         }
       ],
+
       rules: {},
       confirmLoading: false,
       timer: null
@@ -357,11 +369,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除备份信息么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_814dd5fb7d'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteBackup(record.id).then((res) => {
             if (res.code === 200) {
@@ -376,18 +388,20 @@ export default {
     },
     // 还原备份
     handleRestore(record) {
-      const html =
-        "真的要还原备份信息么？<ul style='color:red;'>" +
-        '<li>建议还原和当前版本一致的文件或者临近版本的文件</li>' +
-        '<li>如果版本相差大需要重新初始化数据来保证和当前程序里面字段一致</li>' +
-        '<li>重置初始化在启动时候传入参数 <b> --rest:load_init_db </b> </li>' +
-        ' </ul>还原过程中不能操作哦...'
+      const html = `
+        ${this.$t('i18n_4d18dcbd15')}
+        <ul style='color:red;'>
+        <li>${this.$t('i18n_6ac61b0e74')}</li>
+        <li>${this.$t('i18n_a9eed33cfb')}</li>
+        <li>${this.$t('i18n_5ed197a129')} <b> --rest:load_init_db </b> </li>
+      </ul>${this.$t('i18n_d0132b0170')}`
+
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         width: 600,
         onOk: () => {
           return restoreBackup(record.id).then((res) => {
@@ -420,7 +434,7 @@ export default {
     startSqlUpload() {
       if (this.uploadFileList.length != 1) {
         $notification.warning({
-          message: '请选择一个文件'
+          message: this.$t('i18n_1a704f73c2')
         })
         return
       }

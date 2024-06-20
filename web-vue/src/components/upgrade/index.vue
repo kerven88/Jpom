@@ -2,45 +2,44 @@
   <div>
     <a-timeline>
       <a-timeline-item>
-        <span class="layui-elem-quote">
-          当前程序打包时间：{{ temp.timeStamp }}
+        <span class="layui-elem-quote"
+          >{{ $t('i18n_231f655e35') }}{{ temp.timeStamp }}
           <a-tag v-if="nodeId || machineId">agent</a-tag>
           <a-tag v-else>server</a-tag>
         </span>
       </a-timeline-item>
       <a-timeline-item>
-        <span class="layui-elem-quote">当前前端打包时间：{{ temp.vueTimeStamp }}</span>
+        <span class="layui-elem-quote">{{ $t('i18n_e60389f6d6') }}{{ temp.vueTimeStamp }}</span>
       </a-timeline-item>
       <a-timeline-item v-if="!nodeId && !machineId">
-        <span class="layui-elem-quote">beta计划：</span>
+        <span class="layui-elem-quote">{{ $t('i18n_bdc1fdde6c') }}</span>
         <a-space>
           <a-switch
             v-model:checked="temp.joinBetaRelease"
-            checked-children="加入"
-            un-checked-children="未加入"
+            :checked-children="$t('i18n_c8a2447aa9')"
+            :un-checked-children="$t('i18n_ae17005c0c')"
             :disabled="true"
           />
           <template v-if="temp.joinBetaRelease">
-            <a-button type="link" @click="handleChangeBetaRelease(false)">关闭 beta 计划</a-button>
+            <a-button type="link" @click="handleChangeBetaRelease(false)">{{ $t('i18n_8ef0f6c275') }}</a-button>
           </template>
           <template v-else>
             <a-tooltip>
-              <template #title>
-                加入 beta 计划可以及时获取到最新的功能、一些优化功能、最快修复 bug 的版本，但是 beta
-                版也可能在部分新功能上存在不稳定的情况。您需要根据您业务情况来评估是否可以加入 beta，在使用 beta
-                版过程中遇到问题可以随时反馈给我们，我们会尽快为您解答。
-              </template>
-              <a-button type="link" @click="handleChangeBetaRelease(true)"><QuestionCircleOutlined />我要加入</a-button>
+              <template #title>{{ $t('i18n_31bca0fc93') }}</template>
+              <a-button type="link" @click="handleChangeBetaRelease(true)"
+                ><QuestionCircleOutlined />{{ $t('i18n_d17eac5b5e') }}</a-button
+              >
             </a-tooltip>
           </template>
         </a-space>
       </a-timeline-item>
       <a-timeline-item>
         <a-space>
-          <span class="layui-elem-quote">当前版本号：{{ temp.version }} </span>
+          <span class="layui-elem-quote">{{ $t('i18n_07683555af') }}{{ temp.version }} </span>
           <template v-if="temp.upgrade !== undefined">
             <a-tag v-if="temp.upgrade" color="pink" @click="upgrageVerion"
-              >新版本：{{ temp.newVersion }} {{ temp.newBeta ? '/beta' : '' }} <DownloadOutlined />
+              >{{ $t('i18n_ac2f4259f1') }}{{ temp.newVersion }} {{ temp.newBeta ? '/beta' : '' }}
+              <DownloadOutlined />
             </a-tag>
             <a-tag v-else color="orange" @click="checkVersion">
               <RocketOutlined />
@@ -49,32 +48,26 @@
         </a-space>
       </a-timeline-item>
       <a-timeline-item>
-        <span class="layui-elem-quote">已经运行时间：{{ formatDuration(temp.upTime) }}</span>
+        <span class="layui-elem-quote">{{ $t('i18n_b57ecea951') }}{{ formatDuration(temp.upTime) }}</span>
       </a-timeline-item>
       <a-timeline-item>
         <span class="layui-elem-quote"
-          >端口号：<a-tag>{{ temp.port }}</a-tag></span
+          >{{ $t('i18n_4c096c51a3') }}<a-tag>{{ temp.port }}</a-tag></span
         >
         <span class="layui-elem-quote">&nbsp;&nbsp;</span>
         <span class="layui-elem-quote"
-          >进程号：<a-tag>{{ temp.pid }}</a-tag></span
+          >{{ $t('i18n_2b04210d33') }}<a-tag>{{ temp.pid }}</a-tag></span
         >
       </a-timeline-item>
       <a-timeline-item>
-        <a-alert
-          message="请勿手动删除数据目录下面文件,如果需要删除需要提前备份或者已经确定对应文件弃用后才能删除"
-          type="warning"
-          show-icon
-        />
+        <a-alert :message="$t('i18n_5785f004ea')" type="warning" show-icon />
       </a-timeline-item>
       <a-timeline-item>
-        <span class="layui-elem-quote">
-          数据存储目录：
-          <a-tag>{{ temp.dataPath }}</a-tag>
+        <span class="layui-elem-quote"
+          >{{ $t('i18n_a9add9b059') }}<a-tag>{{ temp.dataPath }}</a-tag>
         </span>
-        <span v-if="temp.jarFile" class="layui-elem-quote">
-          运行的Jar包：
-          <a-tag>{{ temp.jarFile }}</a-tag>
+        <span v-if="temp.jarFile" class="layui-elem-quote"
+          >{{ $t('i18n_9ce5d5202a') }}<a-tag>{{ temp.jarFile }}</a-tag>
         </span>
       </a-timeline-item>
     </a-timeline>
@@ -90,16 +83,16 @@
             @remove="handleRemove"
           >
             <LoadingOutlined v-if="percentage" />
-            <a-button v-else><UploadOutlined />选择升级文件</a-button>
+            <a-button v-else><UploadOutlined />{{ $t('i18n_d615ea8e30') }}</a-button>
           </a-upload>
           <a-row v-if="percentage">
             <a-col span="20">
               <a-progress :percent="percentage" style="width: 100%"></a-progress>
             </a-col>
           </a-row>
-          <a-button type="primary" :disabled="fileList.length === 0 || !!percentage" @click="startUpload">
-            上传升级包
-          </a-button>
+          <a-button type="primary" :disabled="fileList.length === 0 || !!percentage" @click="startUpload">{{
+            $t('i18n_3dd6c10ffd')
+          }}</a-button>
         </a-space>
       </a-col>
     </a-row>
@@ -113,7 +106,6 @@
     ></div>
   </div>
 </template>
-
 <script>
 import {
   systemInfo,
@@ -193,7 +185,7 @@ export default {
     uploadPieces,
     formatDuration,
     renderMarkdown(markdown) {
-      return (this.markdownit && this.markdownit.render(markdown)) || '未初始化'
+      return (this.markdownit && this.markdownit.render(markdown)) || this.$t('i18n_aeade8e979')
     },
     // 加载数据
     loadData() {
@@ -219,7 +211,7 @@ export default {
           // res.data.
           this.showVersion(false, res.data?.remoteVersion).then((upgrade) => {
             // 本地网络检测
-            this.loaclCheckVersion(!upgrade)
+            this.localCheckVersion(!upgrade)
           })
         })
       })
@@ -253,19 +245,24 @@ export default {
     },
     // 开始上传文件
     startUpload() {
-      const html =
-        "确认要上传文件更新到最新版本吗？<ul style='color:red;'>" +
-        '<li>上传更新前请阅读更新日志里面的说明和注意事项并且<b>请注意备份数据防止数据丢失！！</b></li>' +
-        '<li>上传前请检查包是否完整,否则可能出现更新后无法正常启动的情况！！</li>' +
-        '<li>如果升级失败需要手动恢复奥</li>' +
-        ' </ul>'
+      const title = this.$t('i18n_458331a965')
+      const alterB = this.$t('i18n_ddf0c97bce')
+      const liArray = [this.$t('i18n_a38ed189a2'), this.$t('i18n_a5daa9be44'), this.$t('i18n_a52a10123f')]
+
+      const html = `${title}
+      <ul style="color:red;">
+        <li>${liArray[0]}<b>${alterB}</b></li>
+        <li>${liArray[1]}</li>
+        <li>${liArray[2]}</li>
+        </ul>
+      `
 
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
-        okText: '确认',
+        okText: this.$t('i18n_e83a256e4f'),
         zIndex: 1009,
-        cancelText: '取消',
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           const file = this.fileList[0]
           this.percentage = 0
@@ -348,7 +345,7 @@ export default {
 
       this.globalLoading({
         spinning: true,
-        tip: (msg || '升级中，请稍候...') + ',请耐心等待暂时不用刷新页面,升级成功后会自动刷新'
+        tip: (msg || this.$t('i18n_589060f38e')) + this.$t('i18n_9ba71275d3')
       })
       //
       this.timer = setInterval(() => {
@@ -364,7 +361,7 @@ export default {
               })
               clearInterval(this.timer)
               $notification.success({
-                message: '升级成功'
+                message: this.$t('i18n_e64d788d11')
               })
               this.temp = manifest
               setTimeout(() => {
@@ -373,7 +370,7 @@ export default {
             } else {
               if (this.checkCount > RESTART_UPGRADE_WAIT_TIME_COUNT) {
                 $notification.warning({
-                  message: '未升级成功：' + (res.msg || '')
+                  message: this.$t('i18n_2a38b6c0ae') + (res.msg || '')
                 })
                 this.globalLoading({
                   spinning: false
@@ -390,12 +387,12 @@ export default {
               })
               clearInterval(this.timer)
               $notification.error({
-                message: '升级超时,请去服务器查看控制台日志排查问题'
+                message: this.$t('i18n_2191afee6e')
               })
             } else {
               this.globalLoading({
                 spinning: true,
-                tip: (msg || '升级中，请稍候...') + ',请耐心等待暂时不用刷新页面,升级成功后会自动刷新'
+                tip: (msg || this.$t('i18n_589060f38e')) + this.$t('i18n_9ba71275d3')
               })
             }
           })
@@ -412,19 +409,23 @@ export default {
           this.showVersion(true, res.data).then((upgrade) => {
             // 远程检测失败才本地检测
             if (!upgrade) {
-              this.loaclCheckVersion(true)
+              this.localCheckVersion(true)
             }
           })
         }
       })
     },
     // 本地网络检测
-    loaclCheckVersion(tip) {
+    localCheckVersion(tip) {
       //console.log(compareVersion("1.0.0", "1.0.1"), compareVersion("2.4.3", "2.4.2"));
       //console.log(compareVersion("1.0.2", "dev"));
       const buildInfo = pageBuildInfo()
 
-      executionRequest('https://jpom.top/docs/release-versions.json', {
+      const url = this.temp?.joinBetaRelease
+        ? 'https://jpom.top/docs/beta-versions.json'
+        : 'https://jpom.top/docs/release-versions.json'
+
+      executionRequest(url, {
         ...buildInfo,
         type: this.nodeId || this.machineId ? 'agent' : 'server'
       }).then((data) => {
@@ -438,8 +439,11 @@ export default {
         if (upgrade && tip) {
           //
           const dUrl = data.downloadUrl || 'https://jpom.top'
-          const html =
-            '检测到新版本 ' + tagName + "。请前往：<a target='_blank' href='" + dUrl + "'>" + dUrl + '</a> 下载安装包'
+          const htmlAref = `<a href='${dUrl}' target='_blank'>${dUrl}</a>`
+          const title = this.$t('i18n_2314f99795')
+          const tip = this.$t('i18n_ab3615a5ad')
+          const html = `${title} ${tagName} ${htmlAref} ${tip}`
+
           $notification.success({
             duration: 10,
             message: h('div', null, [h('p', { innerHTML: html }, null)])
@@ -453,7 +457,7 @@ export default {
           this.temp = { ...this.temp, upgrade: false }
           if (tip) {
             $notification.success({
-              message: '没有检查到最新版'
+              message: this.$t('i18n_e6cde5a4bc')
             })
           }
           resolve(false)
@@ -471,7 +475,7 @@ export default {
         }
         if (tip) {
           $notification.success({
-            message: this.temp.upgrade ? '检测到新版本 ' + data.tagName : '没有检查到最新版'
+            message: this.temp.upgrade ? this.$t('i18n_2314f99795') + data.tagName : this.$t('i18n_e6cde5a4bc')
           })
         }
         resolve(data.upgrade)
@@ -479,19 +483,23 @@ export default {
     },
     // 升级
     upgrageVerion() {
-      // "确认要升级到最新版本吗？,升级前请阅读更新日志里面的说明和注意事项并且请注意备份数据防止数据丢失！！"
-      const html =
-        "确认要下载更新最新版本吗？<ul style='color:red;'>" +
-        '<li>下载速度根据网速来确定,如果网络不佳下载会较慢</li>' +
-        '<li>下载前请阅读更新日志里面的说明和注意事项并且<b>请注意备份数据防止数据丢失！！</b></li>' +
-        '<li>如果升级失败需要手动恢复奥</li>' +
-        ' </ul>'
+      const title = this.$t('i18n_ec6e39a177')
+      const alterB = this.$t('i18n_ddf0c97bce')
+      const li = [this.$t('i18n_a94feac256'), this.$t('i18n_b55f286cba'), this.$t('i18n_a52a10123f')]
+
+      const html = `${title}
+      <ul style="color:red;">
+        <li>${li[0]}</li>
+        <li>${li[1]}<b>${alterB}</b></li>
+        <li>${li[2]}</li>
+      </ul>
+      `
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
-        okText: '确认',
+        okText: this.$t('i18n_e83a256e4f'),
         zIndex: 1009,
-        cancelText: '取消',
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return remoteUpgrade({
             nodeId: this.nodeId,
@@ -507,21 +515,30 @@ export default {
         }
       })
     },
-    // 加入beta计划
+    // components.upgrade.index.e17b386beta计划
     handleChangeBetaRelease(beta) {
-      const html = beta
-        ? "确认要加入 beta 计划吗？<ul style='color:red;'>" +
-          '<li><b> 加入 beta 计划可以及时获取到最新的功能、一些优化功能、最快修复 bug 的版本，但是 beta 版也可能在部分新功能上存在不稳定的情况。</b></li>' +
-          '<li><b>您需要根据您业务情况来评估是否可以加入 beta。</b></li>' +
-          '<li>在使用 beta 版过程中遇到问题可以随时反馈给我们，我们会尽快为您解答。</li>' +
-          ' </ul>'
-        : '确认要关闭 beta 计划吗？'
+      let html
+      if (beta) {
+        const title = this.$t('i18n_d64cf79bd4')
+        const li = [this.$t('i18n_d31d625029'), this.$t('i18n_d8db440b83'), this.$t('i18n_73b7e8e09e')]
+
+        html = `${title}
+        <ul <ul style="color:red;">
+          <li><b>${li[0]}</b></li>
+          <li><b>${li[1]}</b></li>
+          <li>${li[2]}</li>
+        </ul>
+        `
+      } else {
+        html = this.$t('i18n_87659a4953')
+      }
+
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         content: h('div', {}, [h('p', { innerHTML: html })]),
-        okText: '确认',
+        okText: this.$t('i18n_e83a256e4f'),
         zIndex: 1009,
-        cancelText: '取消',
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return changBetaRelease({
             beta: beta
@@ -540,4 +557,3 @@ export default {
   }
 }
 </script>
-<style scoped></style>

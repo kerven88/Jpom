@@ -13,7 +13,7 @@
                   })
                 "
               >
-                <a-button type="link" :disabled="tabList.length <= 1">关闭其他</a-button>
+                <a-button type="link" :disabled="tabList.length <= 1">{{ $t('i18n_6816da19f3') }}</a-button>
               </a-menu-item>
               <a-menu-item
                 @click="
@@ -23,7 +23,9 @@
                   })
                 "
               >
-                <a-button type="link" :disabled="tabList.length <= 1 || index === 0">关闭左侧</a-button>
+                <a-button type="link" :disabled="tabList.length <= 1 || index === 0">{{
+                  $t('i18n_e9290eaaae')
+                }}</a-button>
               </a-menu-item>
               <a-menu-item
                 @click="
@@ -34,7 +36,7 @@
                 "
               >
                 <a-button type="link" :disabled="tabList.length <= 1 || index === tabList.length - 1"
-                  >关闭右侧
+                  >{{ $t('i18n_649d90ab3c') }}
                 </a-button>
               </a-menu-item>
             </a-menu>
@@ -48,7 +50,9 @@
 <script lang="ts" setup>
 import userHeader from './user-header.vue'
 import { useAllMenuStore } from '@/stores/menu2'
-
+import { useI18n } from 'vue-i18n'
+import { Key } from 'ant-design-vue/es/_util/type'
+const { t: $t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 
@@ -83,11 +87,11 @@ const activeTab = (key?: string) => {
   return activeTab
 }
 
-const onEdit = (key: string, action: 'remove') => {
+const onEdit = (key: Key | MouseEvent | KeyboardEvent, action: 'add' | 'remove') => {
   if (action === 'remove') {
     if (tabList.value.length === 1) {
       $notification.warn({
-        message: '不能关闭了'
+        message: $t('i18n_b953d1a8f1')
       })
       return
     }
@@ -100,7 +104,7 @@ const onEdit = (key: string, action: 'remove') => {
 // 关闭 tabs
 const closeTabs = (data: any) => {
   $notification.success({
-    message: '操作成功'
+    message: $t('i18n_33130f5c46')
   })
   menuStore.clearTabs(props.mode, data).then(() => {
     activeTab()

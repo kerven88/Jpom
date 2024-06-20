@@ -17,14 +17,14 @@
         <a-space>
           <a-input
             v-model:value="listQuery['id']"
-            placeholder="空间ID(全匹配)"
+            :placeholder="$t('i18n_ab7f78ba4c')"
             allow-clear
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="工作空间名称"
+            :placeholder="$t('i18n_6a588459d0')"
             allow-clear
             class="search-input-item"
             @press-enter="loadData"
@@ -43,7 +43,7 @@
               }
             "
             allow-clear
-            placeholder="分组"
+            :placeholder="$t('i18n_829abe5a8d')"
             class="search-input-item"
           >
             <a-select-option v-for="item in groupList" :key="item">{{ item }}</a-select-option>
@@ -62,20 +62,20 @@
               }
             "
             allow-clear
-            placeholder="集群"
+            :placeholder="$t('i18n_85fe5099f6')"
             class="search-input-item"
           >
             <a-select-option v-for="item in clusterList" :key="item.id">{{ item.name }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
           <a-tooltip>
             <template #title>
               <ul>
-                <li>工作空间用于隔离数据,工作空间下面可以有不同数据,不同权限,不同菜单等来实现权限控制</li>
-                <li>工作空间环境变量用于构建命令相关</li>
+                <li>{{ $t('i18n_da509a213f') }}</li>
+                <li>{{ $t('i18n_97cb3c4b2e') }}</li>
               </ul>
             </template>
             <QuestionCircleOutlined />
@@ -119,34 +119,37 @@
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button size="small" type="primary" @click="configMeun(record)">菜单</a-button>
-            <a-button size="small" type="primary" @click="configWhiteDir(record)">授权配置</a-button>
-            <a-button size="small" type="primary" @click="viewEnvVar(record)">变量</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button size="small" type="primary" @click="configMeun(record)">{{ $t('i18n_4ccbdc5301') }}</a-button>
+            <a-button size="small" type="primary" @click="configWhiteDir(record)">{{ $t('i18n_3d48c9da09') }}</a-button>
+            <a-button size="small" type="primary" @click="viewEnvVar(record)">{{ $t('i18n_ddc7d28b7b') }}</a-button>
 
-            <a-tooltip v-if="record.id === 'DEFAULT'" title="不能删除默认工作空间">
-              <a-button size="small" type="primary" danger :disabled="true">删除</a-button>
+            <a-tooltip v-if="record.id === 'DEFAULT'" :title="$t('i18n_0c0633c367')">
+              <a-button size="small" type="primary" danger :disabled="true">{{ $t('i18n_2f4aaddde3') }}</a-button>
             </a-tooltip>
-            <a-button v-else size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button v-else size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="编辑工作空间"
+      :title="$t('i18n_fa8e673c50')"
       :mask-closable="false"
       @ok="handleEditOk"
     >
-      <a-alert message="温馨提醒" type="info" show-icon>
+      <a-alert :message="$t('i18n_c8c6e37071')" type="info" show-icon>
         <template #description>
           <ul>
-            <li>创建工作空间后还需要在对应工作空间中分别管理对应数据</li>
-            <li>如果要将工作空间分配给其他用户还需要到权限组管理</li>
-            <li>工作空间的菜单、环境变量、节点分发授权需要逐一配置</li>
+            <li>{{ $t('i18n_a89646d060') }}</li>
+            <li>{{ $t('i18n_207243d77a') }}</li>
+            <li>{{ $t('i18n_67aa2d01b9') }}</li>
           </ul>
         </template>
       </a-alert>
@@ -158,10 +161,10 @@
         :wrapper-col="{ span: 14 }"
         style="padding-top: 15px"
       >
-        <a-form-item label="名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="工作空间名称" />
+        <a-form-item :label="$t('i18n_d7ec2d3fea')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_6a588459d0')" />
         </a-form-item>
-        <a-form-item label="绑定集群" name="clusterInfoId">
+        <a-form-item :label="$t('i18n_9b5f172ebe')" name="clusterInfoId">
           <a-select
             v-model:value="temp.clusterInfoId"
             show-search
@@ -176,55 +179,62 @@
               }
             "
             allow-clear
-            placeholder="绑定集群"
+            :placeholder="$t('i18n_9b5f172ebe')"
           >
             <a-select-option v-for="item in clusterList" :key="item.id">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="分组" name="group">
+        <a-form-item :label="$t('i18n_829abe5a8d')" name="group">
           <custom-select
             v-model:value="temp.group"
             :data="groupList"
-            input-placeholder="新增分组"
-            select-placeholder="选择分组名"
+            :input-placeholder="$t('i18n_bd0362bed3')"
+            :select-placeholder="$t('i18n_9cac799f2f')"
           >
           </custom-select>
         </a-form-item>
 
-        <a-form-item label="描述" name="description">
-          <a-textarea v-model:value="temp.description" :max-length="200" :rows="5" placeholder="工作空间描述" />
+        <a-form-item :label="$t('i18n_3bdd08adab')" name="description">
+          <a-textarea
+            v-model:value="temp.description"
+            :max-length="200"
+            :rows="5"
+            :placeholder="$t('i18n_4645575b77')"
+          />
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 环境变量 -->
-    <a-modal
+    <CustomModal
+      v-if="envVarListVisible"
       v-model:open="envVarListVisible"
       destroy-on-close
-      :title="`${temp.name} 工作空间环境变量`"
+      :title="`${temp.name} ${$t('i18n_f7e8d887d6')}`"
       width="80vw"
       :footer="null"
       :mask-closable="false"
     >
       <workspaceEnv v-if="envVarListVisible" ref="workspaceEnv" :workspace-id="temp.id" />
-    </a-modal>
+    </CustomModal>
     <!-- 工作空间菜单 -->
-    <a-modal
+    <CustomModal
+      v-if="configMenuVisible"
       v-model:open="configMenuVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      :title="`${temp.name} 工作空间菜单`"
+      :title="`${temp.name} ${$t('i18n_25182fb439')}`"
       :mask-closable="false"
       @ok="onSubmitMenus"
     >
       <a-form ref="editWhiteForm" :model="menusConfigData">
         <a-row type="flex" justify="center">
           <a-alert
-            :message="`菜单配置只对非超级管理员生效`"
+            :message="`${$t('i18n_6228294517')}`"
             style="margin-top: 10px; margin-bottom: 20px; width: 100%"
             banner
           />
           <a-col :span="20">
-            <a-card title="服务端菜单" :bordered="true">
+            <a-card :title="$t('i18n_a75f781415')" :bordered="true">
               <a-tree
                 v-if="menusConfigData.serverMenus"
                 v-model:checkedKeys="menusConfigData.serverMenuKeys"
@@ -241,12 +251,13 @@
           </a-col>
         </a-row>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 配置授权目录 -->
-    <a-modal
+    <CustomModal
+      v-if="configDir"
       v-model:open="configDir"
       destroy-on-close
-      :title="`配置授权目录`"
+      :title="`${$t('i18n_eee6510292')}`"
       :footer="null"
       width="60vw"
       :mask-closable="false"
@@ -265,13 +276,14 @@
           }
         "
       ></whiteList>
-    </a-modal>
+    </CustomModal>
     <!-- 删除工作空间检查 -->
-    <a-modal
+    <CustomModal
+      v-if="preDeleteVisible"
       v-model:open="preDeleteVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      :title="`删除工作空间确认`"
+      :title="`${$t('i18n_aec7b550e2')}`"
       :mask-closable="false"
       @ok="handleDeleteOk"
       @cancel="
@@ -280,8 +292,8 @@
         }
       "
     >
-      <a-alert message="操作提示" type="error" show-icon>
-        <template #description> 真的当前工作空间么,删除前需要将关联数据都删除后才能删除当前工作空间？</template>
+      <a-alert :message="$t('i18n_a35740ae41')" type="error" show-icon>
+        <template #description> {{ $t('i18n_6b46e2bfae') }},{{ $t('i18n_86b7eb5e83') }}</template>
       </a-alert>
 
       <a-tree :tree-data="treeData" default-expand-all :field-names="preDeleteReplaceFields" :show-line="true">
@@ -292,18 +304,20 @@
           {{ dataRef.name }}
 
           <template v-if="dataRef.count > 0">
-            <a-tag color="pink"> 存在 {{ dataRef.count }} 条数据 </a-tag>
+            <a-tag color="pink">
+              {{ $t('i18n_df9497ea98') }} {{ dataRef.count }}
+              {{ $t('i18n_f932eff53e') }}
+            </a-tag>
 
-            <a-tag v-if="dataRef.workspaceBind === 2" color="cyan">自动删除</a-tag>
-            <a-tag v-else-if="dataRef.workspaceBind === 3" color="blue">父级不存在自动删除</a-tag>
-            <a-tag v-else color="purple">手动删除</a-tag>
+            <a-tag v-if="dataRef.workspaceBind === 2" color="cyan">{{ $t('i18n_686a19db6a') }}</a-tag>
+            <a-tag v-else-if="dataRef.workspaceBind === 3" color="blue">{{ $t('i18n_9c3a3e1b03') }}</a-tag>
+            <a-tag v-else color="purple">{{ $t('i18n_ab006f89e7') }}</a-tag>
           </template>
         </template>
       </a-tree>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import {
   deleteWorkspace,
@@ -348,39 +362,39 @@ export default {
       temp: {},
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           width: 200
         },
         {
-          title: '描述',
+          title: this.$t('i18n_3bdd08adab'),
           dataIndex: 'description',
           ellipsis: true,
           width: 200
         },
         {
-          title: '分组名',
+          title: this.$t('i18n_b37b786351'),
           dataIndex: 'group',
           ellipsis: true,
           width: '100px',
           tooltip: true
         },
         {
-          title: '集群',
+          title: this.$t('i18n_85fe5099f6'),
           dataIndex: 'clusterInfoId',
           ellipsis: true,
           width: '100px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
 
           width: 120
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -388,14 +402,14 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           customRender: ({ text }) => parseTime(text),
           sorter: true,
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
           align: 'center',
@@ -406,9 +420,9 @@ export default {
 
       // 表单校验规则
       rules: {
-        name: [{ required: true, message: '请输入工作空间名称', trigger: 'blur' }],
-        description: [{ required: true, message: '请输入工作空间描述', trigger: 'blur' }],
-        clusterInfoId: [{ required: true, message: '请输入选择绑定的集群', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_b153126fc2'), trigger: 'blur' }],
+        description: [{ required: true, message: this.$t('i18n_36b5d427e4'), trigger: 'blur' }],
+        clusterInfoId: [{ required: true, message: this.$t('i18n_aad7450231'), trigger: 'blur' }]
       },
       configMenuVisible: false,
       replaceFields: { children: 'childs', title: 'title', key: 'id' },

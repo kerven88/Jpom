@@ -8,6 +8,9 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
+import dayjs from 'dayjs'
+
 // 常量池
 export const USER_NAME_KEY = 'Jpom-UserName'
 
@@ -43,24 +46,38 @@ export const NO_NOTIFY_KEY = 'tip'
 
 export const NO_LOADING_KEY = 'loading'
 
-const cachePageLimitKeyName = 'page_limit'
-import dayjs from 'dayjs'
-export function getCachePageLimit(): number {
-  return parseInt(localStorage.getItem(cachePageLimitKeyName) || '10')
-}
-
 /**
  * 分页选择条
  */
 export const PAGE_DEFAULT_SIZW_OPTIONS = ['5', '10', '15', '20', '25', '30', '35', '40', '50']
 
 /**
+ * 缓存当前的工作空间 ID
+ */
+export const CACHE_WORKSPACE_ID = 'workspaceId'
+
+/**
+ * 升级 重启检查等待次数
+ */
+export const RESTART_UPGRADE_WAIT_TIME_COUNT = 80
+
+/**
+ * 压缩文件格式
+ */
+export const ZIP_ACCEPT = '.tar,.bz2,.gz,.zip,.tar.bz2,.tar.gz'
+
+const cachePageLimitKeyName = 'page_limit'
+
+export function getCachePageLimit(): number {
+  return parseInt(localStorage.getItem(cachePageLimitKeyName) || '10')
+}
+/**
  * 展示总条数计算方法
  * @param {Number} total 总记录数
  * @returns String
  */
 export function PAGE_DEFAULT_SHOW_TOTAL(total: number) {
-  return `总计 ${total} 条`
+  return t('i18n_1f1030554f', { total: total })
 }
 
 export const PAGE_DEFAULT_LIST_QUERY: any = {
@@ -101,7 +118,7 @@ export function COMPUTED_PAGINATION(queryParam: any, pageSizeOptions = PAGE_DEFA
  * @param {JSON} param1
  * @returns
  */
-export function CHANGE_PAGE(listQuery, { pagination, sorter }) {
+export function CHANGE_PAGE(listQuery: { [key: string]: any }, { pagination, sorter }: any) {
   if (pagination && Object.keys(pagination).length) {
     let limit = pagination.pageSize || pagination.limit || listQuery.limit
     if (limit === -1) {
@@ -125,169 +142,17 @@ export function CHANGE_PAGE(listQuery, { pagination, sorter }) {
 }
 
 /**
- * 缓存当前的工作空间 ID
- */
-export const CACHE_WORKSPACE_ID = 'workspaceId'
-
-/**
- * 升级 重启检查等待次数
- */
-export const RESTART_UPGRADE_WAIT_TIME_COUNT = 80
-
-/**
- * 定时 cron 默认提示
- *
- * https://www.npmjs.com/package/cron-parser
- */
-export const CRON_DATA_SOURCE = [
-  {
-    title: '取消定时,不再定时执行（支持 ! 前缀禁用定时执行，如：!0 0/1 * * * ?）',
-    options: [
-      {
-        title: '',
-        value: ''
-      }
-    ]
-  },
-  {
-    title: '分钟级别',
-    options: [
-      {
-        title: '1分钟',
-        value: '0 0/1 * * * ?'
-      },
-      {
-        title: '5分钟',
-        value: '0 0/5 * * * ?'
-      },
-      {
-        title: '10分钟',
-        value: '0 0/10 * * * ?'
-      },
-      {
-        title: '30分钟',
-        value: '0 0/30 * * * ?'
-      }
-    ]
-  },
-  {
-    title: '小时级别',
-    options: [
-      {
-        title: '每小时',
-        value: '0 0 0/1 * * ?'
-      }
-    ]
-  },
-  {
-    title: '天级别',
-    options: [
-      {
-        title: '凌晨0点和中午12点',
-        value: '0 0 0,12 * * ?'
-      },
-      {
-        title: '凌晨0点',
-        value: '0 0 0 * * ?'
-      }
-    ]
-  },
-  {
-    title: '秒级别（默认未开启秒级别,需要去修改配置文件中:[system.timerMatchSecond]）',
-    options: [
-      {
-        title: '5秒一次',
-        value: '0/5 * * * * ?'
-      },
-      {
-        title: '10秒一次',
-        value: '0/10 * * * * ?'
-      },
-      {
-        title: '30秒一次',
-        value: '0/30 * * * * ?'
-      }
-    ]
-  }
-]
-
-/**
- * 压缩文件格式
- */
-export const ZIP_ACCEPT = '.tar,.bz2,.gz,.zip,.tar.bz2,.tar.gz'
-
-/**
- * mfa app 应用举例
- */
-export const MFA_APP_TIP_ARRAY = [
-  '<strong>【推荐】微信小程序搜索 数盾OTP</strong>',
-  '<strong>【推荐】腾讯身份验证码</strong> 简单好用 <a href="https://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.authenticator">Android</a>',
-  '<strong>Authy</strong> 功能丰富 专为两步验证码 <a href="https://authy.com/download/">iOS/Android/Windows/Mac/Linux</a> &nbsp; <a href="https://chrome.google.com/webstore/detail/authy/gaedmjdfmmahhbjefcbgaolhhanlaolb?hl=cn">Chrome 扩展</a>',
-  '<strong>Google Authenticator</strong> 简单易用，但不支持密钥导出备份 <a href="https://apps.apple.com/us/app/google-authenticator/id388497605">iOS</a> <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=cn">Android</a>',
-  '<strong>Microsoft Authenticator</strong> 使用微软全家桶的推荐 <a href="https://www.microsoft.com/zh-cn/account/authenticator">iOS/Android</a>',
-  '<strong>1Password</strong> 强大安全的密码管理付费应用<a href="https://1password.com/zh-cn/downloads/">iOS/Android/Windows/Mac/Linux/ChromeOS</a>'
-]
-
-/**
- * 项目 DSL 示例
- */
-export const PROJECT_DSL_DEFATUL =
-  '# scriptId 可以是项目路径下脚本文件名或者系统中的脚本模版ID\r\n' +
-  'description: 测试\r\n' +
-  'run:\r\n' +
-  '  start:\r\n' +
-  '#    scriptId: project.sh\r\n' +
-  '    scriptId: \r\n' +
-  '    scriptArgs: start\r\n' +
-  '    scriptEnv:\r\n' +
-  '      "boot_active": test\r\n' +
-  '  status:\r\n' +
-  '#    scriptId: project.sh\r\n' +
-  '    scriptId: \r\n' +
-  '    scriptArgs: status\r\n' +
-  '  stop:\r\n' +
-  '#    scriptId: project.sh\r\n' +
-  '    scriptId: \r\n' +
-  '    scriptArgs: stop\r\n' +
-  '#  restart:\r\n' +
-  '##    scriptId: project.sh\r\n' +
-  '#    scriptId: \r\n' +
-  '#    scriptArgs: restart\r\n' +
-  '#    scriptEnv:\r\n' +
-  '#      "boot_active": test\r\n' +
-  '#  reload:\r\n' +
-  '##    scriptId: project.sh\r\n' +
-  '#    scriptId: \r\n' +
-  '#    scriptArgs: reload\r\n' +
-  '#    scriptEnv:\r\n' +
-  '#      "boot_active": test\r\n' +
-  '#  fileChangeReload: true\r\n' +
-  '#  在指定目录执行: ./ 项目目录  /root/ 特定目录 默认在 ${jpom_agent_data_path}/script_run_cache \r\n' +
-  '#  execPath: ./\r\n' +
-  'file:\r\n' +
-  '# 备份文件保留个数\r\n' +
-  '#  backupCount: 5\r\n' +
-  '# 限制备份指定文件后缀（支持正则）\r\n' +
-  "#  backupSuffix: [ '.jar','.html','^.+\\.(?i)(txt)$' ]\r\n" +
-  '# 项目文件备份路径\r\n' +
-  '#  backupPath: /data/jpom_backup\r\n' +
-  'config:\r\n' +
-  '# 是否开启日志备份功能\r\n' +
-  '#  autoBackToFile: true\r\n' +
-  '\r\n'
-
-/**
  * 并发执行
  * @params list {Array} - 要迭代的数组
  * @params limit {Number} - 并发数量控制数,最好小于3
  * @params asyncHandle {Function} - 对`list`的每一个项的处理函数，参数为当前处理项，必须 return 一个Promise来确定是否继续进行迭代
  * @return {Promise} - 返回一个 Promise 值来确认所有数据是否迭代完成
  */
-export function concurrentExecution(list, limit, asyncHandle) {
+export function concurrentExecution(list: any[], limit: number, asyncHandle: any) {
   // 递归执行
-  const recursion = (arr) => {
+  const recursion = (arr: any) => {
     // 执行方法 arr.shift() 取出并移除第一个数据
-    return asyncHandle(arr.shift()).then((res) => {
+    return asyncHandle(arr.shift()).then((res: any) => {
       // 数组还未迭代完，递归继续进行迭代
       if (arr.length !== 0) {
         return recursion(arr)
@@ -297,7 +162,7 @@ export function concurrentExecution(list, limit, asyncHandle) {
     })
   }
   // 创建新的并发数组
-  const listCopy = [].concat(list)
+  const listCopy = [...list]
   // 正在进行的所有并发异步操作
   const asyncList = []
   limit = limit > listCopy.length ? listCopy.length : limit
@@ -315,7 +180,7 @@ export function concurrentExecution(list, limit, asyncHandle) {
  * @param limit 并发控制
  * @param asyncHandle 任务处理函数
  */
-export async function concurrentJobs(list, limit, asyncHandle) {
+export async function concurrentJobs(list: any[], limit: number, asyncHandle: any) {
   const arr = [...list]
   const result = []
   for (let i = 0; i < arr.length; i += limit) {
@@ -324,7 +189,7 @@ export async function concurrentJobs(list, limit, asyncHandle) {
   return result
 }
 
-export function readJsonStrField(json, key) {
+export function readJsonStrField(json: string, key: string) {
   try {
     const data = JSON.parse(json)[key] || ''
     if (Object.prototype.toString.call(data) === '[object Object]') {
@@ -382,7 +247,7 @@ export function parseTime(time: any, cFormat = 'YYYY-MM-DD HH:mm:ss') {
  * @param defaultValue
  * @returns
  */
-export function renderSize(value, defaultValue = '-') {
+export function renderSize(value: any, defaultValue = '-') {
   return formatUnits(value, 1024, ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'], defaultValue)
 }
 
@@ -392,7 +257,7 @@ export function renderSize(value, defaultValue = '-') {
  * @param defaultValue
  * @returns
  */
-export function renderBpsSize(value, defaultValue = '-') {
+export function renderBpsSize(value: any, defaultValue = '-') {
   return formatUnits(value, 1024, ['bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps', 'Pbps', 'Ebps', 'Zbps', 'Ybps'], defaultValue)
 }
 
@@ -402,7 +267,7 @@ export function renderBpsSize(value, defaultValue = '-') {
  * @param defaultValue
  * @returns
  */
-export function formatUnits(value, base, unitArr, defaultValue = '-') {
+export function formatUnits(value: any, base: number, unitArr: string[], defaultValue = '-') {
   if (null == value || value === '') {
     return defaultValue
   }
@@ -414,9 +279,9 @@ export function formatUnits(value, base, unitArr, defaultValue = '-') {
   }
   // console.log(value, srcsize);
   index = Math.floor(Math.log(srcsize) / Math.log(base))
-  let size = srcsize / Math.pow(base, index)
-  size = size.toFixed(2) //保留的小数位数
-  return size + unitArr[index]
+  const size = srcsize / Math.pow(base, index)
+  //保留的小数位数
+  return size.toFixed(2) + unitArr[index]
 }
 
 /**
@@ -424,26 +289,37 @@ export function formatUnits(value, base, unitArr, defaultValue = '-') {
  * @param {function} group
  * @returns Object
  */
-Array.prototype.groupBy = function (group) {
-  return group && typeof group === 'function'
-    ? Array.prototype.reduce.call(
-        this,
-        function (c, v) {
-          const k = group(v)
-          c[k] = v
-          return c
-        },
-        {}
-      )
-    : this
+declare global {
+  interface Array<T> {
+    groupBy(fn: (ix: T) => any): any[]
+  }
 }
+if (!Array.prototype.groupBy) {
+  Object.defineProperty(Array.prototype, 'groupBy', {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function groupBy<T>(this: T[], group: (ix: T) => any): any[] {
+      return this.reduce(function (c: any, v: any) {
+        const k = group(v)
+        c[k] = v
+        return c
+      }, {})
+    }
+  })
+}
+// Array.prototype.groupBy = function (group: any) {
+//   return group && typeof group === 'function'
+//     ?
+//     : this
+// }
 //
-export function itemGroupBy(arr, groupKey, key, dataKey) {
+export function itemGroupBy(arr: any[], groupKey: string, key: string, dataKey: string) {
   key = key || 'type'
   dataKey = dataKey || 'data'
 
-  const newArr = [],
-    types = {}
+  const newArr: any[] = []
+  const types: { [key: string]: any } = {}
   let i, j, cur
   for (i = 0, j = arr.length; i < j; i++) {
     cur = arr[i]
@@ -463,7 +339,7 @@ export function itemGroupBy(arr, groupKey, key, dataKey) {
  * @param {String} levelCount 格式化个数
  * @returns
  */
-export function formatDuration(ms: any, seg: string = '', levelCount: number = 5) {
+export function formatDuration(ms: any, seg: string = ',', levelCount: number = 5) {
   let msNum = Number(ms)
   if (isNaN(msNum)) {
     return ms
@@ -475,13 +351,12 @@ export function formatDuration(ms: any, seg: string = '', levelCount: number = 5
   seg = seg || ''
   levelCount = levelCount || 5
   if (msNum < 0) msNum = -msNum
-  const time = {
-    天: Math.floor(msNum / 86400000),
-    小时: Math.floor(msNum / 3600000) % 24,
-    分钟: Math.floor(msNum / 60000) % 60,
-    秒: Math.floor(msNum / 1000) % 60,
-    毫秒: Math.floor(msNum) % 1000
-  }
+  const time: { [key: string]: number } = {}
+  ;(time[t('i18n_249aba7632')] = Math.floor(msNum / 86400000)),
+    (time[t('i18n_2de0d491d0')] = Math.floor(msNum / 3600000) % 24),
+    (time[t('i18n_3a17b7352e')] = Math.floor(msNum / 60000) % 60),
+    (time[t('i18n_0c1fec657f')] = Math.floor(msNum / 1000) % 60),
+    (time[t('i18n_21157cbff8')] = Math.floor(msNum) % 1000)
   return Object.entries(time)
     .filter((val) => val[1] !== 0)
     .map(([key, val]) => `${val}${key}`)
@@ -490,7 +365,7 @@ export function formatDuration(ms: any, seg: string = '', levelCount: number = 5
 }
 
 //小数转换为分数(小数先转换成number类型，再乘以100，并且保留2位小数)
-export function formatPercent(point, keep = 2) {
+export function formatPercent(point: any, keep = 2) {
   if (!point) {
     return '-'
   }
@@ -498,13 +373,12 @@ export function formatPercent(point, keep = 2) {
 }
 
 //小数转换为分数(小数先转换成number类型，并且保留2位小数)
-export function formatPercent2(point, keep = 2) {
+export function formatPercent2(point: any, keep = 2) {
   if (null == point) {
     return '-'
   }
-  let percent = Number(Number(point).toFixed(keep))
-  percent += '%'
-  return percent
+  const percent = Number(Number(point).toFixed(keep))
+  return percent + '%'
 }
 
 //小数转换为分数(小数先转换成number类型，再乘以100，并且保留2位小数)
@@ -515,7 +389,7 @@ export function formatPercent2Number(point: any, keep = 2) {
   return Number(Number(point).toFixed(keep))
 }
 
-export function compareVersion(version1, version2) {
+export function compareVersion(version1: string, version2: string) {
   if (version1 == null && version2 == null) {
     return 0
   } else if (version1 == null) {
@@ -555,9 +429,9 @@ export function compareVersion(version1, version2) {
 
 // 当前页面构建信息
 export function pageBuildInfo() {
-  const htmlVersion = document.head.querySelector('[name~=jpom-version][content]').content
-  const buildTime = document.head.querySelector('[name~=build-time][content]').content
-  const buildEnv = document.head.querySelector('[name~=build-env][content]').content
+  const htmlVersion = (document.head.querySelector('[name~=jpom-version][content]') as any)?.content
+  const buildTime = (document.head.querySelector('[name~=build-time][content]') as any)?.content
+  const buildEnv = (document.head.querySelector('[name~=build-env][content]') as any)?.content
   return {
     v: htmlVersion,
     t: buildTime,

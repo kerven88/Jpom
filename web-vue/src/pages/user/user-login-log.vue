@@ -7,7 +7,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="systemUserLoginLog"
-      empty-description="没有任何登录日志"
+      :empty-description="$t('i18n_ede2c450d1')"
       :loading="loading"
       :data-source="list"
       :columns="columns"
@@ -24,19 +24,19 @@
         <a-space>
           <a-input
             v-model:value="listQuery['%modifyUser%']"
-            placeholder="用户名"
+            :placeholder="$t('i18n_819767ada1')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%username%']"
-            placeholder="用户昵称"
+            :placeholder="$t('i18n_9a56bb830e')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%ip%']"
-            placeholder="登录IP"
+            :placeholder="$t('i18n_b38d6077d6')"
             class="search-input-item"
             @press-enter="loadData"
           />
@@ -47,8 +47,8 @@
             format="YYYY-MM-DD HH:mm:ss"
             @change="onChangeTime"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
         </a-space>
       </template>
@@ -58,16 +58,16 @@
         </template>
 
         <template v-if="column.dataIndex === 'success'">
-          <a-tag v-if="text" color="green">成功</a-tag>
-          <a-tag v-else color="pink">失败</a-tag>
+          <a-tag v-if="text" color="green">{{ $t('i18n_330363dfc5') }}</a-tag>
+          <a-tag v-else color="pink">{{ $t('i18n_acd5cb847a') }}</a-tag>
         </template>
 
         <template v-if="column.dataIndex === 'useMfa'">
-          <a-tag>{{ text ? '使用' : '未使用' }}</a-tag>
+          <a-tag>{{ text ? $t('i18n_ecff77a8d4') : $t('i18n_869ec83e33') }}</a-tag>
         </template>
 
         <template v-if="column.dataIndex === 'operateCode'">
-          {{ operateCodeMap[text] || '未知' }}
+          {{ operateCodeMap[text] || $t('i18n_1622dc9b6b') }}
         </template>
       </template>
     </CustomTable>
@@ -78,6 +78,9 @@ import { userLoginLgin, operateCodeMap } from '@/api/user/user-login-log'
 import { IPageQuery } from '@/interface/common'
 import { CustomColumnType } from '@/components/customTable/types'
 import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
+
+import { useI18n } from 'vue-i18n'
+const { t: $t } = useI18n()
 
 const loading = ref(false)
 const list = ref([])
@@ -91,36 +94,36 @@ const activePage = computed(() => {
 })
 
 const columns = ref<CustomColumnType[]>([
-  { title: '用户ID', dataIndex: 'modifyUser', width: 100 },
-  { title: '用户昵称', dataIndex: 'username', width: 120 },
+  { title: $t('i18n_30acd20d6e'), dataIndex: 'modifyUser', width: 100 },
+  { title: $t('i18n_9a56bb830e'), dataIndex: 'username', width: 120 },
   { title: 'IP', dataIndex: 'ip', width: 120 },
 
   {
-    title: '是否成功',
+    title: $t('i18n_5e9f2dedca'),
     dataIndex: 'success',
     width: 90,
     align: 'center'
   },
   {
-    title: '是否使用MFA',
+    title: $t('i18n_ae0d608495'),
     dataIndex: 'useMfa',
     align: 'center',
     width: 110
   },
   {
-    title: '结果描述',
+    title: $t('i18n_64c083c0a9'),
     dataIndex: 'operateCode',
     ellipsis: true,
     width: 180
   },
   {
-    title: '登录时间',
+    title: $t('i18n_9fca7c455f'),
     dataIndex: 'createTimeMillis',
     sorter: true,
     customRender: ({ text, record }) => parseTime(text || record.optTime),
     width: '170px'
   },
-  { title: '浏览器', dataIndex: 'userAgent', ellipsis: true, width: 100 }
+  { title: $t('i18n_912302cb02'), dataIndex: 'userAgent', ellipsis: true, width: 100 }
 ])
 
 const pagination = computed(() => {
@@ -155,4 +158,3 @@ onMounted(() => {
   loadData()
 })
 </script>
-<style scoped></style>

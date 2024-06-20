@@ -1,13 +1,3 @@
-///
-/// Copyright (c) 2019 Of Him Code Technology Studio
-/// Jpom is licensed under Mulan PSL v2.
-/// You can use this software according to the terms and conditions of the Mulan PSL v2.
-/// You may obtain a copy of Mulan PSL v2 at:
-/// 			http://license.coscl.org.cn/MulanPSL2
-/// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-/// See the Mulan PSL v2 for more details.
-///
-
 /* eslint-disable */
 /* prettier-ignore */
 // @ts-nocheck
@@ -115,7 +105,9 @@ declare module 'vue' {
     CodeOutlined: typeof import('@ant-design/icons-vue')['CodeOutlined']
     ColumnHeightOutlined: typeof import('@ant-design/icons-vue')['ColumnHeightOutlined']
     CompositionTransfer: typeof import('./../components/compositionTransfer/composition-transfer.vue')['default']
-    copy: typeof import('./../components/customTable/index copy.vue')['default']
+    CompressOutlined: typeof import('@ant-design/icons-vue')['CompressOutlined']
+    CopyOutlined: typeof import('@ant-design/icons-vue')['CopyOutlined']
+    CustomDrawer: typeof import('./../components/customDrawer/index.vue')['default']
     CustomInput: typeof import('./../components/customInput/index.vue')['default']
     CustomModal: typeof import('./../components/customModal/index.vue')['default']
     CustomSelect: typeof import('./../components/customSelect/index.vue')['default']
@@ -152,6 +144,7 @@ declare module 'vue' {
     MessageOutlined: typeof import('@ant-design/icons-vue')['MessageOutlined']
     MinusCircleOutlined: typeof import('@ant-design/icons-vue')['MinusCircleOutlined']
     MoreOutlined: typeof import('@ant-design/icons-vue')['MoreOutlined']
+    ParameterWidget: typeof import('./../components/parameterWidget/index.vue')['default']
     PlayCircleOutlined: typeof import('@ant-design/icons-vue')['PlayCircleOutlined']
     PlusOutlined: typeof import('@ant-design/icons-vue')['PlusOutlined']
     PlusSquareOutlined: typeof import('@ant-design/icons-vue')['PlusSquareOutlined']

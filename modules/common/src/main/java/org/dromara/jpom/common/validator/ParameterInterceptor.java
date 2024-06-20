@@ -11,13 +11,16 @@ package org.dromara.jpom.common.validator;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.http.Header;
 import cn.hutool.http.HtmlUtil;
 import cn.keepbx.jpom.model.JsonMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.common.BaseJpomController;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.HandlerMethodInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
@@ -83,7 +86,8 @@ public class ParameterInterceptor implements HandlerMethodInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
-
+        String language = ServletUtil.getHeader(request, Header.ACCEPT_LANGUAGE.getValue(), CharsetUtil.CHARSET_UTF_8);
+        I18nMessageUtil.setLanguage(language);
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (MethodParameter item : methodParameters) {
             ValidatorItem[] validatorItems;
@@ -182,7 +186,7 @@ public class ParameterInterceptor implements HandlerMethodInterceptor {
         }
         if (method == null) {
             // 没有配置对应方法
-            log.error(handlerMethod.getBeanType() + "未配置验证方法：" + validatorConfig.customizeMethod());
+            log.error(I18nMessageUtil.get("i18n.verification_method_not_configured.7358"), handlerMethod.getBeanType(), validatorConfig.customizeMethod());
             interceptor.error(request, response, name, value, validatorItem);
             return false;
         }
@@ -409,6 +413,7 @@ public class ParameterInterceptor implements HandlerMethodInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         BaseJpomController.clearResources();
+        I18nMessageUtil.clearLanguage();
     }
 
     /**
@@ -442,7 +447,11 @@ public class ParameterInterceptor implements HandlerMethodInterceptor {
     public static class DefaultInterceptor implements Interceptor {
         @Override
         public void error(HttpServletRequest request, HttpServletResponse response, String parameterName, String value, ValidatorItem validatorItem) {
-            JsonMessage<String> jsonMessage = new JsonMessage<>(validatorItem.code(), validatorItem.msg());
+            String msg = validatorItem.msg();
+            if (StrUtil.isEmpty(msg)) {
+                msg = I18nMessageUtil.get("i18n.parameter_validation_failed.f0a1");
+            }
+            JsonMessage<String> jsonMessage = new JsonMessage<>(validatorItem.code(), msg);
             log.warn("{} {} {} {} {}", request.getRequestURI(), parameterName, value, validatorItem.value(), jsonMessage);
             ServletUtil.write(response, jsonMessage.toString(), MediaType.APPLICATION_JSON_VALUE);
         }

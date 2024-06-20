@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from '@/api/config'
 
 // 任务列表
@@ -76,14 +76,14 @@ export function taskLogInfoList(params) {
 }
 
 export const statusMap = {
-  0: '等待开始',
-  1: '进行中',
-  2: '任务结束',
-  3: '发布失败',
-  4: '取消任务'
+  0: t('i18n_a87818b04f'),
+  1: t('i18n_fb852fc6cc'),
+  2: t('i18n_5ab90c17a3'),
+  3: t('i18n_250688d7c9'),
+  4: t('i18n_d926e2f58e')
 }
 
 export const taskTypeMap = {
   0: 'SSH',
-  1: '节点'
+  1: t('i18n_3bf3c0a8d6')
 }

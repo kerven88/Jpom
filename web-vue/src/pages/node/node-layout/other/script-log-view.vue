@@ -2,7 +2,7 @@
   <div>
     <log-view1
       :ref="`logView`"
-      title-name="执行日志"
+      :title-name="$t('i18n_c84ddfe8a6')"
       :visible="visible"
       @close="
         () => {
@@ -12,7 +12,6 @@
     />
   </div>
 </template>
-
 <script>
 import { scriptLog } from '@/api/node-other'
 import LogView1 from '@/components/logView'

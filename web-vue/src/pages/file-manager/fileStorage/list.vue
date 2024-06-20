@@ -24,40 +24,40 @@
           <a-space>
             <a-input
               v-model:value="listQuery['%name%']"
-              placeholder="文件名称"
+              :placeholder="$t('i18n_d2e2560089')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['%aliasCode%']"
-              placeholder="别名码"
+              :placeholder="$t('i18n_2f5e828ecd')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['extName']"
-              placeholder="后缀,精准搜索"
+              :placeholder="$t('i18n_ae809e0295')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['id']"
-              placeholder="文件id,精准搜索"
+              :placeholder="$t('i18n_2168394b82')"
               class="search-input-item"
               @press-enter="loadData"
             />
-            <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-              <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+            <a-tooltip :title="$t('i18n_4838a3bd20')">
+              <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
             </a-tooltip>
-            <a-button type="primary" @click="handleUpload">上传文件</a-button>
-            <a-button type="primary" @click="handleRemoteDownload">远程下载</a-button>
+            <a-button type="primary" @click="handleUpload">{{ $t('i18n_a6fc9e3ae6') }}</a-button>
+            <a-button type="primary" @click="handleRemoteDownload">{{ $t('i18n_bd7043cae3') }}</a-button>
             <a-button
               type="primary"
               danger
               :disabled="!tableSelections || tableSelections.length <= 0"
               @click="handleBatchDelete"
             >
-              批量删除
+              {{ $t('i18n_7fb62b3011') }}
             </a-button>
           </a-space>
         </template>
@@ -74,12 +74,14 @@
             </a-tooltip>
           </template>
           <template v-else-if="column.dataIndex === 'name'">
-            <a-popover title="文件信息">
+            <a-popover :title="$t('i18n_73485331c2')">
               <template #content>
-                <p>文件名：{{ text }}</p>
-                <p>文件描述：{{ record.description }}</p>
-                <p v-if="record.status !== undefined">下载状态：{{ statusMap[record.status] || '未知' }}</p>
-                <p v-if="record.progressDesc">状态描述：{{ record.progressDesc }}</p>
+                <p>{{ $t('i18n_b9c52d9a85') }}{{ text }}</p>
+                <p>{{ $t('i18n_46a04cdc9c') }}{{ record.description }}</p>
+                <p v-if="record.status !== undefined">
+                  {{ $t('i18n_53365c29c8') }}{{ statusMap[record.status] || $t('i18n_1622dc9b6b') }}
+                </p>
+                <p v-if="record.progressDesc">{{ $t('i18n_fb3a2241bb') }}{{ record.progressDesc }}</p>
               </template>
               <!-- {{ text }} -->
               <a-button type="link" style="padding: 0" size="small" @click="handleEdit(record)">{{ text }}</a-button>
@@ -92,52 +94,57 @@
             </a-tooltip>
           </template>
           <template v-else-if="column.dataIndex === 'source'">
-            <a-tooltip placement="topLeft" :title="`${sourceMap[text] || '未知'}`">
-              <span>{{ sourceMap[text] || '未知' }}</span>
+            <a-tooltip placement="topLeft" :title="sourceMap[text] || $t('i18n_1622dc9b6b')">
+              <span>{{ sourceMap[text] || $t('i18n_1622dc9b6b') }}</span>
             </a-tooltip>
           </template>
 
           <template v-else-if="column.dataIndex === 'exists'">
-            <a-tag v-if="text" color="green">存在</a-tag>
-            <a-tag v-else color="red">丢失</a-tag>
+            <a-tag v-if="text" color="green">{{ $t('i18n_df9497ea98') }}</a-tag>
+            <a-tag v-else color="red">{{ $t('i18n_162e219f6d') }}</a-tag>
           </template>
           <template v-else-if="column.dataIndex === 'workspaceId'">
-            <a-tag v-if="text === 'GLOBAL'">全局</a-tag>
-            <a-tag v-else>工作空间</a-tag>
+            <a-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</a-tag>
+            <a-tag v-else>{{ $t('i18n_98d69f8b62') }}</a-tag>
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
               <!-- <a-button type="primary" size="small" @click="handleEdit(record)">编辑</a-button> -->
-              <a-button size="small" :disabled="!record.exists" type="primary" @click="handleDownloadUrl(record)"
-                >下载</a-button
-              >
-              <a-button size="small" :disabled="!record.exists" type="primary" @click="handleReleaseFile(record)"
-                >发布</a-button
-              >
-              <a-button type="primary" danger size="small" @click="handleDelete(record)">删除</a-button>
+              <a-button size="small" :disabled="!record.exists" type="primary" @click="handleDownloadUrl(record)">{{
+                $t('i18n_f26ef91424')
+              }}</a-button>
+              <a-button size="small" :disabled="!record.exists" type="primary" @click="handleReleaseFile(record)">{{
+                $t('i18n_83611abd5f')
+              }}</a-button>
+              <a-button type="primary" danger size="small" @click="handleDelete(record)">{{
+                $t('i18n_2f4aaddde3')
+              }}</a-button>
             </a-space>
           </template>
         </template>
       </a-table>
       <!-- 上传文件 -->
-      <a-modal
+      <CustomModal
+        v-if="uploadVisible"
         v-model:open="uploadVisible"
         destroy-on-close
         :confirm-loading="confirmLoading"
         :closable="!uploading"
         :footer="uploading ? null : undefined"
         :keyboard="false"
-        :title="`上传文件`"
+        :title="`${$t('i18n_a6fc9e3ae6')}`"
         :mask-closable="false"
         @ok="handleUploadOk"
       >
         <a-form ref="form" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-          <a-form-item label="选择文件" name="file">
+          <a-form-item :label="$t('i18n_fd7e0c997d')" name="file">
             <a-progress v-if="percentage" :percent="percentage">
               <template #format="percent">
                 {{ percent }}%
                 <template v-if="percentageInfo.total"> ({{ renderSize(percentageInfo.total) }}) </template>
-                <template v-if="percentageInfo.duration"> 用时:{{ formatDuration(percentageInfo.duration) }} </template>
+                <template v-if="percentageInfo.duration">
+                  {{ $t('i18n_e710da3487') }}:{{ formatDuration(percentageInfo.duration) }}
+                </template>
               </template>
             </a-progress>
 
@@ -159,28 +166,28 @@
               "
             >
               <LoadingOutlined v-if="percentage" />
-              <a-button v-else type="primary"><UploadOutlined />选择文件</a-button>
+              <a-button v-else type="primary"><UploadOutlined />{{ $t('i18n_fd7e0c997d') }}</a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="保留天数" name="keepDay">
+          <a-form-item :label="$t('i18n_824607be6b')" name="keepDay">
             <a-input-number
               v-model:value="temp.keepDay"
               :min="1"
               style="width: 100%"
-              placeholder="文件保存天数,默认 3650 天"
+              :placeholder="$t('i18n_e9ea1e7c02')"
             />
           </a-form-item>
-          <a-form-item label="文件共享" name="global">
+          <a-form-item :label="$t('i18n_3a6970ac26')" name="global">
             <a-radio-group v-model:value="temp.global">
-              <a-radio :value="true"> 全局 </a-radio>
-              <a-radio :value="false"> 当前工作空间 </a-radio>
+              <a-radio :value="true"> {{ $t('i18n_2be75b1044') }} </a-radio>
+              <a-radio :value="false"> {{ $t('i18n_691b11e443') }} </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="别名码" name="aliasCode" help="用于区别文件是否为同一类型,可以针对同类型进行下载管理">
+          <a-form-item :label="$t('i18n_2f5e828ecd')" name="aliasCode" :help="$t('i18n_41638b0a48')">
             <a-input-search
               v-model:value="temp.aliasCode"
               :max-length="50"
-              placeholder="请输入别名码"
+              :placeholder="$t('i18n_8fbcdbc785')"
               @search="
                 () => {
                   temp = { ...temp, aliasCode: randomStr(6) }
@@ -188,47 +195,48 @@
               "
             >
               <template #enterButton>
-                <a-button type="primary"> 随机生成 </a-button>
+                <a-button type="primary"> {{ $t('i18n_6709f4548f') }} </a-button>
               </template>
             </a-input-search>
           </a-form-item>
-          <a-form-item label="文件描述" name="description">
-            <a-textarea v-model:value="temp.description" placeholder="请输入文件描述" />
+          <a-form-item :label="$t('i18n_8d6f38b4b1')" name="description">
+            <a-textarea v-model:value="temp.description" :placeholder="$t('i18n_411672c954')" />
           </a-form-item>
         </a-form>
-      </a-modal>
+      </CustomModal>
       <!-- 编辑文件 -->
-      <a-modal
+      <CustomModal
+        v-if="editVisible"
         v-model:open="editVisible"
         destroy-on-close
         :confirm-loading="confirmLoading"
-        :title="`修改文件`"
+        :title="`${$t('i18n_5c3b53e66c')}`"
         :mask-closable="false"
         @ok="handleEditOk"
       >
         <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-          <a-form-item label="文件名" name="name">
-            <a-input v-model:value="temp.name" placeholder="文件名" />
+          <a-form-item :label="$t('i18n_29139c2a1a')" name="name">
+            <a-input v-model:value="temp.name" :placeholder="$t('i18n_29139c2a1a')" />
           </a-form-item>
-          <a-form-item label="保留天数" name="keepDay">
+          <a-form-item :label="$t('i18n_824607be6b')" name="keepDay">
             <a-input-number
               v-model:value="temp.keepDay"
               :min="1"
               style="width: 100%"
-              placeholder="文件保存天数,默认 3650 天"
+              :placeholder="$t('i18n_e9ea1e7c02')"
             />
           </a-form-item>
-          <a-form-item label="文件共享" name="global">
+          <a-form-item :label="$t('i18n_3a6970ac26')" name="global">
             <a-radio-group v-model:value="temp.global">
-              <a-radio :value="true"> 全局 </a-radio>
-              <a-radio :value="false"> 当前工作空间 </a-radio>
+              <a-radio :value="true"> {{ $t('i18n_2be75b1044') }} </a-radio>
+              <a-radio :value="false"> {{ $t('i18n_691b11e443') }} </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="别名码" name="aliasCode" help="用于区别文件是否为同一类型,可以针对同类型进行下载管理">
+          <a-form-item :label="$t('i18n_2f5e828ecd')" name="aliasCode" :help="$t('i18n_41638b0a48')">
             <a-input-search
               v-model:value="temp.aliasCode"
               :max-length="50"
-              placeholder="请输入别名码"
+              :placeholder="$t('i18n_8fbcdbc785')"
               @search="
                 () => {
                   temp = { ...temp, aliasCode: randomStr(6) }
@@ -236,47 +244,48 @@
               "
             >
               <template #enterButton>
-                <a-button type="primary"> 随机生成 </a-button>
+                <a-button type="primary"> {{ $t('i18n_6709f4548f') }} </a-button>
               </template>
             </a-input-search>
           </a-form-item>
-          <a-form-item label="文件描述" name="description">
-            <a-textarea v-model:value="temp.description" placeholder="请输入文件描述" />
+          <a-form-item :label="$t('i18n_8d6f38b4b1')" name="description">
+            <a-textarea v-model:value="temp.description" :placeholder="$t('i18n_411672c954')" />
           </a-form-item>
         </a-form>
-      </a-modal>
+      </CustomModal>
       <!--远程下载  -->
-      <a-modal
+      <CustomModal
+        v-if="uploadRemoteFileVisible"
         v-model:open="uploadRemoteFileVisible"
         destroy-on-close
-        title="远程下载文件"
+        :title="$t('i18n_5d488af335')"
         :mask-closable="false"
         :confirm-loading="confirmLoading"
         @ok="handleRemoteUpload"
       >
         <a-form ref="remoteForm" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" :rules="rules">
-          <a-form-item label="远程下载URL" name="url">
-            <a-input v-model:value="temp.url" placeholder="远程下载地址" />
+          <a-form-item :label="$t('i18n_a66fff7541')" name="url">
+            <a-input v-model:value="temp.url" :placeholder="$t('i18n_7457228a61')" />
           </a-form-item>
-          <a-form-item label="保留天数" name="keepDay">
+          <a-form-item :label="$t('i18n_824607be6b')" name="keepDay">
             <a-input-number
               v-model:value="temp.keepDay"
               :min="1"
               style="width: 100%"
-              placeholder="文件保存天数,默认 3650 天"
+              :placeholder="$t('i18n_e9ea1e7c02')"
             />
           </a-form-item>
-          <a-form-item label="文件共享" name="global">
+          <a-form-item :label="$t('i18n_3a6970ac26')" name="global">
             <a-radio-group v-model:value="temp.global">
-              <a-radio :value="true"> 全局 </a-radio>
-              <a-radio :value="false"> 当前工作空间 </a-radio>
+              <a-radio :value="true"> {{ $t('i18n_2be75b1044') }} </a-radio>
+              <a-radio :value="false"> {{ $t('i18n_691b11e443') }} </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="别名码" name="aliasCode" help="用于区别文件是否为同一类型,可以针对同类型进行下载管理">
+          <a-form-item :label="$t('i18n_2f5e828ecd')" name="aliasCode" :help="$t('i18n_41638b0a48')">
             <a-input-search
               v-model:value="temp.aliasCode"
               :max-length="50"
-              placeholder="请输入别名码"
+              :placeholder="$t('i18n_8fbcdbc785')"
               @search="
                 () => {
                   temp = { ...temp, aliasCode: randomStr(6) }
@@ -284,20 +293,21 @@
               "
             >
               <template #enterButton>
-                <a-button type="primary"> 随机生成 </a-button>
+                <a-button type="primary"> {{ $t('i18n_6709f4548f') }} </a-button>
               </template>
             </a-input-search>
           </a-form-item>
-          <a-form-item label="文件描述" name="description">
-            <a-textarea v-model:value="temp.description" placeholder="请输入文件描述" />
+          <a-form-item :label="$t('i18n_8d6f38b4b1')" name="description">
+            <a-textarea v-model:value="temp.description" :placeholder="$t('i18n_411672c954')" />
           </a-form-item>
         </a-form>
-      </a-modal>
+      </CustomModal>
       <!-- 断点下载 -->
-      <a-modal
+      <CustomModal
+        v-if="triggerVisible"
         v-model:open="triggerVisible"
         destroy-on-close
-        title="断点/分片下载"
+        :title="$t('i18n_e7e8d4c1fb')"
         width="50%"
         :footer="null"
         :mask-closable="false"
@@ -305,13 +315,13 @@
         <a-form ref="editTriggerForm" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
           <a-tabs default-active-key="1">
             <template #rightExtra>
-              <a-tooltip title="重置下载 token 信息,重置后之前的下载 token 将失效">
-                <a-button type="primary" size="small" @click="resetTrigger">重置</a-button>
+              <a-tooltip :title="$t('i18n_84415a6bb1')">
+                <a-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</a-button>
               </a-tooltip>
             </template>
-            <a-tab-pane key="1" tab="断点/分片单文件下载">
+            <a-tab-pane key="1" :tab="$t('i18n_0b58866c3e')">
               <a-space direction="vertical" style="width: 100%">
-                <a-alert type="info" :message="`下载地址(点击可以复制)`">
+                <a-alert type="info" :message="`${$t('i18n_d911cffcd5')}(${$t('i18n_00a070c696')})`">
                   <template #description>
                     <a-typography-paragraph :copyable="{ tooltip: false, text: temp.triggerDownloadUrl }">
                       <a-tag>GET</a-tag>
@@ -320,26 +330,26 @@
                   </template>
                 </a-alert>
                 <a :href="temp.triggerDownloadUrl" target="_blank">
-                  <a-button size="small" type="primary"><DownloadOutlined />立即下载</a-button>
+                  <a-button size="small" type="primary"><DownloadOutlined />{{ $t('i18n_2a813bc3eb') }}</a-button>
                 </a>
               </a-space>
             </a-tab-pane>
-            <a-tab-pane v-if="temp.triggerAliasDownloadUrl" tab="断点/分片别名下载">
+            <a-tab-pane v-if="temp.triggerAliasDownloadUrl" :tab="$t('i18n_d61af4e686')">
               <a-space direction="vertical" style="width: 100%">
-                <a-alert message="温馨提示" type="warning">
+                <a-alert :message="$t('i18n_947d983961')" type="warning">
                   <template #description>
                     <ul>
                       <li>
-                        支持自定义排序字段：sort=createTimeMillis:desc
+                        {{ $t('i18n_ac762710a5') }}=createTimeMillis:desc
 
-                        <p>描述根据创建时间升序第一个</p>
+                        <p>{{ $t('i18n_35fbad84cb') }}</p>
                       </li>
-                      <li>支持的字段可以通过接口返回的查看</li>
-                      <li>通用的字段有：createTimeMillis、modifyTimeMillis</li>
+                      <li>{{ $t('i18n_c83752739f') }}</li>
+                      <li>{{ $t('i18n_4055a1ee9c') }}</li>
                     </ul>
                   </template>
                 </a-alert>
-                <a-alert type="info" :message="`下载地址(点击可以复制)`">
+                <a-alert type="info" :message="`${$t('i18n_d911cffcd5')}(${$t('i18n_00a070c696')})`">
                   <template #description>
                     <a-typography-paragraph :copyable="{ tooltip: false, text: temp.triggerAliasDownloadUrl }">
                       <a-tag>GET</a-tag>
@@ -348,25 +358,26 @@
                   </template>
                 </a-alert>
                 <a :href="temp.triggerAliasDownloadUrl" target="_blank">
-                  <a-button size="small" type="primary"><DownloadOutlined />立即下载</a-button>
+                  <a-button size="small" type="primary"><DownloadOutlined />{{ $t('i18n_2a813bc3eb') }}</a-button>
                 </a>
               </a-space>
             </a-tab-pane>
           </a-tabs>
         </a-form>
-      </a-modal>
+      </CustomModal>
       <!-- 发布文件 -->
-      <a-modal
+      <CustomModal
+        v-if="releaseFileVisible"
         v-model:open="releaseFileVisible"
         destroy-on-close
         :confirm-loading="confirmLoading"
-        title="发布文件"
-        width="60%"
+        :title="$t('i18n_7e930b95ef')"
+        width="70%"
         :mask-closable="false"
         @ok="releaseFileOk()"
       >
         <releaseFile v-if="releaseFileVisible" ref="releaseFile" @commit="handleCommitTask"></releaseFile>
-      </a-modal>
+      </CustomModal>
     </div>
     <!-- 选择确认区域 -->
     <div v-if="choose" style="padding-top: 50px">
@@ -391,15 +402,16 @@
               }
             "
           >
-            取消
+            {{ $t('i18n_625fb26b4b') }}
           </a-button>
-          <a-button type="primary" @click="handerConfirm"> 确定 </a-button>
+          <a-button type="primary" @click="handerConfirm">
+            {{ $t('i18n_38cf16f220') }}
+          </a-button>
         </a-space>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import {
   CHANGE_PAGE,
@@ -447,26 +459,26 @@ export default {
       list: [],
       columns: [
         {
-          title: '文件MD5',
+          title: this.$t('i18n_c11eb9deff'),
           dataIndex: 'id',
           ellipsis: true,
           width: 100
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           width: 150
         },
         {
-          title: '别名码',
+          title: this.$t('i18n_2f5e828ecd'),
           dataIndex: 'aliasCode',
           ellipsis: true,
           width: 100,
           tooltip: true
         },
         {
-          title: '大小',
+          title: this.$t('i18n_58f9666705'),
           dataIndex: 'size',
           sorter: true,
           ellipsis: true,
@@ -474,28 +486,28 @@ export default {
           width: '100px'
         },
         {
-          title: '后缀',
+          title: this.$t('i18n_242d641eab'),
           dataIndex: 'extName',
           ellipsis: true,
           tooltip: true,
           width: '80px'
         },
         {
-          title: '共享',
+          title: this.$t('i18n_fffd3ce745'),
           dataIndex: 'workspaceId',
           ellipsis: true,
 
           width: '90px'
         },
         {
-          title: '来源',
+          title: this.$t('i18n_26ca20b161'),
           dataIndex: 'source',
           ellipsis: true,
 
           width: '80px'
         },
         {
-          title: '过期天数',
+          title: this.$t('i18n_eaa5d7cb9b'),
           dataIndex: 'validUntil',
           sorter: true,
           customRender: ({ text }) => {
@@ -507,42 +519,42 @@ export default {
           width: '100px'
         },
         {
-          title: '文件状态',
+          title: this.$t('i18n_a3d0154996'),
           dataIndex: 'exists',
           ellipsis: true,
 
           width: '80px'
         },
         {
-          title: '创建人',
+          title: this.$t('i18n_95a43eaa59'),
           dataIndex: 'createUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text }) => parseTime(text),
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           customRender: ({ text }) => parseTime(text),
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           ellipsis: true,
@@ -551,9 +563,10 @@ export default {
           width: '170px'
         }
       ],
+
       rules: {
-        name: [{ required: true, message: '请输入文件名称', trigger: 'blur' }],
-        url: [{ required: true, message: '请输入远程地址', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_7aa81d1573'), trigger: 'blur' }],
+        url: [{ required: true, message: this.$t('i18n_f4dd45fca9'), trigger: 'blur' }]
       },
 
       temp: {},
@@ -622,7 +635,7 @@ export default {
         // 判断文件
         if (this.fileList.length === 0) {
           $notification.success({
-            message: '请选择文件'
+            message: this.$t('i18n_9febf31146')
           })
           return false
         }
@@ -650,9 +663,9 @@ export default {
                   if (res.data) {
                     //
                     $notification.warning({
-                      message: `当前文件已经存在啦,文件名：${res.data.name} ,是否共享：${
-                        res.data.workspaceId === 'GLOBAL' ? '是' : '否'
-                      }`
+                      message: `${this.$t('i18n_a17b5ab021')},${this.$t('i18n_b9c52d9a85')}${res.data.name} ,${this.$t(
+                        'i18n_ee992d9744'
+                      )}${res.data.workspaceId === 'GLOBAL' ? this.$t('i18n_0a60ac8f02') : this.$t('i18n_c9744f45e7')}`
                     })
                     //
                     this.uploading = false
@@ -756,11 +769,11 @@ export default {
     // 删除文件
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除当前文件么？' + record.name,
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_3787283bf4') + record.name,
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return delFile({
             id: record.id
@@ -779,16 +792,16 @@ export default {
     handleBatchDelete() {
       if (!this.tableSelections || this.tableSelections.length <= 0) {
         $notification.error({
-          message: '没有选择任何数据'
+          message: this.$t('i18n_5d817c403e')
         })
         return
       }
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除这些文件么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_52d24791ab'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return delFile({ ids: this.tableSelections.join(',') }).then((res) => {
             if (res.code === 200) {
@@ -902,7 +915,7 @@ export default {
     handerConfirm() {
       if (!this.tableSelections.length) {
         $notification.warning({
-          message: '请选择要使用的文件'
+          message: this.$t('i18n_8d62b202d9')
         })
         return
       }
@@ -911,7 +924,7 @@ export default {
       })
       if (!selectData.length) {
         $notification.warning({
-          message: '请选择要使用的文件'
+          message: this.$t('i18n_8d62b202d9')
         })
         return
       }
@@ -920,7 +933,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 :deep(.ant-progress-text) {
   width: auto;

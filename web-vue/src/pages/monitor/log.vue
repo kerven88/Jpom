@@ -14,20 +14,35 @@
     >
       <template #title>
         <a-space wrap class="search-box">
-          <a-select v-model:value="listQuery.nodeId" allow-clear placeholder="请选择节点" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.nodeId"
+            allow-clear
+            :placeholder="$t('i18n_f8a613d247')"
+            class="search-input-item"
+          >
             <a-select-option v-for="(nodeName, key) in nodeMap" :key="key">{{ nodeName }}</a-select-option>
           </a-select>
-          <a-select v-model:value="listQuery.status" allow-clear placeholder="报警状态" class="search-input-item">
-            <a-select-option :value="1">正常</a-select-option>
-            <a-select-option :value="0">异常</a-select-option>
+          <a-select
+            v-model:value="listQuery.status"
+            allow-clear
+            :placeholder="$t('i18n_db4470d98d')"
+            class="search-input-item"
+          >
+            <a-select-option :value="1">{{ $t('i18n_fd6e80f1e0') }}</a-select-option>
+            <a-select-option :value="0">{{ $t('i18n_c195df6308') }}</a-select-option>
           </a-select>
-          <a-select v-model:value="listQuery.notifyStatus" allow-clear placeholder="通知状态" class="search-input-item">
-            <a-select-option :value="1">成功</a-select-option>
-            <a-select-option :value="0">失败</a-select-option>
+          <a-select
+            v-model:value="listQuery.notifyStatus"
+            allow-clear
+            :placeholder="$t('i18n_8023baf064')"
+            class="search-input-item"
+          >
+            <a-select-option :value="1">{{ $t('i18n_330363dfc5') }}</a-select-option>
+            <a-select-option :value="0">{{ $t('i18n_acd5cb847a') }}</a-select-option>
           </a-select>
           <a-range-picker :show-time="{ format: 'HH:mm:ss' }" format="YYYY-MM-DD HH:mm:ss" @change="onchangeTime" />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button :loading="loading" type="primary" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
         </a-space>
       </template>
@@ -43,21 +58,28 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'status'">
-          <span>{{ text ? '正常' : '异常' }}</span>
+          <span>{{ text ? $t('i18n_fd6e80f1e0') : $t('i18n_c195df6308') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'notifyStyle'">
-          {{ notifyStyle[text] || '未知' }}
+          {{ notifyStyle[text] || $t('i18n_1622dc9b6b') }}
         </template>
         <template v-else-if="column.dataIndex === 'notifyStatus'">
-          <span>{{ text ? '成功' : '失败' }}</span>
+          <span>{{ text ? $t('i18n_330363dfc5') : $t('i18n_acd5cb847a') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
-          <a-button size="small" type="primary" @click="handleDetail(record)">详情</a-button>
+          <a-button size="small" type="primary" @click="handleDetail(record)">{{ $t('i18n_f26225bde6') }}</a-button>
         </template>
       </template>
     </a-table>
     <!-- 详情区 -->
-    <a-modal v-model:open="detailVisible" destroy-on-close width="600px" title="详情信息" :footer="null">
+    <CustomModal
+      v-if="detailVisible"
+      v-model:open="detailVisible"
+      destroy-on-close
+      width="600px"
+      :title="$t('i18n_3032257aa3')"
+      :footer="null"
+    >
       <a-list item-layout="horizontal" :data-source="detailData">
         <template #renderItem="{ item }">
           <a-list-item>
@@ -69,10 +91,9 @@
           </a-list-item>
         </template>
       </a-list>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { getMonitorLogList, notifyStyle } from '@/api/monitor'
 import { getNodeListAll } from '@/api/node'
@@ -91,40 +112,40 @@ export default {
       detailData: [],
       columns: [
         {
-          title: '报警标题',
+          title: this.$t('i18n_36b3f3a2f6'),
           dataIndex: 'title',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '节点名称',
+          title: this.$t('i18n_b1785ef01e'),
           dataIndex: 'nodeId',
           width: 100,
           ellipsis: true
         },
         {
-          title: '项目 ID',
+          title: this.$t('i18n_4fdd2213b5'),
           dataIndex: 'projectId',
           width: 100,
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '报警状态',
+          title: this.$t('i18n_db4470d98d'),
           dataIndex: 'status',
           width: 100,
           align: 'center',
           ellipsis: true
         },
         {
-          title: '报警方式',
+          title: this.$t('i18n_52eedb4a12'),
           dataIndex: 'notifyStyle',
           width: 100,
           align: 'center',
           ellipsis: true
         },
         {
-          title: '报警时间',
+          title: this.$t('i18n_4741e596ac'),
           dataIndex: 'createTime',
           customRender: ({ text }) => {
             return parseTime(text)
@@ -132,13 +153,13 @@ export default {
           width: '170px'
         },
         {
-          title: '通知状态',
+          title: this.$t('i18n_8023baf064'),
           dataIndex: 'notifyStatus',
           width: 100,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           fixed: 'right',
@@ -202,15 +223,15 @@ export default {
       this.detailData = []
       this.detailVisible = true
       this.temp = Object.assign({}, record)
-      this.detailData.push({ title: '标题', description: this.temp.title })
-      this.detailData.push({ title: '内容', description: this.temp.content })
+      this.detailData.push({ title: this.$t('i18n_32c65d8d74'), description: this.temp.title })
+      this.detailData.push({ title: this.$t('i18n_2d711b09bd'), description: this.temp.content })
       this.detailData.push({
-        title: '通知对象',
+        title: this.$t('i18n_59c75681b4'),
         description: this.temp.notifyObject
       })
       if (!this.temp.notifyStatus) {
         this.detailData.push({
-          title: '通知异常',
+          title: this.$t('i18n_fcb4c2610a'),
           description: this.temp.notifyError
         })
       }

@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from './config'
 
 // 监控列表
@@ -139,8 +139,8 @@ export function deleteMonitorOperate(id) {
 }
 
 export const notifyStyle = {
-  0: '钉钉',
-  1: '邮箱',
-  2: '企业微信',
+  0: t('i18n_4a0e9142e7'),
+  1: t('i18n_3bc5e602b2'),
+  2: t('i18n_ff17b9f9cd'),
   3: 'webhook'
 }

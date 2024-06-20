@@ -14,19 +14,21 @@ import cn.hutool.core.lang.Opt;
 import cn.hutool.core.lang.Tuple;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.net.url.UrlQuery;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import org.dromara.jpom.JpomApplication;
 import org.dromara.jpom.common.Const;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
+import org.dromara.jpom.common.i18n.I18nThreadUtil;
 import org.dromara.jpom.configuration.ProjectLogConfig;
 import org.dromara.jpom.exception.IllegalArgument2Exception;
 import org.dromara.jpom.model.EnvironmentMapBuilder;
 import org.dromara.jpom.model.data.DslYmlDto;
 import org.dromara.jpom.model.data.NodeProjectInfoModel;
 import org.dromara.jpom.model.data.NodeScriptModel;
+import org.dromara.jpom.model.data.ScriptLibraryModel;
 import org.dromara.jpom.script.DslScriptBuilder;
 import org.dromara.jpom.service.manage.ProjectInfoService;
 import org.dromara.jpom.service.system.AgentWorkspaceEnvVarService;
@@ -52,17 +54,20 @@ public class DslScriptServer {
     private final ProjectLogConfig logConfig;
     private final JpomApplication jpomApplication;
     private final ProjectInfoService projectInfoService;
+    private final ScriptLibraryService scriptLibraryService;
 
     public DslScriptServer(AgentWorkspaceEnvVarService agentWorkspaceEnvVarService,
                            NodeScriptServer nodeScriptServer,
                            ProjectLogConfig logConfig,
                            JpomApplication jpomApplication,
-                           ProjectInfoService projectInfoService) {
+                           ProjectInfoService projectInfoService,
+                           ScriptLibraryService scriptLibraryService) {
         this.agentWorkspaceEnvVarService = agentWorkspaceEnvVarService;
         this.nodeScriptServer = nodeScriptServer;
         this.logConfig = logConfig;
         this.jpomApplication = jpomApplication;
         this.projectInfoService = projectInfoService;
+        this.scriptLibraryService = scriptLibraryService;
     }
 
     /**
@@ -74,7 +79,7 @@ public class DslScriptServer {
     public void run(DslYmlDto dslYmlDto, ConsoleCommandOp consoleCommandOp, NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel, boolean sync) throws Exception {
         String log = projectInfoService.resolveAbsoluteLog(nodeProjectInfoModel, originalModel);
         DslScriptBuilder builder = this.create(dslYmlDto, consoleCommandOp, nodeProjectInfoModel, originalModel, log);
-        Future<?> execute = ThreadUtil.execAsync(builder);
+        Future<?> execute = I18nThreadUtil.execAsync(builder);
         if (sync) {
             execute.get();
         }
@@ -116,13 +121,30 @@ public class DslScriptServer {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("status", false);
         if (scriptProcess == null) {
-            jsonObject.put("msg", "流程不存在");
+            String value = I18nMessageUtil.get("i18n.process_does_not_exist.4e39");
+            jsonObject.put("msg", value);
             return new Tuple(jsonObject, null);
         }
         String scriptId = scriptProcess.getScriptId();
         if (StrUtil.isEmpty(scriptId)) {
-            jsonObject.put("msg", "请填写脚本模板id");
+            String value = I18nMessageUtil.get("i18n.script_template_id_required.f339");
+            jsonObject.put("msg", value);
             return new Tuple(jsonObject, null);
+        }
+        if (StrUtil.startWithIgnoreCase(scriptId, "G@")) {
+            // 判断是否引用脚本库
+            scriptId = scriptId.substring(2);
+            ScriptLibraryModel libraryModel = scriptLibraryService.get(scriptId);
+            if (libraryModel != null) {
+                jsonObject.put("status", true);
+                jsonObject.put("type", "library");
+                jsonObject.put("scriptId", scriptId);
+                return new Tuple(jsonObject, libraryModel);
+            } else {
+                String string = I18nMessageUtil.get("i18n.missing_script_library_message.be9a") + scriptId;
+                jsonObject.put("msg", string);
+                return new Tuple(jsonObject, null);
+            }
         }
         //
         NodeScriptModel item = nodeScriptServer.getItem(scriptId);
@@ -142,7 +164,8 @@ public class DslScriptServer {
             jsonObject.put("scriptId", scriptId);
             return new Tuple(jsonObject, scriptFile);
         }
-        jsonObject.put("msg", "脚本模版不存在:" + scriptId);
+        String value = I18nMessageUtil.get("i18n.script_template_not_exist.e05f") + scriptId;
+        jsonObject.put("msg", value);
         return new Tuple(jsonObject, null);
     }
 
@@ -173,8 +196,16 @@ public class DslScriptServer {
         File scriptFile;
         boolean autoDelete = false;
         if (StrUtil.equals(type, "file")) {
+            // 项目文件
             scriptFile = tuple.get(1);
+        } else if ("library".equals(type)) {
+            // 脚本库
+            ScriptLibraryModel libraryModel = tuple.get(1);
+            scriptFile = this.initScriptFile(libraryModel);
+            // 系统生成的脚本需要自动删除
+            autoDelete = true;
         } else {
+            // 节点脚本
             NodeScriptModel item = tuple.get(1);
             scriptFile = this.initScriptFile(item);
             // 系统生成的脚本需要自动删除
@@ -193,10 +224,20 @@ public class DslScriptServer {
      * @return file
      */
     private File initScriptFile(NodeScriptModel scriptModel) {
+        return nodeScriptServer.toExecuteFile(scriptModel);
+    }
+
+    /**
+     * 创建脚本文件
+     *
+     * @param scriptModel 脚本对象
+     * @return file
+     */
+    private File initScriptFile(ScriptLibraryModel scriptModel) {
         String dataPath = jpomApplication.getDataPath();
         File scriptFile = FileUtil.file(dataPath, Const.SCRIPT_RUN_CACHE_DIRECTORY, StrUtil.format("{}.{}", IdUtil.fastSimpleUUID(), CommandUtil.SUFFIX));
         // 替换内容
-        String context = scriptModel.getContext();
+        String context = scriptModel.getScript();
         FileUtils.writeScript(context, scriptFile, ExtConfigBean.getConsoleLogCharset());
         return scriptFile;
     }

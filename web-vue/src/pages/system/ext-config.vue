@@ -4,9 +4,11 @@
       <a-col span="6" style="">
         <a-row>
           <a-space style="display: inline">
-            <a-input v-model:value="addName" placeholder="创建文件 /xxx/xxx/xxx" style="width: 100%">
+            <a-input v-model:value="addName" :placeholder="$t('i18n_cfeea27648')" style="width: 100%">
               <template #addonAfter>
-                <a-button type="primary" size="small" :disabled="!addName" @click="addItemHander">确认 </a-button>
+                <a-button type="primary" size="small" :disabled="!addName" @click="addItemHander"
+                  >{{ $t('i18n_e83a256e4f') }}
+                </a-button>
               </template>
             </a-input>
           </a-space>
@@ -30,16 +32,18 @@
           >
             <template #tool_before>
               <div v-show="temp.name">
-                名称： <a-tag color="red">{{ temp.name }}</a-tag>
+                {{ $t('i18n_5b47861521') }} <a-tag color="red">{{ temp.name }}</a-tag>
               </div>
             </template>
           </code-editor>
 
           <a-row type="flex" justify="center">
             <a-space>
-              <a-button type="primary" danger :disabled="!temp || !temp.name" @click="saveData">保存</a-button>
+              <a-button type="primary" danger :disabled="!temp || !temp.name" @click="saveData">{{
+                $t('i18n_be5fbbe34c')
+              }}</a-button>
               <a-button v-if="temp.hasDefault" type="primary" :disabled="!temp || !temp.name" @click="readeDefault">
-                读取默认
+                {{ $t('i18n_3306c2a7c7') }}
               </a-button>
             </a-space>
           </a-row>
@@ -48,7 +52,6 @@
     </a-row>
   </div>
 </template>
-
 <script>
 import codeEditor from '@/components/codeEditor'
 import { addItem, listExtConf, getItem, saveItem, getDefaultItem } from '@/api/ext-config'
@@ -112,17 +115,20 @@ export default {
       getDefaultItem({ name: this.temp.name }).then((res) => {
         if (res.code === 200) {
           this.temp = { ...this.temp, content: res.data }
-          $message.success({ content: '已经读取默认配置文件到编辑器中' })
+          $message.success({ content: this.$t('i18n_335258331a') })
         }
       })
     },
     addItemHander() {
+      const title = this.$t('i18n_ef016ab402')
+      const other = this.$t('i18n_956ab8a9f7')
+      const content = `${title} 【${this.addName}】 ${other}`
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '确认创建该【' + this.addName + '】配置文件吗？配置文件一旦创建不能通过管理页面删除的奥？',
-        okText: '确认',
-        cancelText: '取消',
+        content: content,
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return addItem({ name: this.addName }).then((res) => {
             if (res.code === 200) {
@@ -150,5 +156,3 @@ export default {
   }
 }
 </script>
-
-<style scoped></style>

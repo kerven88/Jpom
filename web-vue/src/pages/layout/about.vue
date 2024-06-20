@@ -1,60 +1,54 @@
 <!-- Jpom 为开源软件，请基于开源协议用于商业用途 -->
-
-<!-- 开源不等同于免费，如果您基于 Jpom 二次开发修改了 logo、名称、版权等，请找我们授权，否则会有法律风险。
-  我们有权利追诉破坏开源并因此获利的团队个人的全部违法所得，也欢迎给我们提供侵权线索。 -->
-
-<!-- 二次修改不可删除或者修改版权，否则可能承担法律责任 -->
-
-<!-- 擅自修改或者删除版权信息有法律风险，请尊重开源协议，不要擅自修改版本信息，否则可能承担法律责任。 -->
-
 <template>
   <div>
     <a-alert type="warning" show-icon>
       <template #message>
         <a-space>
           <template #split> <a-divider type="vertical" /> </template>
-          <a href="https://jpom.top/pages/legal-risk/" target="_blank"> 法律风险<LinkOutlined /> </a>
-          <a href="https://jpom.top" target="_blank"> 官方文档<LinkOutlined /> </a>
+          <a href="https://jpom.top/pages/legal-risk/" target="_blank">{{ $t('i18n_9f01272a10') }}<LinkOutlined /> </a>
+          <a href="https://jpom.top" target="_blank">{{ $t('i18n_19fa0be4d2') }}<LinkOutlined /> </a>
         </a-space>
       </template>
       <template #description>
         <ul>
           <li>
             <div>
-              <b style="color: red">开源不等同于免费</b>，如果您基于 Jpom 二次开发修改了
-              <b>logo、名称、版权等</b>，请找我们授权，否则会有法律风险。
-              <div>我们有权利追诉破坏开源并因此获利的团队个人的全部违法所得，也欢迎给我们提供侵权线索。</div>
+              <b style="color: red">{{ $t('i18n_f3947e6581') }}</b
+              >，{{ $t('i18n_f30f1859ba') }} <b>logo{{ $t('i18n_cbcc87b3d4') }}</b
+              >，{{ $t('i18n_2bb1967887') }}
+              <div>{{ $t('i18n_c12ba6ff43') }}</div>
             </div>
           </li>
           <li>
             <div>
-              <b style="color: red">擅自修改或者删除版权信息有法律风险</b
-              >，请尊重开源协议，不要擅自修改版本信息，否则可能承担法律责任。
+              <b style="color: red">{{ $t('i18n_c26e6aaabb') }}</b
+              >，{{ $t('i18n_0b9d5ba772') }}
             </div>
           </li>
         </ul>
       </template>
     </a-alert>
     <a-tabs>
-      <a-tab-pane key="0" tab="支持开源">
-        <h2>Jpom 是一款开源软件您使用这个项目并感觉良好，或是想支持我们继续开发，您可以通过如下方式支持我们：</h2>
+      <a-tab-pane key="0" :tab="$t('i18n_6f6ee88ec4')">
+        <h2>Jpom {{ $t('i18n_a1c4a75c2d') }}</h2>
 
         <ul>
           <li>
-            Star 并向您的朋友推荐或分享： <a href="https://gitee.com/dromara/Jpom" target="_blank">Gitee</a> /
+            Star {{ $t('i18n_80198317ff') }} <a href="https://gitee.com/dromara/Jpom" target="_blank">Gitee</a> /
             <a href="https://github.com/dromara/Jpom" target="_blank">Github</a>
           </li>
-          <li>通过以下二维码进行一次性捐款赞助，请作者喝一杯咖啡☕️</li>
-          <li>付费加入我们的技术交流群优先解答您所有疑问</li>
+          <li>{{ $t('i18n_49a9d6c7e6') }}</li>
+          <li>{{ $t('i18n_de4cf8bdfa') }}</li>
           <li>
-            选择企业版本或者购买授权：<a href="https://jpom.top/pages/enterprise-service/" target="_blank">企业服务</a>
+            {{ $t('i18n_7a93e0a6ae')
+            }}<a href="https://jpom.top/pages/enterprise-service/" target="_blank">{{ $t('i18n_da89135649') }}</a>
           </li>
         </ul>
         <div></div>
         <a-card style="text-align: center">
-          <template #title> 一次性捐款赞助 </template>
+          <template #title> {{ $t('i18n_aeb44d34e6') }} </template>
           <template #extra>
-            <a href="https://jpom.top/pages/praise/" target="_blank">更多说明</a>
+            <a href="https://jpom.top/pages/praise/" target="_blank">{{ $t('i18n_ef734bf850') }}</a>
           </template>
           <a-row :gutter="[16, 16]">
             <a-col :span="6" />
@@ -74,7 +68,7 @@
                   <!-- <setting-outlined key="setting" />
                   <edit-outlined key="edit" />
                   <ellipsis-outlined key="ellipsis" /> -->
-                  <a-card-meta title="微信赞赏" description="扫码赞赏支持开源项目长期发展"> </a-card-meta>
+                  <a-card-meta :title="$t('i18n_55f01e138a')" :description="$t('i18n_0ee3ca5e88')"> </a-card-meta>
                 </template>
               </a-card>
             </a-col>
@@ -92,7 +86,7 @@
                   <!-- <img alt="alipay" :src="alipayQrcorde" style="width: 90%; margin: 5%" /> -->
                 </template>
                 <template #actions>
-                  <a-card-meta title="支付宝转账" description="扫码转账支持开源项目长期发展"> </a-card-meta>
+                  <a-card-meta :title="$t('i18n_a1da57ab69')" :description="$t('i18n_2331a990aa')"> </a-card-meta>
 
                   <!-- <setting-outlined key="setting" />
                 <edit-outlined key="edit" />
@@ -104,16 +98,20 @@
           </a-row>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane key="3" tab="联系我们">
+      <a-tab-pane key="3" :tab="$t('i18n_0cbf83cc07')">
         <div>
-          <h2 style="display: inline">联系时请备注来意</h2>
-          备注示例：<a-tag>付费社群</a-tag><a-tag>企业服务</a-tag><a-tag>广告投放</a-tag><a-tag>合作咨询</a-tag>
-          <a-tag>免费社群</a-tag>
+          <h2 style="display: inline">{{ $t('i18n_a952ba273f') }}</h2>
+          {{ $t('i18n_f712d3d040') }}<a-tag>{{ $t('i18n_0ce54ecc25') }}</a-tag
+          ><a-tag>{{ $t('i18n_da89135649') }}</a-tag
+          ><a-tag>{{ $t('i18n_92dde4c02b') }}</a-tag
+          ><a-tag>{{ $t('i18n_712cdd7984') }}</a-tag>
+          <a-tag>{{ $t('i18n_73f798a129') }}</a-tag>
         </div>
 
         <ul>
           <li>
-            邮箱：<a-typography-paragraph
+            {{ $t('i18n_da4495b1b4')
+            }}<a-typography-paragraph
               style="display: inline"
               :copyable="{ tooltip: false, text: 'bwcx_jzy@dromara.org' }"
             >
@@ -121,13 +119,14 @@
             </a-typography-paragraph>
           </li>
           <li>
-            微信：<a-typography-paragraph style="display: inline" :copyable="{ tooltip: false, text: 'jpom66' }">
+            {{ $t('i18n_da671a4d16')
+            }}<a-typography-paragraph style="display: inline" :copyable="{ tooltip: false, text: 'jpom66' }">
               <a href="https://jpom.top/pages/praise/join/" target="_blank"> jpom66</a>
             </a-typography-paragraph>
           </li>
         </ul>
 
-        <a-card title="微信二维码">
+        <a-card :title="$t('i18n_bdd87b63a6')">
           <div style="text-align: center">
             <a-image width="400px" :src="weixQrcodeJpom66" :preview="true"> </a-image>
           </div>
@@ -140,11 +139,11 @@
           /> -->
         </a-card>
       </a-tab-pane>
-      <a-tab-pane key="1" tab="开源协议">
+      <a-tab-pane key="1" :tab="$t('i18n_21dd8f23b4')">
         <pre style="white-space: pre-wrap">{{ licenseText }}</pre>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="软件致谢">
-        <h1>Jpom 中使用了如下开源软件，我们衷心感谢有了他们的开源 Jpom 才能更完善</h1>
+      <a-tab-pane key="2" :tab="$t('i18n_7fb5bdb690')">
+        <h1>Jpom {{ $t('i18n_4dc781596b') }}</h1>
         <a-list size="small" bordered :data-source="thankDependency">
           <template #renderItem="{ item }">
             <a-list-item>
@@ -166,17 +165,17 @@
             </a-list-item>
           </template>
           <template #header>
-            <div>排名按照字母 a-z 排序</div>
+            <div>{{ $t('i18n_791b6d0e62') }}</div>
           </template>
           <template #footer>
-            <div>还有更多相关依赖开源组件</div>
+            <div>{{ $t('i18n_ce1ecd8a5b') }}</div>
           </template>
         </a-list></a-tab-pane
       >
     </a-tabs>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 // 擅自修改或者删除版权信息有法律风险，请尊重开源协议，不要擅自修改版本信息，否则可能承担法律责任。
 import { getLicense, getThankDependency } from '@/api/about'
 import alipayQrcorde from '@/assets/images/qrcode/alipay-small.png'
@@ -184,6 +183,8 @@ import weixinQrcorde from '@/assets/images/qrcode/weixin-small.png'
 import alipayPraiseQrcorde from '@/assets/images/qrcode/alipay-praise.jpg'
 import weixinPraiseQrcorde from '@/assets/images/qrcode/weixin-praise.jpg'
 import weixQrcodeJpom66 from '@/assets/images/qrcode/weix-qrcode-jpom66.jpg'
+import { useI18n } from 'vue-i18n'
+const { t: $t } = useI18n()
 // import jpomLogo from '@/assets/images/jpom.svg'
 const licenseText = ref('')
 

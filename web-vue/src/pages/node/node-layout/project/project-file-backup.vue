@@ -12,7 +12,7 @@
           x: 'max-content'
         }"
       >
-        <template v-if="backupListData.path" #title> 备份文件存储目录：{{ backupListData.path }} </template>
+        <template v-if="backupListData.path" #title> {{ $t('i18n_1b38c0bc86') }}{{ backupListData.path }} </template>
 
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'filename'">
@@ -32,8 +32,12 @@
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a-button size="small" type="primary" @click="handleBackupFile(record)">详情</a-button>
-              <a-button size="small" type="primary" danger @click="handlBackupeDelete(record)">删除</a-button>
+              <a-button size="small" type="primary" @click="handleBackupFile(record)">{{
+                $t('i18n_f26225bde6')
+              }}</a-button>
+              <a-button size="small" type="primary" danger @click="handlBackupeDelete(record)">{{
+                $t('i18n_2f4aaddde3')
+              }}</a-button>
             </a-space>
           </template>
         </template>
@@ -53,13 +57,15 @@
                   viewList = true
                 }
               "
-              >返回列表
+              >{{ $t('i18n_adcd1dd701') }}
             </a-button>
-            <a-button size="small" type="primary" @click="loadData">刷新目录</a-button>
+            <a-button size="small" type="primary" @click="loadData">{{ $t('i18n_90b5a467c1') }}</a-button>
           </a-space>
         </div>
 
         <a-directory-tree
+          v-model:expandedKeys="expandedKeys"
+          v-model:selectedKeys="selectedKeys"
           :field-names="treeReplaceFields"
           :load-data="onTreeData"
           :tree-data="treeList"
@@ -81,11 +87,11 @@
         >
           <template #title>
             <a-popconfirm
-              :title="`${
-                uploadPath ? '将还原【' + uploadPath + '】目录,' : ''
-              } 请选择还原方式,清空还原将会先删除项目目录中的文件再将对应备份文件恢复至当前目录`"
-              ok-text="覆盖还原"
-              cancel-text="清空还原"
+              :title="`${uploadPath ? $t('i18n_bdd4cddd22') + uploadPath + $t('i18n_dadd4907c2') : ''} ${$t(
+                'i18n_aefd8f9f27'
+              )},${$t('i18n_500789168c')}`"
+              :ok-text="$t('i18n_587a63264b')"
+              :cancel-text="$t('i18n_b1a09cee8e')"
               :ok-button-props="{
                 loading: recoverLoading
               }"
@@ -96,11 +102,11 @@
                 <QuestionCircleOutlined style="color: red" />
               </template>
               <!-- @click="recoverPath(uploadPath)" -->
-              <a-button size="small" type="primary">还原</a-button>
+              <a-button size="small" type="primary">{{ $t('i18n_69de8d7f40') }}</a-button>
             </a-popconfirm>
 
             <a-space>
-              <a-tag v-if="uploadPath" color="#2db7f5">当前目录: {{ uploadPath || '' }}</a-tag>
+              <a-tag v-if="uploadPath" color="#2db7f5">{{ $t('i18n_2c8109fa0b') }}{{ uploadPath || '' }}</a-tag>
             </a-space>
           </template>
 
@@ -113,7 +119,7 @@
             </template>
             <template v-else-if="column.dataIndex === 'isDirectory'">
               <a-tooltip placement="topLeft" :title="text">
-                <span>{{ text ? '目录' : '文件' }}</span>
+                <span>{{ text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1') }}</span>
               </a-tooltip>
             </template>
             <template v-else-if="column.dataIndex === 'fileSizeLong'">
@@ -129,21 +135,23 @@
             <template v-else-if="column.dataIndex === 'operation'">
               <a-space>
                 <template v-if="record.isDirectory">
-                  <a-tooltip title="不能下载目录">
-                    <a-button size="small" type="primary" :disabled="true">下载</a-button>
+                  <a-tooltip :title="$t('i18n_6c14188ba0')">
+                    <a-button size="small" type="primary" :disabled="true">{{ $t('i18n_f26ef91424') }}</a-button>
                   </a-tooltip>
                 </template>
                 <template v-else>
-                  <a-button size="small" type="primary" @click="handleDownload(record)">下载</a-button>
+                  <a-button size="small" type="primary" @click="handleDownload(record)">{{
+                    $t('i18n_f26ef91424')
+                  }}</a-button>
                 </template>
                 <template v-if="record.isDirectory">
                   <!-- record.filename -->
                   <a-popconfirm
                     :title="`${
-                      record.filename ? '将还原【' + record.filename + '】目录,' : ''
-                    } 请选择还原方式,清空还原将会先删除项目目录中的文件再将对应备份文件恢复至当前目录`"
-                    ok-text="覆盖还原"
-                    cancel-text="清空还原"
+                      record.filename ? $t('i18n_bdd4cddd22') + record.filename + $t('i18n_dadd4907c2') : ''
+                    } ${$t('i18n_aefd8f9f27')},${$t('i18n_500789168c')}`"
+                    :ok-text="$t('i18n_587a63264b')"
+                    :cancel-text="$t('i18n_b1a09cee8e')"
                     :ok-button-props="{
                       loading: recoverLoading
                     }"
@@ -153,16 +161,18 @@
                     <template #icon>
                       <QuestionCircleOutlined style="color: red" />
                     </template>
-                    <a-button size="small" type="primary">还原</a-button>
+                    <a-button size="small" type="primary">{{ $t('i18n_69de8d7f40') }}</a-button>
                   </a-popconfirm>
                 </template>
                 <template v-else>
-                  <a-button size="small" type="primary" :loading="recoverLoading" @click="recover(record)"
-                    >还原</a-button
-                  >
+                  <a-button size="small" type="primary" :loading="recoverLoading" @click="recover(record)">{{
+                    $t('i18n_69de8d7f40')
+                  }}</a-button>
                 </template>
 
-                <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+                <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+                  $t('i18n_2f4aaddde3')
+                }}</a-button>
               </a-space>
             </template>
           </template>
@@ -171,7 +181,6 @@
     </a-layout>
   </div>
 </template>
-
 <script>
 import {
   backupDeleteProjectFile,
@@ -214,66 +223,69 @@ export default {
         children: 'children',
         label: 'filename'
       },
-
+      expandedKeys: [],
+      selectedKeys: [],
       columns: [
         {
-          title: '文件名称',
+          title: this.$t('i18n_d2e2560089'),
           dataIndex: 'filename',
           ellipsis: true
         },
 
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'fileSizeLong',
           width: 120,
           ellipsis: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeLong',
           width: 180,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           width: 180,
           align: 'center',
           fixed: 'right'
         }
       ],
+
       fileColumns: [
         {
-          title: '文件名称',
+          title: this.$t('i18n_d2e2560089'),
           dataIndex: 'filename',
           ellipsis: true
         },
         {
-          title: '文件类型',
+          title: this.$t('i18n_28b988ce6a'),
           dataIndex: 'isDirectory',
           width: 100,
           ellipsis: true
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'fileSizeLong',
           width: 120,
           ellipsis: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeLong',
           width: 180,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           width: 180,
           align: 'center',
           fixed: 'right'
         }
       ],
+
       recoverLoading: false
     }
   },
@@ -321,13 +333,14 @@ export default {
       const key = 'root-' + new Date().getTime()
       this.treeList = [
         {
-          filename: '目录：' + (this.temp.filename || ''),
+          filename: this.$t('i18n_cfeff30d2c') + (this.temp.filename || ''),
           level: 1,
           isDirectory: true,
           key: key,
           isLeaf: false
         }
       ]
+
       // 设置默认展开第一个
       setTimeout(() => {
         const node = this.treeList[0]
@@ -392,7 +405,7 @@ export default {
     loadFileList() {
       if (Object.keys(this.tempNode).length === 0) {
         $notification.warn({
-          message: '请选择一个节点'
+          message: this.$t('i18n_bcaf69a038')
         })
         return false
       }
@@ -425,7 +438,7 @@ export default {
     // 下载
     handleDownload(record) {
       $notification.info({
-        message: '正在下载，请稍等...'
+        message: this.$t('i18n_e4bf491a0d')
       })
       // 请求参数
       const params = {
@@ -441,14 +454,14 @@ export default {
     // 删除
     handleDelete(record) {
       const msg = record.isDirectory
-        ? '真的要删除【' + record.filename + '】文件夹么？'
-        : '真的要删除【' + record.filename + '】文件么？'
+        ? this.$t('i18n_3cc09369ad') + record.filename + this.$t('i18n_52a8df6678')
+        : this.$t('i18n_3cc09369ad') + record.filename + this.$t('i18n_48e79b3340')
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return backupDeleteProjectFile({
             nodeId: this.nodeId,
@@ -470,13 +483,13 @@ export default {
     },
     // 删除备份
     handlBackupeDelete(record) {
-      const msg = '真的要删除【' + record.filename + '】备份文件夹么？'
+      const msg = this.$t('i18n_3cc09369ad') + record.filename + this.$t('i18n_115cd58b5d')
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return backupDeleteProjectFile({
             nodeId: this.nodeId,
@@ -506,11 +519,11 @@ export default {
         this.recoverPath(record.filename)
       } else {
         $confirm({
-          title: '系统提示',
+          title: this.$t('i18n_c4535759ee'),
           zIndex: 1009,
-          content: '是否将【' + record.filename + '】此文件还原到项目目录？',
-          okText: '确认',
-          cancelText: '取消',
+          content: this.$t('i18n_d2cac1245d') + record.filename + this.$t('i18n_e039ffccc8'),
+          okText: this.$t('i18n_e83a256e4f'),
+          cancelText: this.$t('i18n_625fb26b4b'),
           onOk() {
             // // 请求参数
             this.recoverNet('', record.filename)
@@ -545,7 +558,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .file-layout {
   padding: 0;

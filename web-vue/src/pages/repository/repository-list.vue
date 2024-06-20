@@ -7,7 +7,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="repository-list"
-      empty-description="没有任何仓库"
+      :empty-description="$t('i18n_e07cbb381c')"
       size="middle"
       :columns="columns"
       :data-source="list"
@@ -31,16 +31,21 @@
           <a-input
             v-model:value="listQuery['%name%']"
             class="search-input-item"
-            placeholder="仓库名称"
+            :placeholder="$t('i18n_f967131d9d')"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%gitUrl%']"
             class="search-input-item"
-            placeholder="仓库地址"
+            :placeholder="$t('i18n_e4bea943de')"
             @press-enter="loadData"
           />
-          <a-select v-model:value="listQuery.repoType" allow-clear placeholder="仓库类型" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.repoType"
+            allow-clear
+            :placeholder="$t('i18n_4ce606413e')"
+            class="search-input-item"
+          >
             <a-select-option :value="'0'">GIT</a-select-option>
             <a-select-option :value="'1'">SVN</a-select-option>
           </a-select>
@@ -58,29 +63,35 @@
               }
             "
             allow-clear
-            placeholder="分组"
+            :placeholder="$t('i18n_829abe5a8d')"
             class="search-input-item"
           >
             <a-select-option v-for="item in groupList" :key="item">{{ item }}</a-select-option>
           </a-select>
 
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
           <a-tooltip>
-            <template #title> 使用 Access Token 一次导入多个项目 </template>
-            <a-button type="primary" @click="handleAddGitee"><QuestionCircleOutlined />令牌导入</a-button>
+            <template #title> {{ $t('i18n_77c262950c') }} </template>
+            <a-button type="primary" @click="handleAddGitee"
+              ><QuestionCircleOutlined />{{ $t('i18n_e354969500') }}</a-button
+            >
           </a-tooltip>
         </a-space>
       </template>
       <template #toolPrefix>
-        <a-button type="primary" size="small" @click="handlerExportData"><DownloadOutlined />导出</a-button>
+        <a-button type="primary" size="small" @click="handlerExportData"
+          ><DownloadOutlined />{{ $t('i18n_55405ea6ff') }}</a-button
+        >
         <a-dropdown>
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">
-                <a-button type="primary" size="small" @click="handlerImportTemplate()">下载导入模板</a-button>
+                <a-button type="primary" size="small" @click="handlerImportTemplate()">{{
+                  $t('i18n_2e505d23f7')
+                }}</a-button>
               </a-menu-item>
             </a-menu>
           </template>
@@ -93,7 +104,9 @@
             :multiple="false"
             :before-upload="beforeUpload"
           >
-            <a-button type="primary" size="small"><UploadOutlined /> 导入 <DownOutlined /> </a-button>
+            <a-button type="primary" size="small"
+              ><UploadOutlined /> {{ $t('i18n_8d9a071ee2') }} <DownOutlined />
+            </a-button>
           </a-upload>
         </a-dropdown>
       </template>
@@ -107,7 +120,7 @@
         <template v-else-if="column.dataIndex === 'repoType'">
           <span v-if="text === 0">GIT</span>
           <span v-else-if="text === 1">SVN</span>
-          <span v-else>未知</span>
+          <span v-else>{{ $t('i18n_1622dc9b6b') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'protocol'">
           <span v-if="text === 0">HTTP(S)</span>
@@ -116,18 +129,22 @@
           <span v-else>{{ record.gitUrl.indexOf('http') > -1 ? 'HTTP(S)' : 'SSH' }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'workspaceId'">
-          <a-tag v-if="text === 'GLOBAL'">全局</a-tag>
-          <a-tag v-else>工作空间</a-tag>
+          <a-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</a-tag>
+          <a-tag v-else>{{ $t('i18n_98d69f8b62') }}</a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button type="primary" size="small" @click="handleEdit(record)">编辑</a-button>
-            <a-button v-if="global" type="primary" size="small" @click="viewBuild(record)">关联</a-button>
-            <a-button type="primary" danger size="small" @click="handleDelete(record)">删除</a-button>
+            <a-button type="primary" size="small" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button v-if="global" type="primary" size="small" @click="viewBuild(record)">{{
+              $t('i18n_1c3cf7f5f0')
+            }}</a-button>
+            <a-button type="primary" danger size="small" @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
 
             <a-dropdown>
               <a @click="(e) => e.preventDefault()">
-                更多
+                {{ $t('i18n_0ec9eaf9c3') }}
                 <DownOutlined />
               </a>
               <template #overlay>
@@ -138,7 +155,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'top')"
-                      >置顶</a-button
+                      >{{ $t('i18n_3d43ff1199') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -147,7 +164,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'up')"
-                      >上移</a-button
+                      >{{ $t('i18n_315eacd193') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -157,7 +174,7 @@
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) === listQuery.total"
                       @click="sortItemHander(record, index, 'down')"
                     >
-                      下移
+                      {{ $t('i18n_17acd250da') }}
                     </a-button>
                   </a-menu-item>
                 </a-menu>
@@ -168,40 +185,51 @@
       </template>
     </CustomTable>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
-      :z-index="1009"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="编辑仓库"
+      :title="$t('i18n_ed39deafd8')"
       :mask-closable="false"
+      width="60%"
       @ok="handleEditOk"
     >
       <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-        <a-form-item label="仓库名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="仓库名称" />
+        <a-form-item :label="$t('i18n_f967131d9d')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_f967131d9d')" />
         </a-form-item>
-        <a-form-item label="分组" name="group">
+        <a-form-item :label="$t('i18n_829abe5a8d')" name="group">
           <custom-select
             v-model:value="temp.group"
             :data="groupList"
-            input-placeholder="新增分组"
-            select-placeholder="选择分组名"
+            :input-placeholder="$t('i18n_bd0362bed3')"
+            :select-placeholder="$t('i18n_9cac799f2f')"
           >
           </custom-select>
         </a-form-item>
-        <a-form-item label="仓库地址" name="gitUrl">
+        <a-form-item :label="$t('i18n_e4bea943de')" name="gitUrl">
           <a-input-group compact>
             <a-form-item-rest>
-              <a-select v-model:value="temp.repoType" style="width: 20%" name="repoType" placeholder="仓库类型">
+              <a-select
+                v-model:value="temp.repoType"
+                style="width: 20%"
+                name="repoType"
+                :placeholder="$t('i18n_4ce606413e')"
+              >
                 <a-select-option :value="0">GIT</a-select-option>
                 <a-select-option :value="1">SVN</a-select-option>
               </a-select>
             </a-form-item-rest>
-            <a-input v-model:value="temp.gitUrl" style="width: 80%" :max-length="250" placeholder="仓库地址" />
+            <a-input
+              v-model:value="temp.gitUrl"
+              style="width: 80%"
+              :max-length="250"
+              :placeholder="$t('i18n_e4bea943de')"
+            />
           </a-input-group>
         </a-form-item>
-        <a-form-item label="协议" name="protocol">
+        <a-form-item :label="$t('i18n_faa1ad5e5c')" name="protocol">
           <a-radio-group v-model:value="temp.protocol" name="protocol">
             <a-radio :value="0">HTTP(S)</a-radio>
             <a-radio :value="1">SSH</a-radio>
@@ -212,8 +240,10 @@
           <a-form-item name="userName">
             <template #label>
               <a-tooltip>
-                账号
-                <template #title> 账号支持引用工作空间变量：<b>$ref.wEnv.xxxx</b> xxxx 为变量名称</template>
+                {{ $t('i18n_7035c62fb0') }}
+                <template #title>
+                  {{ $t('i18n_f0a1428f65') }}<b>$ref.wEnv.xxxx</b> xxxx {{ $t('i18n_c1b72e7ded') }}</template
+                >
                 <QuestionCircleOutlined v-if="!temp.id" />
               </a-tooltip>
             </template>
@@ -222,7 +252,7 @@
               :input="temp.userName"
               :env-list="envVarList"
               type="text"
-              :placeholder="`登录用户`"
+              :placeholder="`${$t('i18n_fc4e2c6151')}`"
               @change="
                 (v) => {
                   temp = { ...temp, userName: v }
@@ -234,8 +264,10 @@
           <a-form-item name="password">
             <template #label>
               <a-tooltip>
-                密码
-                <template #title> 密码支持引用工作空间变量：<b>$ref.wEnv.xxxx</b> xxxx 为变量名称</template>
+                {{ $t('i18n_a810520460') }}
+                <template #title>
+                  {{ $t('i18n_63dd96a28a') }}<b>$ref.wEnv.xxxx</b> xxxx {{ $t('i18n_c1b72e7ded') }}</template
+                >
                 <QuestionCircleOutlined v-if="!temp.id" />
               </a-tooltip>
             </template>
@@ -243,7 +275,7 @@
             <custom-input
               :input="temp.password"
               :env-list="envVarList"
-              :placeholder="`${!temp.id ? '登录密码' : '此处不填不会修改密码'}`"
+              :placeholder="`${!temp.id ? $t('i18n_2646b813e8') : $t('i18n_b90a30dd20')}`"
               @change="
                 (v) => {
                   temp = { ...temp, password: v }
@@ -252,22 +284,24 @@
             >
             </custom-input>
             <template #help>
-              <a-tooltip v-if="temp.id" title=" 密码字段和密钥字段在编辑的时候不会返回，如果需要重置或者清空就请点我">
-                <a-button style="margin: 5px" size="small" type="primary" danger @click="restHideField(temp)"
-                  >清除</a-button
-                >
+              <a-tooltip v-if="temp.id" :title="$t('i18n_b408105d69')">
+                <a-button style="margin: 5px" size="small" type="primary" danger @click="restHideField(temp)">{{
+                  $t('i18n_4403fca0c0')
+                }}</a-button>
               </a-tooltip>
             </template>
           </a-form-item>
         </template>
-        <a-form-item v-if="temp.repoType === 1 && temp.protocol === 1" label="账号" name="userName">
-          <a-input v-model:value="temp.userName" placeholder="svn ssh 必填登录用户">
+        <a-form-item v-if="temp.repoType === 1 && temp.protocol === 1" :label="$t('i18n_7035c62fb0')" name="userName">
+          <a-input v-model:value="temp.userName" :placeholder="$t('i18n_f04a289502')">
             <template #prefix>
               <UserOutlined />
             </template>
             <template #suffix>
-              <a-tooltip v-if="temp.id" title=" 密码字段和密钥字段在编辑的时候不会返回，如果需要重置或者清空就请点我">
-                <a-button size="small" type="primary" danger @click="restHideField(temp)">清除</a-button>
+              <a-tooltip v-if="temp.id" :title="$t('i18n_b408105d69')">
+                <a-button size="small" type="primary" danger @click="restHideField(temp)">{{
+                  $t('i18n_4403fca0c0')
+                }}</a-button>
               </a-tooltip>
             </template>
           </a-input>
@@ -277,15 +311,17 @@
           <a-form-item name="password">
             <template #label>
               <a-tooltip>
-                密码
-                <template #title> 密码支持引用工作空间变量：<b>$ref.wEnv.xxxx</b> xxxx 为变量名称</template>
+                {{ $t('i18n_a810520460') }}
+                <template #title>
+                  {{ $t('i18n_63dd96a28a') }}<b>$ref.wEnv.xxxx</b> xxxx {{ $t('i18n_c1b72e7ded') }}</template
+                >
                 <QuestionCircleOutlined v-if="!temp.id" />
               </a-tooltip>
             </template>
             <custom-input
               :input="temp.password"
               :env-list="envVarList"
-              :placeholder="`证书密码`"
+              :placeholder="`${$t('i18n_45028ad61d')}`"
               @change="
                 (v) => {
                   temp = { ...temp, password: v }
@@ -294,24 +330,26 @@
             >
             </custom-input>
           </a-form-item>
-          <a-form-item label="私钥" name="rsaPrv">
+          <a-form-item :label="$t('i18n_d0eddb45e2')" name="rsaPrv">
             <a-tooltip placement="topLeft">
               <template #title>
                 <div>
                   <p style="color: #faa">
-                    注意：目前对 SSH key 访问 git 仓库地址不支持使用 ssh-keygen -t rsa -C "邮箱" 方式生成的 SSH key
-                    <br />需要使用 ssh-keygen -m PEM -t rsa -b 4096 -C "邮箱" 方式生成公私钥<br />
+                    {{ $t('i18n_43c61e76e7') }} "{{ $t('i18n_3bc5e602b2') }}" {{ $t('i18n_9e560a4162') }} <br />{{
+                      $t('i18n_8c66392870')
+                    }}
+                    "{{ $t('i18n_3bc5e602b2') }}" {{ $t('i18n_d0a864909b') }}<br />
                   </p>
-                  <p>如果在生成私钥的过程中有加密，那么需要把加密密码填充到上面的密码框中</p>
-                  <p>支持两种方式填充：</p>
+                  <p>{{ $t('i18n_8fb7785809') }}</p>
+                  <p>{{ $t('i18n_0af04cdc22') }}</p>
                   <p>
-                    1. 完整的私钥内容 如: <br />-----BEGIN RSA PRIVATE KEY-----
+                    1. {{ $t('i18n_f5d0b69533') }}: <br />-----BEGIN RSA PRIVATE KEY-----
                     <br />
                     ..... <br />
                     -----END RSA PRIVATE KEY-----
                   </p>
                   <p>
-                    2. 私钥文件绝对路径（绝对路径前面新增 file: 前缀) 如:
+                    2. {{ $t('i18n_becc848a54') }}: {{ $t('i18n_4c9bb42608') }}) {{ $t('i18n_bcc4f9e5ca') }}:
                     <br />file:/Users/Hotstrip/.ssh/id_rsa
                   </p>
                 </div>
@@ -319,41 +357,41 @@
               <a-textarea
                 v-model:value="temp.rsaPrv"
                 :auto-size="{ minRows: 3, maxRows: 3 }"
-                placeholder="私钥,不填将使用默认的 $HOME/.ssh 目录中的配置。支持配置文件目录:file:"
+                :placeholder="$t('i18n_d7ee59f327')"
               ></a-textarea>
             </a-tooltip>
           </a-form-item>
           <!-- 公钥暂时没用到 -->
-          <a-form-item v-if="false" label="公钥" name="rsaPub">
+          <a-form-item v-if="false" :label="$t('i18n_b939d47e23')" name="rsaPub">
             <a-textarea
               v-model:value="temp.rsaPub"
               :auto-size="{ minRows: 3, maxRows: 3 }"
-              placeholder="公钥,不填将使用默认的 $HOME/.ssh 目录中的配置。支持配置文件目录:file:"
+              :placeholder="$t('i18n_db686f0328')"
             ></a-textarea>
           </a-form-item>
         </template>
-        <a-form-item v-if="workspaceId !== 'GLOBAL'" label="共享" name="global">
+        <a-form-item v-if="workspaceId !== 'GLOBAL'" :label="$t('i18n_fffd3ce745')" name="global">
           <a-radio-group v-model:value="temp.global">
-            <a-radio :value="true"> 全局</a-radio>
-            <a-radio :value="false"> 当前工作空间</a-radio>
+            <a-radio :value="true"> {{ $t('i18n_2be75b1044') }}</a-radio>
+            <a-radio :value="false"> {{ $t('i18n_691b11e443') }}</a-radio>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item label="超时时间(s)" name="timeout">
+        <a-form-item :label="$t('i18n_67425c29a5')" name="timeout">
           <a-input-number
             v-model:value="temp.timeout"
             :min="0"
-            placeholder="拉取仓库超时时间,单位秒"
+            :placeholder="$t('i18n_ea9f824647')"
             style="width: 100%"
           />
         </a-form-item>
       </a-form>
-    </a-modal>
-    <a-modal
+    </CustomModal>
+    <CustomModal
+      v-if="giteeImportVisible"
       v-model:open="giteeImportVisible"
-      :z-index="1009"
       destroy-on-close
-      title="通过私人令牌导入仓库"
+      :title="$t('i18n_c8633b4b77')"
       width="80%"
       :footer="null"
       :mask-closable="false"
@@ -365,13 +403,11 @@
         :model="giteeImportForm"
         :wrapper-col="{ span: 20 }"
       >
-        <a-form-item
-          name="token"
-          label="私人令牌"
-          help="使用私人令牌，可以在你不输入账号密码的情况下对你账号内的仓库进行管理，你可以在创建令牌时指定令牌所拥有的权限。"
-        >
+        <a-form-item name="token" :label="$t('i18n_8ba971a184')" :help="$t('i18n_e30a93415b')">
           <a-form-item-rest>
-            <a-tooltip :title="`${giteeImportForm.type} 的令牌${importTypePlaceholder[giteeImportForm.type]}`">
+            <a-tooltip
+              :title="`${giteeImportForm.type} ${$t('i18n_32d0576d85')}${importTypePlaceholder[giteeImportForm.type]}`"
+            >
               <a-input-group compact>
                 <a-select v-model:value="giteeImportForm.type" style="width: 10%" @change="importChange">
                   <a-select-option v-for="item in Object.keys(providerData)" :key="item" :value="item">
@@ -391,16 +427,16 @@
             </a-tooltip>
           </a-form-item-rest>
         </a-form-item>
-        <a-form-item name="address" label="地址">
-          <a-input v-model:value="giteeImportForm.address" placeholder="请填写平台地址" />
+        <a-form-item name="address" :label="$t('i18n_7650487a87')">
+          <a-input v-model:value="giteeImportForm.address" :placeholder="$t('i18n_9412eb8f99')" />
         </a-form-item>
         <a-form-item
-          v-if="providerData[giteeImportForm.type].query"
+          v-if="providerData[giteeImportForm.type]?.query"
           name="condition"
-          label="搜索"
-          help="输入仓库名称或者仓库路径进行搜索"
+          :label="$t('i18n_e5f71fc31e')"
+          :help="$t('i18n_bf0e1e0c16', { slot1: $t('i18n_e5f71fc31e') })"
         >
-          <a-input v-model:value="giteeImportForm.condition" placeholder="输入仓库名称或者仓库路径进行搜索" />
+          <a-input v-model:value="giteeImportForm.condition" :placeholder="$t('i18n_e72f2b8806')" />
         </a-form-item>
       </a-form>
       <a-table
@@ -440,12 +476,12 @@
 
           <template v-else-if="column.dataIndex === 'operation'">
             <a-button type="primary" size="small" :disabled="record.exists" @click="handleGiteeRepoAdd(record)">{{
-              record.exists ? '已存在' : '新增'
+              record.exists ? $t('i18n_cb951984f2') : $t('i18n_66ab5e9f24')
             }}</a-button>
           </template>
         </template>
       </a-table>
-    </a-modal>
+    </CustomModal>
     <!-- 选择仓库确认区域 -->
     <!-- <div style="padding-top: 50px" v-if="this.choose">
       <div
@@ -476,20 +512,20 @@
       </div> -->
     <!-- </div> -->
     <!-- 关联构建 -->
-    <a-modal
+    <CustomModal
+      v-if="viewBuildVisible"
       v-model:open="viewBuildVisible"
       destroy-on-close
       width="80vw"
-      title="当前工作空间关联构建"
+      :title="$t('i18n_1c13276448')"
       :mask-closable="false"
       :footer="null"
     >
       <buildList-component v-if="viewBuildVisible" :repository-id="temp.id" :full-content="false" />
       <a-spin v-else>loading....</a-spin>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import CustomInput from '@/components/customInput'
 import {
@@ -557,7 +593,7 @@ export default {
 
       columns: [
         {
-          title: '仓库名称',
+          title: this.$t('i18n_f967131d9d'),
           dataIndex: 'name',
           width: 200,
           sorter: true,
@@ -565,14 +601,14 @@ export default {
           tooltip: true
         },
         {
-          title: '分组名',
+          title: this.$t('i18n_b37b786351'),
           dataIndex: 'group',
           ellipsis: true,
           width: '100px',
           tooltip: true
         },
         {
-          title: '仓库地址',
+          title: this.$t('i18n_e4bea943de'),
           dataIndex: 'gitUrl',
           width: 300,
           sorter: true,
@@ -580,76 +616,77 @@ export default {
           tooltip: true
         },
         {
-          title: '仓库类型',
+          title: this.$t('i18n_4ce606413e'),
           dataIndex: 'repoType',
           width: 100,
           sorter: true,
           ellipsis: true
         },
         {
-          title: '协议',
+          title: this.$t('i18n_faa1ad5e5c'),
           dataIndex: 'protocol',
           width: 100,
           sorter: true,
           ellipsis: true
         },
         {
-          title: '共享',
+          title: this.$t('i18n_fffd3ce745'),
           dataIndex: 'workspaceId',
           ellipsis: true,
 
           width: '90px'
         },
         {
-          title: '创建人',
+          title: this.$t('i18n_95a43eaa59'),
           dataIndex: 'createUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           tooltip: true,
           width: '120px'
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text }) => parseTime(text),
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           customRender: ({ text }) => parseTime(text),
           width: '170px'
         },
         {
-          title: '排序值',
+          title: this.$t('i18n_c35c1a1330'),
           dataIndex: 'sortValue',
           sorter: true,
           width: '80px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
           align: 'center',
           width: this.global ? '240px' : '180px'
         }
       ],
+
       reposColumns: [
         {
-          title: '仓库名称',
+          title: this.$t('i18n_f967131d9d'),
           dataIndex: 'name',
           ellipsis: true
         },
         {
-          title: '仓库路径',
+          title: this.$t('i18n_42b6bd1b2f'),
           dataIndex: 'full_name',
           ellipsis: true
         },
@@ -660,46 +697,47 @@ export default {
         },
 
         {
-          title: '描述',
+          title: this.$t('i18n_3bdd08adab'),
           dataIndex: 'description',
 
           ellipsis: true
         },
         {
-          title: '私有',
+          title: this.$t('i18n_3dc5185d81'),
           dataIndex: 'private',
           width: 80,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           width: 100,
 
           align: 'left'
         }
       ],
+
       giteeImportForm: Object.assign({}, PAGE_DEFAULT_LIST_QUERY, {
         limit: 15,
         type: 'gitee',
         address: 'https://gitee.com'
       }),
       giteeImportFormRules: {
-        token: [{ required: true, message: '请输入私人令牌', trigger: 'blur' }]
+        token: [{ required: true, message: this.$t('i18n_76530bff27'), trigger: 'blur' }]
         // address: [{ required: true, message: "请填写平台地址", trigger: "blur" }],
       },
       rules: {
-        name: [{ required: true, message: '请填写仓库名称', trigger: 'blur' }],
-        gitUrl: [{ required: true, message: '请填写仓库地址', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_9f0de3800b'), trigger: 'blur' }],
+        gitUrl: [{ required: true, message: this.$t('i18n_0cf81d77bb'), trigger: 'blur' }]
       },
       importTypePlaceholder: {
-        gitee: '在 设置-->安全设置-->私人令牌 中获取',
-        github: '在 Settings-->Developer settings-->Personal access tokens 中获取',
-        gitlab_v3: '在 preferences-->Access Tokens 中获取',
-        gitlab: '在 preferences-->Access Tokens 中获取',
-        gitea: '在 设置 --> 应用 --> 生成令牌',
-        gogs: '在 设置 --> 应用 --> 生成令牌',
-        other: '请输入私人令牌'
+        gitee: this.$t('i18n_233fb56ab2'),
+        github: this.$t('i18n_4b1835640f'),
+        gitlab_v3: this.$t('i18n_5bd1d267a9'),
+        gitlab: this.$t('i18n_5bd1d267a9'),
+        gitea: this.$t('i18n_cd1aedc667'),
+        gogs: this.$t('i18n_cd1aedc667'),
+        other: this.$t('i18n_76530bff27')
       },
       tableSelections: [],
       envVarList: [],
@@ -907,10 +945,10 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的要删除仓库信息么？',
-        okText: '确认',
-        cancelText: '取消',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_7dfc7448ec'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         zIndex: 1009,
         onOk: () => {
           return deleteRepository({
@@ -930,10 +968,10 @@ export default {
     // 清除隐藏字段
     restHideField(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的要清除仓库隐藏字段信息么？（密码，私钥）',
-        okText: '确认',
-        cancelText: '取消',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_664c205cc3'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         zIndex: 1009,
         onOk: () => {
           return restHideField(record.id).then((res) => {
@@ -951,21 +989,21 @@ export default {
     // 排序
     sortItemHander(record, index, method) {
       const msgData = {
-        top: '确定要将此数据置顶吗？',
-        up: '确定要将此数上移吗？',
-        down: '确定要将此数据下移吗？下移操作可能因为列表后续数据没有排序值操作无效！'
+        top: this.$t('i18n_0079d91f95'),
+        up: this.$t('i18n_b166a66d67'),
+        down: this.$t('i18n_7a7e25e9eb')
       }
-      let msg = msgData[method] || '确定要操作吗？'
+      let msg = msgData[method] || this.$t('i18n_49574eee58')
       if (!record.sortValue) {
-        msg += ' 当前数据为默认状态,操后上移或者下移可能不会达到预期排序,还需要对相关数据都操作后才能达到预期排序'
+        msg += ` ${this.$t('i18n_57c0a41ec6')},${this.$t('i18n_066f903d75')},${this.$t('i18n_c4e2cd2266')}`
       }
       // console.log(this.list, index, this.list[method === "top" ? index : method === "up" ? index - 1 : index + 1]);
       const compareId = this.list[method === 'top' ? index : method === 'up' ? index - 1 : index + 1].id
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         content: msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         zIndex: 1009,
         onOk: () => {
           return sortItem({
@@ -989,7 +1027,7 @@ export default {
     handerConfirm() {
       if (!this.tableSelections.length) {
         $notification.warning({
-          message: '请选择要使用的仓库'
+          message: this.$t('i18n_be381ac957')
         })
         return
       }
@@ -1007,7 +1045,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 /* .filter {
   margin-bottom: 10px;

@@ -1,6 +1,6 @@
 <template>
   <a-config-provider
-    :locale="lang[nowLang]?.antd"
+    :locale="antdLang"
     :theme="{
       algorithm: themeAlgorithm
       // token: {
@@ -15,17 +15,20 @@
     </a-spin>
   </a-config-provider>
 </template>
-
-<script setup lang="ts">
+<script lang="ts" setup>
 import { theme } from 'ant-design-vue'
 import { onMounted, onUnmounted } from 'vue'
 import { SpinProps } from 'ant-design-vue/es/spin/Spin'
-import { lang } from './i18n'
+import { changeLang } from './i18n'
 import { useI18n } from 'vue-i18n'
+import { Locale } from 'ant-design-vue/es/locale'
 const routerActivation = ref(true)
 const useGuideStore = guideStore()
 const getGuideCache = useGuideStore.getGuideCache
 const i18nHook = useI18n()
+const t = i18nHook.t
+
+const antdLang = ref<Locale>()
 
 const nowLang = computed(() => {
   return useGuideStore.getLocale()
@@ -40,9 +43,15 @@ const nowLang = computed(() => {
 const onMatchMediaChange = (e: MediaQueryListEvent) => {
   useGuideStore.setSystemIsDark(e.matches)
 }
+const changeI18n = (lang: string) => {
+  changeLang(lang).then((antdLoadLang) => {
+    antdLang.value = antdLoadLang.default
+  })
+}
+//console.log('app', new Date().getTime())
 onMounted(() => {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onMatchMediaChange)
-  i18nHook.locale.value = nowLang.value
+  changeI18n(nowLang.value)
 })
 
 onUnmounted(() => {
@@ -60,6 +69,9 @@ const themeAlgorithm = computed(() => {
   }
   const themeDiy = useGuideStore.getThemeView()
   if (themeDiy === 'light') {
+    if (getGuideCache.compactView) {
+      return algorithm
+    }
     algorithm.push(theme.defaultAlgorithm)
   } else if (themeDiy === 'dark') {
     algorithm.push(theme.darkAlgorithm)
@@ -73,10 +85,10 @@ const pageLoadingTimeout = ref()
 
 const useAppStore = appStore()
 
-const pageLoading = computed(() => {
+const pageLoadingStore = computed(() => {
   return useAppStore.loading
 })
-watch(pageLoading, (newValue) => {
+watch(pageLoadingStore, (newValue) => {
   //
   if (newValue === 2) {
     clearTimeout(pageLoadingTimeout.value)
@@ -87,7 +99,7 @@ watch(pageLoading, (newValue) => {
       pageloading.value = true
       globalLoading({
         spinning: true,
-        tip: '页面资源加载中....'
+        tip: t('i18n_6ad02e7a1b')
       })
     }, 500)
   }
@@ -124,7 +136,7 @@ const reload = () => {
 
 const globalLoadingProps = ref<SpinProps>({
   spinning: false,
-  tip: '加载中...',
+  tip: t('i18n_26b5bd4947'),
   size: 'large',
   delay: 500,
   wrapperClassName: ''
@@ -153,7 +165,6 @@ const globalLoading = (props: boolean | string | SpinProps) => {
 provide('reload', reload)
 provide('globalLoading', globalLoading)
 </script>
-
 <style lang="less">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -173,7 +184,6 @@ provide('globalLoading', globalLoading)
   height: 100vh;
 }
 </style>
-
 <style scoped>
 .pageLoading {
   position: absolute;

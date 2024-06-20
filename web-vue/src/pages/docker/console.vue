@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 控制台 -->
-    <a-drawer
+    <CustomDrawer
       destroy-on-close
       placement="right"
       :width="`${getCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 200px)'}`"
@@ -17,25 +17,25 @@
       <template #title>
         <a-menu v-model:selectedKeys="menuKeyArray" mode="horizontal" class="docker-menu" @click="menuClick">
           <a-menu-item key="containers">
-            <span class="nav-text">独立容器</span>
+            <span class="nav-text">{{ $t('i18n_2b0623dab9') }}</span>
           </a-menu-item>
           <a-menu-item key="docker-compose">
             <span class="nav-text">docker-compose</span>
           </a-menu-item>
           <a-menu-item key="images">
-            <span class="nav-text">镜像</span>
+            <span class="nav-text">{{ $t('i18n_3477228591') }}</span>
           </a-menu-item>
           <a-menu-item key="volumes">
-            <span class="nav-text">卷</span>
+            <span class="nav-text">{{ $t('i18n_7088e18ac9') }}</span>
           </a-menu-item>
           <a-menu-item key="networks">
-            <span class="nav-text">网络</span>
+            <span class="nav-text">{{ $t('i18n_7ddbe15c84') }}</span>
           </a-menu-item>
           <a-menu-item key="info">
-            <span class="nav-text">信息</span>
+            <span class="nav-text">{{ $t('i18n_d8c7e04c8e') }}</span>
           </a-menu-item>
           <a-menu-item key="prune">
-            <span class="nav-text">裁剪</span>
+            <span class="nav-text">{{ $t('i18n_293cafbbd3') }}</span>
           </a-menu-item>
         </a-menu>
       </template>
@@ -95,10 +95,9 @@
         />
         <!-- </a-layout-content> -->
       </div>
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import Container from './container'
 import Images from './images'

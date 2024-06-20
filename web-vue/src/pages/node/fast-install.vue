@@ -2,35 +2,44 @@
   <div>
     <div v-if="fastInstallInfo">
       <a-collapse v-model:activeKey="fastInstallActiveKey">
-        <a-collapse-panel key="1" header="温馨提示">
+        <a-collapse-panel key="1" :header="$t('i18n_947d983961')">
           <a-alert message="" type="warning" show-icon>
             <template #description>
               <ul>
                 <li>
-                  复制下面任意一条命令到还未安装插件端的服务器中去执行,执行前需要放行<b>防火墙端口</b>,<b>安全组规则</b>等网络端口限制
+                  {{ $t('i18n_e2be9bab6b') }}<b>{{ $t('i18n_0f59fe5338') }}</b
+                  >,<b>{{ $t('i18n_baafe06808') }}</b
+                  >{{ $t('i18n_c5c69827c5') }}
                 </li>
-                <li>插件端运行端口默认使用：<b>2123</b></li>
+                <li>{{ $t('i18n_b4e2b132cf') }}<b>2123</b></li>
                 <li>
-                  执行前需要检查命令中的地址在对应的服务器中是否可以访问,如果无法访问将不能自动绑定节点,<b
-                    >会使用 PING 检查</b
-                  >
+                  {{ $t('i18n_e222f4b9ad') }}<b>{{ $t('i18n_57cadc4cf3') }}</b>
                 </li>
-                <li>插件端安装并启动成功后将主动上报节点信息,如果上报的 IP+PROP 能正常通讯将新增节点信息</li>
-                <li style="color: red">如果上报的节点信息包含多个 IP 地址需要用户确认使用具体的 IP 地址信息</li>
-                <li>新增的节点(插件端)将自动<b>绑定到当前工作空间</b>,如果需要在其他工作空间需要提前切换生成命令</li>
-                <li>下面命令将在<b>重启服务端后失效</b>,重启服务端需要重新获取</li>
+                <li>{{ $t('i18n_d19bae9fe0') }}</li>
+                <li style="color: red">{{ $t('i18n_282c8cda1f') }}</li>
                 <li>
-                  支持指定网卡名称来绑定：<b>networkName</b>。如：http://192.168.31.175:2122/api/node/receive_push?token=xxx&workspaceId=xxx&networkName=en0
+                  {{ $t('i18n_88c85a2506') }}<b>{{ $t('i18n_310c809904') }}</b
+                  >,{{ $t('i18n_f7596f3159') }}
+                </li>
+                <li>
+                  {{ $t('i18n_38da533413') }}<b>{{ $t('i18n_0bac3db71c') }}</b
+                  >,{{ $t('i18n_0e052223a4') }}
+                </li>
+                <li>
+                  {{ $t('i18n_a50fbc5a52') }}<b>networkName</b
+                  >{{
+                    $t('i18n_9971192b6a')
+                  }}://192.168.31.175:2122/api/node/receive_push?token=xxx&workspaceId=xxx&networkName=en0
                 </li>
               </ul>
             </template>
           </a-alert>
         </a-collapse-panel>
-        <a-collapse-panel key="2" header="快速安装">
+        <a-collapse-panel key="2" :header="$t('i18n_70b5b45591')">
           <a-tabs :default-active-key="0">
             <a-tab-pane v-for="(item, index) in fastInstallInfo.shUrls" :key="index" :tab="item.name">
               <div>
-                <a-alert type="info" :message="`命令内容`">
+                <a-alert type="info" :message="`${$t('i18n_ccb91317c5')}`">
                   <template #description>
                     <a-typography-paragraph :copyable="{ tooltip: false, text: item.allText }">
                       <span>{{ item.allText }} </span>
@@ -41,8 +50,8 @@
             </a-tab-pane>
           </a-tabs>
         </a-collapse-panel>
-        <a-collapse-panel key="3" header="快速绑定">
-          <a-alert type="info" :message="`命令内容(命令路径请修改为您的服务器中的实际路径)`">
+        <a-collapse-panel key="3" :header="$t('i18n_dab864ab72')">
+          <a-alert type="info" :message="`${$t('i18n_ccb91317c5')}(${$t('i18n_a8920fbfad')})`">
             <template #description>
               <a-typography-paragraph :copyable="{ tooltip: false, text: fastInstallInfo.bindCommand }">
                 <span>{{ fastInstallInfo.bindCommand }} </span>
@@ -50,12 +59,14 @@
             </template>
           </a-alert>
         </a-collapse-panel>
-        <a-collapse-panel key="4" header="执行结果">
-          <div v-if="!pullFastInstallResultData || !pullFastInstallResultData.length">还没有任何结果</div>
+        <a-collapse-panel key="4" :header="$t('i18n_adaf94c06b')">
+          <div v-if="!pullFastInstallResultData || !pullFastInstallResultData.length">
+            {{ $t('i18n_f4fb0cbecf') }}
+          </div>
           <a-alert
             v-for="(item, index) in pullFastInstallResultData"
             :key="`${index}-${new Date().getTime()}`"
-            :message="`第 ${index + 1} 个结果`"
+            :message="`${$t('i18n_ac00774608')} ${index + 1} ${$t('i18n_dbc0b66ca4')}`"
             :type="`${item.type === 'success' ? 'success' : item.type === 'exists' ? 'error' : 'warning'}`"
             closable
             @close="clearPullFastInstallResult(item.id)"
@@ -63,24 +74,23 @@
             <template #description>
               <a-space direction="vertical" style="width: 100%">
                 <div v-if="item.type === 'canUseIpEmpty'">
-                  <a-tag color="orange">不能和节点正常通讯</a-tag>
+                  <a-tag color="orange">{{ $t('i18n_5d803afb8d') }}</a-tag>
                 </div>
                 <div v-if="item.type === 'multiIp'">
-                  <a-tag color="green">多IP可以使用</a-tag>
+                  <a-tag color="green">{{ $t('i18n_d9569a5d3b') }}</a-tag>
                 </div>
                 <div v-if="item.type === 'exists'">
-                  <a-tag color="orange">节点已经存在</a-tag>
+                  <a-tag color="orange">{{ $t('i18n_9bd451c4e9') }}</a-tag>
                 </div>
                 <div v-if="item.type === 'success'">
-                  <a-tag color="orange">绑定成功</a-tag>
+                  <a-tag color="orange">{{ $t('i18n_1974fe5349') }}</a-tag>
                 </div>
                 <div>
-                  所有的IP：<a-tag v-for="(itemIp, indexIp) in item.allIp" :key="indexIp"
-                    >{{ itemIp }}:{{ item.port }}</a-tag
-                  >
+                  {{ $t('i18n_8cd628f495')
+                  }}<a-tag v-for="(itemIp, indexIp) in item.allIp" :key="indexIp">{{ itemIp }}:{{ item.port }}</a-tag>
                 </div>
                 <div v-if="item.type === 'multiIp'">
-                  能通讯的IP(需要手动确认):
+                  {{ $t('i18n_78a4b837e3') }}({{ $t('i18n_c5de93f9c7') }}):
                   <a-tag
                     v-for="(itemIp, indexIp) in item.canUseIp"
                     :key="indexIp"
@@ -89,7 +99,7 @@
                   /></a-tag>
                 </div>
                 <div v-if="item.type === 'success' || item.type === 'exists'">
-                  节点的IP:
+                  {{ $t('i18n_69c743de70') }}:
                   <a-tag v-for="(itemIp, indexIp) in item.canUseIp" :key="indexIp">{{ itemIp }}:{{ item.port }}</a-tag>
                 </div>
               </a-space>
@@ -101,7 +111,6 @@
     <div v-else>loading....</div>
   </div>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 

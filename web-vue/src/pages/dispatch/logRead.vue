@@ -16,15 +16,15 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="日志名称"
+            :placeholder="$t('i18n_66e9ea5488')"
             class="search-input-item"
             @press-enter="loadData"
           />
 
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
         </a-space>
       </template>
       <template #bodyCell="{ column, text, record }">
@@ -36,36 +36,39 @@
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button type="primary" size="small" @click="handleEdit(record)">编辑</a-button>
-            <a-button type="primary" size="small" @click="handleLogRead(record)">查看</a-button>
-            <a-button type="primary" danger size="small" @click="handleDelete(record)">删除</a-button>
+            <a-button type="primary" size="small" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button type="primary" size="small" @click="handleLogRead(record)">{{ $t('i18n_607e7a4f37') }}</a-button>
+            <a-button type="primary" danger size="small" @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="60%"
-      title="编辑日志搜索"
+      :title="$t('i18n_7e58312632')"
       :mask-closable="false"
       @ok="handleEditOk"
     >
       <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="日志名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="日志项目名称" />
+        <a-form-item :label="$t('i18n_66e9ea5488')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_7c9bb61536')" />
         </a-form-item>
-        <a-form-item label="绑定节点" required>
+        <a-form-item :label="$t('i18n_83f25dbaa0')" required>
           <a-space direction="vertical" style="width: 100%">
             <a-row v-for="(item, index) in temp.projectList" :key="index">
               <a-col :span="11">
-                <span>节点: </span>
+                <span>{{ $t('i18n_9b280a6d2d') }} </span>
                 <a-select
                   v-model:value="item.nodeId"
                   style="width: 80%"
-                  placeholder="请选择节点"
+                  :placeholder="$t('i18n_f8a613d247')"
                   @change="
                     () => {
                       temp = {
@@ -94,12 +97,12 @@
                 </a-select>
               </a-col>
               <a-col :span="11">
-                <span>项目: </span>
+                <span>{{ $t('i18n_8198e4461a') }} </span>
                 <a-select
                   v-model:value="item.projectId"
                   :disabled="!item.nodeId"
                   style="width: 80%"
-                  :placeholder="`请选择项目`"
+                  :placeholder="`${$t('i18n_9fc2e26bfa')}`"
                 >
                   <!-- <a-select-option value=""> 请先选择节点</a-select-option> -->
                   <template v-if="nodeProjectList[item.nodeId]">
@@ -126,13 +129,14 @@
               </a-col>
             </a-row>
 
-            <a-button type="primary" @click="() => temp.projectList.push({})">新增</a-button>
+            <a-button type="primary" @click="() => temp.projectList.push({})">{{ $t('i18n_66ab5e9f24') }}</a-button>
           </a-space>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 实时阅读 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="logReadVisible"
       destroy-on-close
       placement="right"
       :width="`${getCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 200px)'}`"
@@ -145,7 +149,7 @@
       "
     >
       <template #title>
-        搜索查看
+        {{ $t('i18n_bfda12336c') }}
         {{ temp.cacheData && temp.cacheData.logFile ? ':' + temp.cacheData.logFile : '' }}
       </template>
       <logReadView
@@ -158,10 +162,9 @@
           }
         "
       ></logReadView>
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import { deleteLogRead, editLogRead, getLogReadList } from '@/api/log-read'
 import { getNodeListAll, getProjectListAll } from '@/api/node'
@@ -187,14 +190,14 @@ export default {
       editVisible: false,
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           tooltip: true
         },
 
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           align: 'center',
@@ -202,7 +205,7 @@ export default {
           width: 120
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           customRender: ({ text }) => {
@@ -214,7 +217,7 @@ export default {
           width: 180
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           ellipsis: true,
 
@@ -222,8 +225,9 @@ export default {
           align: 'center'
         }
       ],
+
       rules: {
-        name: [{ required: true, message: '请填写日志项目名称', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_679de60f71'), trigger: 'blur' }]
       },
       confirmLoading: false
     }
@@ -314,7 +318,7 @@ export default {
         })
         if (!temp.projectList || !temp.projectList.length) {
           $notification.warn({
-            message: '至少选择一个节点和项目'
+            message: this.$t('i18n_1a56bb2237')
           })
           return false
         }
@@ -340,11 +344,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除日志搜索么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_9bbb6b5b75'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteLogRead(record.id).then((res) => {
             if (res.code === 200) {

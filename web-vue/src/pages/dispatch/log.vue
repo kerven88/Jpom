@@ -7,7 +7,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="dispatch-log-list"
-      empty-description="没有任何分发日志"
+      :empty-description="$t('i18n_8d1286cd2e')"
       size="middle"
       :data-source="list"
       :columns="columns"
@@ -21,20 +21,35 @@
     >
       <template #title>
         <a-space wrap class="search-box">
-          <a-select v-model:value="listQuery.nodeId" allow-clear placeholder="请选择节点" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.nodeId"
+            allow-clear
+            :placeholder="$t('i18n_f8a613d247')"
+            class="search-input-item"
+          >
             <a-select-option v-for="node in nodeList" :key="node.id">{{ node.name }}</a-select-option>
           </a-select>
-          <a-select v-model:value="listQuery.outGivingId" allow-clear placeholder="分发项目" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.outGivingId"
+            allow-clear
+            :placeholder="$t('i18n_bc8752e529')"
+            class="search-input-item"
+          >
             <a-select-option v-for="dispatch in dispatchList" :key="dispatch.id">{{ dispatch.name }}</a-select-option>
           </a-select>
-          <a-select v-model:value="listQuery.status" allow-clear placeholder="请选择状态" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.status"
+            allow-clear
+            :placeholder="$t('i18n_e1c965efff')"
+            class="search-input-item"
+          >
             <a-select-option v-for="(item, key) in dispatchStatusMap" :key="key" :value="key">{{
               item
             }}</a-select-option>
           </a-select>
           <a-range-picker :show-time="{ format: 'HH:mm:ss' }" format="YYYY-MM-DD HH:mm:ss" @change="onchangeTime" />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button :loading="loading" type="primary" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
         </a-space>
       </template>
@@ -67,7 +82,10 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'mode'">
-          <a-tooltip placement="topLeft" :title="`${dispatchMode[text] || ''}  关联数据：${record.modeData || ''}`">
+          <a-tooltip
+            placement="topLeft"
+            :title="`${dispatchMode[text] || ''}  ${$t('i18n_b04209e785')}${record.modeData || ''}`"
+          >
             <span>{{ dispatchMode[text] || '' }}</span>
           </a-tooltip>
         </template>
@@ -101,22 +119,29 @@
         </template>
         <template v-else-if="column.dataIndex === 'status'">
           <!-- {{ dispatchStatusMap[text] || "未知" }} -->
-          <a-tag v-if="text === 2" color="green">{{ dispatchStatusMap[text] || '未知' }}</a-tag>
+          <a-tag v-if="text === 2" color="green">{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
           <a-tag v-else-if="text === 1 || text === 0 || text === 5" color="orange">{{
-            dispatchStatusMap[text] || '未知'
+            dispatchStatusMap[text] || $t('i18n_1622dc9b6b')
           }}</a-tag>
           <a-tag v-else-if="text === 3 || text === 4 || text === 6" color="red">{{
-            dispatchStatusMap[text] || '未知'
+            dispatchStatusMap[text] || $t('i18n_1622dc9b6b')
           }}</a-tag>
-          <a-tag v-else>{{ dispatchStatusMap[text] || '未知' }}</a-tag>
+          <a-tag v-else>{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
-          <a-button type="primary" size="small" @click="handleDetail(record)">详情</a-button>
+          <a-button type="primary" size="small" @click="handleDetail(record)">{{ $t('i18n_f26225bde6') }}</a-button>
         </template>
       </template>
     </CustomTable>
     <!-- 详情区 -->
-    <a-modal v-model:open="detailVisible" destroy-on-close width="600px" title="详情信息" :footer="null">
+    <CustomModal
+      v-if="detailVisible"
+      v-model:open="detailVisible"
+      destroy-on-close
+      width="600px"
+      :title="$t('i18n_3032257aa3')"
+      :footer="null"
+    >
       <a-list item-layout="horizontal" :data-source="detailData">
         <template #renderItem="{ item }">
           <a-list-item>
@@ -131,10 +156,9 @@
           </a-list-item>
         </template>
       </a-list>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { getNodeListAll } from '@/api/node'
 import { dispatchStatusMap, getDishPatchListAll, getDishPatchLogList, dispatchMode } from '@/api/dispatch'
@@ -156,49 +180,49 @@ export default {
       detailData: [],
       columns: [
         {
-          title: '分发项目 ID',
+          title: this.$t('i18n_b714160f52'),
           dataIndex: 'outGivingId',
           width: 100,
           ellipsis: true
         },
 
         {
-          title: '节点名称',
+          title: this.$t('i18n_b1785ef01e'),
           dataIndex: 'nodeName',
           ellipsis: true,
           width: 150
         },
         {
-          title: '项目 ID',
+          title: this.$t('i18n_4fdd2213b5'),
           dataIndex: 'projectId',
           ellipsis: true,
           width: 100
         },
         {
-          title: '分发方式',
+          title: this.$t('i18n_174062da44'),
           dataIndex: 'mode',
           ellipsis: true,
           width: '100px'
         },
         {
-          title: '分发结果',
+          title: this.$t('i18n_0ef396cbcc'),
           dataIndex: 'outGivingResultMsg',
           ellipsis: true,
           width: 200
         },
 
         {
-          title: '分发耗时',
+          title: this.$t('i18n_4cd49caae4'),
           dataIndex: 'outGivingResultTime',
           width: '120px'
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'outGivingResultSize',
           width: '100px'
         },
         {
-          title: '开始时间',
+          title: this.$t('i18n_592c595891'),
           dataIndex: 'startTime',
           customRender: ({ text }) => {
             return parseTime(text)
@@ -207,7 +231,7 @@ export default {
           width: '170px'
         },
         {
-          title: '结束时间',
+          title: this.$t('i18n_f782779e8b'),
           dataIndex: 'endTime',
           sorter: true,
           customRender: ({ text }) => {
@@ -216,26 +240,32 @@ export default {
           width: '170px'
         },
         {
-          title: '分发状态消息',
+          title: this.$t('i18n_543de6ff04'),
           dataIndex: 'outGivingResultMsgData',
           ellipsis: true,
           width: 100
         },
         {
-          title: '操作人',
+          title: this.$t('i18n_f9ac4b2aa6'),
           dataIndex: 'modifyUser',
           ellipsis: true,
 
           width: 120
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           width: 100,
           ellipsis: true,
           fixed: 'right'
         },
-        { title: '操作', dataIndex: 'operation', align: 'center', width: '100px', fixed: 'right' }
+        {
+          title: this.$t('i18n_2b6bc0f293'),
+          dataIndex: 'operation',
+          align: 'center',
+          width: '100px',
+          fixed: 'right'
+        }
       ]
     }
   },
@@ -296,7 +326,7 @@ export default {
       this.detailVisible = true
       this.temp = Object.assign({}, record)
 
-      this.detailData.push({ title: '分发结果', description: this.temp.result })
+      this.detailData.push({ title: this.$t('i18n_0ef396cbcc'), description: this.temp.result })
     },
     // 分页、排序、筛选变化时触发
     changePage(pagination, filters, sorter) {

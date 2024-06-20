@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 编辑区 -->
-    <a-drawer
+    <CustomDrawer
       destroy-on-close
       :open="true"
       :body-style="{
@@ -23,20 +23,20 @@
         <template v-if="id">
           <a-menu v-model:selectedKeys="menuKey" mode="horizontal" class="menu" @click="menuClick">
             <a-menu-item key="info">
-              <span><InfoOutlined /> {{ $tl('p.buildInfo') }}</span>
+              <span><InfoOutlined /> {{ $t('i18n_224aef211c') }}</span>
             </a-menu-item>
             <a-menu-item key="edit">
-              <span> <EditOutlined /> {{ $tl('p.editBuild') }}</span>
+              <span> <EditOutlined /> {{ $t('i18n_e54c5ecb54') }}</span>
             </a-menu-item>
             <a-menu-item key="trigger">
-              <span><ApiOutlined /> {{ $tl('p.trigger') }}</span>
+              <span><ApiOutlined /> {{ $t('i18n_4696724ed3') }}</span>
             </a-menu-item>
           </a-menu>
         </template>
         <template v-else>
           <a-menu v-model:selectedKeys="menuKey" mode="horizontal" class="menu" @click="menuClick">
             <a-menu-item key="edit">
-              <span> <EditOutlined /> {{ $tl('p.addBuild') }}</span>
+              <span> <EditOutlined /> {{ $t('i18n_44a6891817') }}</span>
             </a-menu-item>
           </a-menu>
         </template>
@@ -74,10 +74,10 @@
               }
             "
           >
-            {{ $tl('p.cancel') }}
+            {{ $t('i18n_625fb26b4b') }}
           </a-button>
-          <a-tooltip v-if="id" :title="$tl('p.refreshWarning')">
-            <a-button @click="$refs.editBuild.refresh()"> {{ $tl('p.refresh') }}</a-button>
+          <a-tooltip v-if="id" :title="$t('i18n_18c7e2556e')">
+            <a-button @click="$refs.editBuild.refresh()"> {{ $t('i18n_694fc5efa9') }}</a-button>
           </a-tooltip>
           <a-divider type="vertical" />
           <a-button
@@ -88,7 +88,7 @@
                 stepsCurrent = stepsCurrent - 1
               }
             "
-            >{{ $tl('p.previousStep') }}</a-button
+            >{{ $t('i18n_eeb6908870') }}</a-button
           >
           <a-button
             type="primary"
@@ -98,17 +98,19 @@
                 stepsCurrent = stepsCurrent + 1
               }
             "
-            >{{ $tl('p.nextStep') }}</a-button
+            >{{ $t('i18n_38ce27d846') }}</a-button
           >
           <a-divider type="vertical" />
 
-          <a-button type="primary" @click="$refs.editBuild.handleEditBuildOk(false)"> {{ $tl('p.save') }} </a-button>
+          <a-button type="primary" @click="$refs.editBuild.handleEditBuildOk(false)">
+            {{ $t('i18n_be5fbbe34c') }}
+          </a-button>
           <a-button type="primary" @click="$refs.editBuild.handleEditBuildOk(true)">
-            {{ $tl('p.saveAndBuild') }}
+            {{ $t('i18n_a577822cdd') }}
           </a-button>
         </a-space>
       </template>
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
 <script>
@@ -155,9 +157,6 @@ export default {
     }
   },
   methods: {
-    $tl(key, ...args) {
-      return this.$t(`pages.build.item.${key}`, ...args)
-    },
     menuClick(item) {
       this.menuKey = item.key
     },

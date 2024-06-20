@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from '@/api/config'
 
 // 机器 列表
@@ -55,11 +55,11 @@ export function machineDistribute(params) {
 }
 
 export const statusMap = {
-  0: '无法连接',
-  1: '正常',
-  2: '授权信息错误',
-  3: '状态码错误',
-  4: '资源监控异常'
+  0: t('i18n_757a730c9e'),
+  1: t('i18n_fd6e80f1e0'),
+  2: t('i18n_c18455fbe3'),
+  3: t('i18n_c5bbaed670'),
+  4: t('i18n_a14da34559')
 }
 
 // 查看机器关联节点
@@ -114,5 +114,21 @@ export function machineCorrectLonelyData(data) {
     url: '/system/assets/machine/correct-lonely-data',
     method: 'post',
     data: data
+  })
+}
+
+export function machineMonitorConfig(data) {
+  return axios({
+    url: '/system/assets/machine/monitor-config',
+    method: 'get',
+    params: data
+  })
+}
+
+export function machineSearch(data) {
+  return axios({
+    url: '/system/assets/machine/search',
+    method: 'get',
+    params: data
   })
 }

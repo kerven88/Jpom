@@ -6,7 +6,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="ssh-command-list"
-      empty-description="没有任何SSH脚本命令"
+      :empty-description="$t('i18n_ba17b17ba2')"
       :data-source="commandList"
       :columns="columns"
       size="middle"
@@ -24,28 +24,28 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="搜索命令"
+            :placeholder="$t('i18n_9c2a917905')"
             class="search-input-item"
             @press-enter="getCommandData"
           />
           <a-input
             v-model:value="listQuery['%desc%']"
-            placeholder="描述"
+            :placeholder="$t('i18n_3bdd08adab')"
             class="search-input-item"
             @press-enter="getCommandData"
           />
           <a-input
             v-model:value="listQuery['%autoExecCron%']"
-            placeholder="定时执行"
+            :placeholder="$t('i18n_6b2e348a2b')"
             class="search-input-item"
             @press-enter="getCommandData"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="getCommandData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="getCommandData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="createCommand">新增</a-button>
+          <a-button type="primary" @click="createCommand">{{ $t('i18n_66ab5e9f24') }}</a-button>
           <a-dropdown>
-            <a @click="(e) => e.preventDefault()"> 更多 <DownOutlined /> </a>
+            <a @click="(e) => e.preventDefault()"> {{ $t('i18n_0ec9eaf9c3') }} <DownOutlined /> </a>
             <template #overlay>
               <a-menu>
                 <a-menu-item>
@@ -53,7 +53,7 @@
                     type="primary"
                     :disabled="!tableSelections || !tableSelections.length"
                     @click="syncToWorkspaceShow"
-                    >工作空间同步</a-button
+                    >{{ $t('i18n_398ce396cd') }}</a-button
                   >
                 </a-menu-item>
               </a-menu>
@@ -64,20 +64,18 @@
       <template #tableHelp>
         <a-tooltip>
           <template #title>
-            <div>命令模版是用于在线管理一些脚本命令，如初始化软件环境、管理应用程序等</div>
+            <div>{{ $t('i18n_4826549b41') }}</div>
 
             <div>
               <ul>
-                <li>命令内容支持工作空间环境变量</li>
+                <li>{{ $t('i18n_5ef72bdfce') }}</li>
+                <li>{{ $t('i18n_5d368ab0a5') }}</li>
                 <li>
-                  执行命令将自动替换为 sh
-                  命令文件、并自动加载环境变量：/etc/profile、/etc/bashrc、~/.bashrc、~/.bash_profile
+                  {{ $t('i18n_26f95520a5') }}<b>#disabled-template-auto-evn</b> {{ $t('i18n_bfacfcd978') }}({{
+                    $t('i18n_8e872df7da')
+                  }})
                 </li>
-                <li>
-                  执行命令包含：<b>#disabled-template-auto-evn</b>
-                  将取消自动加载环境变量(注意是整行不能包含空格)
-                </li>
-                <li>命令文件将上传至 ${user.home}/.jpom/xxxx.sh 执行完成将自动删除</li>
+                <li>{{ $t('i18n_2ea7e70e87') }}</li>
               </ul>
             </div>
           </template>
@@ -98,39 +96,39 @@
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleExecute(record)">执行</a-button>
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button size="small" type="primary" @click="handleTrigger(record)">触发器</a-button>
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" @click="handleExecute(record)">{{ $t('i18n_1a6aa24e76') }}</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button size="small" type="primary" @click="handleTrigger(record)">{{ $t('i18n_4696724ed3') }}</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </CustomTable>
     <!-- 编辑命令 -->
-    <a-modal
+    <CustomModal
+      v-if="editCommandVisible"
       v-model:open="editCommandVisible"
       destroy-on-close
       width="80vw"
-      title="编辑 命令"
+      :title="$t('i18n_9a0c5b150c')"
       :mask-closable="false"
       :confirm-loading="confirmLoading"
       @ok="handleEditCommandOk"
     >
       <a-form ref="editCommandForm" :rules="rules" :model="temp" :label-col="{ span: 3 }" :wrapper-col="{ span: 20 }">
-        <a-form-item label="命令名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="100" placeholder="命令名称" />
+        <a-form-item :label="$t('i18n_6496a5a043')" name="name">
+          <a-input v-model:value="temp.name" :max-length="100" :placeholder="$t('i18n_6496a5a043')" />
         </a-form-item>
 
-        <a-form-item
-          name="command"
-          help="脚本存放路径：${user.home}/.jpom/xxxx.sh，执行脚本路径：${user.home}，执行脚本方式：bash ${user.home}/.jpom/xxxx.sh par1 par2"
-        >
+        <a-form-item name="command" :help="$t('i18n_77c1e73c08')">
           <template #label>
             <a-tooltip>
-              命令内容
+              {{ $t('i18n_ccb91317c5') }}
               <template #title>
                 <ul>
-                  <li>可以引用工作空间的环境变量 变量占位符 ${xxxx} xxxx 为变量名称</li>
+                  <li>{{ $t('i18n_5fbde027e3') }}</li>
                 </ul>
               </template>
               <QuestionCircleOutlined v-show="!temp.id" />
@@ -142,10 +140,15 @@
               v-model:content="temp.command"
               height="40vh"
               :options="{ mode: 'shell', tabSize: 2 }"
-            ></code-editor>
+              :show-tool="true"
+            >
+              <template #tool_before>
+                <a-button type="link" @click="scriptLibraryVisible = true">{{ $t('i18n_f685377a22') }}</a-button>
+              </template>
+            </code-editor>
           </a-form-item-rest>
         </a-form-item>
-        <a-form-item label="SSH节点">
+        <a-form-item :label="$t('i18n_b0b9df58fd')">
           <a-select
             v-model:value="chooseSsh"
             show-search
@@ -159,7 +162,7 @@
                 )
               }
             "
-            placeholder="请选择SSH节点"
+            :placeholder="$t('i18n_649f8046f3')"
             mode="multiple"
           >
             <a-select-option v-for="item in sshList" :key="item.id" :value="item.id">
@@ -168,7 +171,7 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="默认参数">
+        <a-form-item :label="$t('i18n_2171d1b07d')">
           <a-form-item-rest>
             <a-space direction="vertical" style="width: 100%">
               <a-row v-for="(item, index) in commandParams" :key="item.key">
@@ -176,13 +179,13 @@
                   <a-space direction="vertical" style="width: 100%">
                     <a-input
                       v-model:value="item.desc"
-                      :addon-before="`参数${index + 1}描述`"
-                      placeholder="参数描述,参数描述没有实际作用,仅是用于提示参数的含义"
+                      :addon-before="$t('i18n_417fa2c2be', { index: index + 1 })"
+                      :placeholder="$t('i18n_3f414ade96', { slot1: $t('i18n_2b1015e902') })"
                     />
                     <a-input
                       v-model:value="item.value"
-                      :addon-before="`参数${index + 1}值`"
-                      placeholder="参数值,新增默认参数后在手动执行脚本时需要填写参数值"
+                      :addon-before="$t('i18n_620489518c', { index: index + 1 })"
+                      :placeholder="`${$t('i18n_bfed4943c5')}${$t('i18n_e9f2c62e54')}`"
                     />
                   </a-space>
                 </a-col>
@@ -195,46 +198,47 @@
                   </a-row>
                 </a-col>
               </a-row>
-              <a-button type="primary" @click="() => commandParams.push({})">新增参数</a-button>
+              <a-button type="primary" @click="() => commandParams.push({})">{{ $t('i18n_4c0eead6ff') }}</a-button>
             </a-space>
           </a-form-item-rest>
         </a-form-item>
-        <a-form-item label="自动执行" name="autoExecCron">
+        <a-form-item :label="$t('i18n_df39e42127')" name="autoExecCron">
           <a-auto-complete
             v-model:value="temp.autoExecCron"
-            placeholder="如果需要定时自动执行则填写,cron 表达式.默认未开启秒级别,需要去修改配置文件中:[system.timerMatchSecond]）"
+            :placeholder="$t('i18n_5dff0d31d0')"
             :options="CRON_DATA_SOURCE"
           >
             <template #option="item"> {{ item.title }} {{ item.value }} </template>
           </a-auto-complete>
         </a-form-item>
-        <a-form-item label="命令描述" name="desc">
+        <a-form-item :label="$t('i18n_bf91239ad7')" name="desc">
           <a-textarea
             v-model:value="temp.desc"
             :max-length="255"
             :rows="3"
             style="resize: none"
-            placeholder="命令详细描述"
+            :placeholder="$t('i18n_81d7d5cd8a')"
           />
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
 
-    <a-modal
+    <CustomModal
+      v-if="executeCommandVisible"
       v-model:open="executeCommandVisible"
       destroy-on-close
       width="600px"
-      title="执行 命令"
+      :title="$t('i18n_bb4740c7a7')"
       :mask-closable="false"
       :confirm-loading="confirmLoading"
       @ok="handleExecuteCommandOk"
     >
       <a-form :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="命令名称" name="name">
-          <a-input v-model:value="temp.name" :disabled="true" placeholder="命令名称" />
+        <a-form-item :label="$t('i18n_6496a5a043')" name="name">
+          <a-input v-model:value="temp.name" :disabled="true" :placeholder="$t('i18n_6496a5a043')" />
         </a-form-item>
 
-        <a-form-item label="SSH节点" required>
+        <a-form-item :label="$t('i18n_b0b9df58fd')" required>
           <a-select
             v-model:value="chooseSsh"
             show-search
@@ -249,7 +253,7 @@
               }
             "
             mode="multiple"
-            placeholder="请选择 SSH节点"
+            :placeholder="$t('i18n_e43359ca06')"
           >
             <a-select-option v-for="item in sshList" :key="item.id" :value="item.id">
               {{ item.name }}
@@ -257,21 +261,14 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item
-          label="命令参数"
-          :help="`${
-            commandParams.length
-              ? '所有参数将拼接成字符串以空格分隔形式执行脚本,需要注意参数顺序和未填写值的参数将自动忽略'
-              : ''
-          }`"
-        >
+        <a-form-item :label="$t('i18n_abba4775e1')" :help="`${commandParams.length ? $t('i18n_916cde39c4') : ''}`">
           <a-space direction="vertical" style="width: 100%">
             <a-row v-for="(item, index) in commandParams" :key="item.key">
               <a-col :span="22">
                 <a-input
                   v-model:value="item.value"
-                  :addon-before="`参数${index + 1}值`"
-                  :placeholder="`参数值 ${item.desc ? ',' + item.desc : ''}`"
+                  :addon-before="`${$t('i18n_3d0a2df9ec')}${index + 1}${$t('i18n_fe7509e0ed')}`"
+                  :placeholder="`${$t('i18n_3d0a2df9ec')}${$t('i18n_fe7509e0ed')} ${item.desc ? ',' + item.desc : ''}`"
                 >
                   <template #suffix>
                     <a-tooltip v-if="item.desc" :title="item.desc">
@@ -289,43 +286,48 @@
                 </a-row>
               </a-col>
             </a-row>
-            <a-button type="primary" @click="() => commandParams.push({})">新增参数</a-button>
+            <a-button type="primary" @click="() => commandParams.push({})">{{ $t('i18n_4c0eead6ff') }}</a-button>
           </a-space>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 执行日志 -->
-    <a-modal
+    <CustomModal
+      v-if="logVisible"
       v-model:open="logVisible"
       destroy-on-close
       :width="'80vw'"
-      title="执行日志"
+      :title="$t('i18n_c84ddfe8a6')"
       :footer="null"
       :mask-closable="false"
     >
       <command-log v-if="logVisible" :temp="temp" />
-    </a-modal>
+    </CustomModal>
     <!-- 同步到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="syncToWorkspaceVisible"
       v-model:open="syncToWorkspaceVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="同步到其他工作空间"
+      :title="$t('i18n_1a44b9e2f7')"
       :mask-closable="false"
       @ok="handleSyncToWorkspace"
     >
-      <a-alert message="温馨提示" type="warning" show-icon>
+      <a-alert :message="$t('i18n_947d983961')" type="warning" show-icon>
         <template #description>
           <ul>
-            <li>同步机制采用<b>脚本名称</b>确定是同一个脚本</li>
-            <li>当目标工作空间不存在对应的 脚本 时候将自动创建一个新的 脚本</li>
-            <li>当目标工作空间已经存在 脚本 时候将自动同步 脚本内容、默认参数、自动执行、描述</li>
+            <li>
+              {{ $t('i18n_384f337da1') }}<b>{{ $t('i18n_50fb61ef9d') }}</b
+              >{{ $t('i18n_50d2671541') }}
+            </li>
+            <li>{{ $t('i18n_770a07d78f') }}</li>
+            <li>{{ $t('i18n_b5d2cf4a76') }}</li>
           </ul>
         </template>
       </a-alert>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -339,7 +341,7 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id" :disabled="getWorkspaceId() === item.id">{{
               item.name
@@ -347,13 +349,14 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
 
     <!-- 触发器 -->
-    <a-modal
+    <CustomModal
+      v-if="triggerVisible"
       v-model:open="triggerVisible"
       destroy-on-close
-      title="触发器"
+      :title="$t('i18n_4696724ed3')"
       width="50%"
       :footer="null"
       :mask-closable="false"
@@ -361,35 +364,30 @@
       <a-form ref="editTriggerForm" :rules="rules" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
         <a-tabs default-active-key="1">
           <template #rightExtra>
-            <a-tooltip title="重置触发器 token 信息,重置后之前的触发器 token 将失效">
-              <a-button type="primary" size="small" @click="resetTrigger">重置</a-button>
+            <a-tooltip :title="$t('i18n_01ad26f4a9')">
+              <a-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</a-button>
             </a-tooltip>
           </template>
-          <a-tab-pane key="1" tab="执行">
+          <a-tab-pane key="1" :tab="$t('i18n_1a6aa24e76')">
             <a-space direction="vertical" style="width: 100%">
-              <a-alert message="温馨提示" type="warning">
+              <a-alert :message="$t('i18n_947d983961')" type="warning">
                 <template #description>
                   <ul>
-                    <li>单个触发器地址中：第一个随机字符串为命令脚本ID，第二个随机字符串为 token</li>
-                    <li>
-                      重置为重新生成触发地址,重置成功后之前的触发器地址将失效,触发器绑定到生成触发器到操作人上,如果将对应的账号删除触发器将失效
-                    </li>
-                    <li>批量触发参数 BODY json： [ { "id":"1", "token":"a" } ]</li>
-                    <li>
-                      单个触发器请求支持将参数解析为环境变量传入脚本执行，比如传入参数名为 abc=efg
-                      在脚本中引入则为：${trigger_abc}
-                    </li>
+                    <li>{{ $t('i18n_05e78c26b1') }}</li>
+                    <li>{{ $t('i18n_632a907224') }}</li>
+                    <li>{{ $t('i18n_3fca26a684') }}</li>
+                    <li>{{ $t('i18n_a04b7a8f5d') }}</li>
                   </ul>
                 </template>
               </a-alert>
-              <a-alert type="info" :message="`单个触发器地址(点击可以复制)`">
+              <a-alert type="info" :message="`${$t('i18n_de78b73dab')}(${$t('i18n_00a070c696')})`">
                 <template #description>
                   <a-typography-paragraph :copyable="{ tooltip: false, text: temp.triggerUrl }">
                     <a-tag>GET</a-tag> <span>{{ temp.triggerUrl }} </span>
                   </a-typography-paragraph>
                 </template>
               </a-alert>
-              <a-alert type="info" :message="`批量触发器地址(点击可以复制)`">
+              <a-alert type="info" :message="`${$t('i18n_8d202b890c')}(${$t('i18n_00a070c696')})`">
                 <template #description>
                   <a-typography-paragraph :copyable="{ tooltip: false, text: temp.batchTriggerUrl }">
                     <a-tag>POST</a-tag> <span>{{ temp.batchTriggerUrl }} </span>
@@ -400,22 +398,84 @@
           </a-tab-pane>
         </a-tabs>
       </a-form>
-    </a-modal>
+    </CustomModal>
+    <!-- pages.ssh.command.a36f20d3 -->
+    <CustomDrawer
+      v-if="scriptLibraryVisible"
+      destroy-on-close
+      :title="$t('i18n_53bdd93fd6')"
+      placement="right"
+      :open="scriptLibraryVisible"
+      width="85vw"
+      :footer-style="{ textAlign: 'right' }"
+      @close="
+        () => {
+          scriptLibraryVisible = false
+        }
+      "
+    >
+      <ScriptLibraryNoPermission
+        v-if="scriptLibraryVisible"
+        ref="scriptLibraryRef"
+        @script-confirm="
+          (script) => {
+            temp = { ...temp, command: script }
+            scriptLibraryVisible = false
+          }
+        "
+        @tag-confirm="
+          (tag) => {
+            temp = { ...temp, command: (temp.command || '') + `\nG@(\&quot;${tag}\&quot;)` }
+            scriptLibraryVisible = false
+          }
+        "
+      ></ScriptLibraryNoPermission>
+      <template #footer>
+        <a-space>
+          <a-button
+            @click="
+              () => {
+                scriptLibraryVisible = false
+              }
+            "
+            >{{ $t('i18n_625fb26b4b') }}</a-button
+          >
+          <a-button
+            type="primary"
+            @click="
+              () => {
+                $refs['scriptLibraryRef'].handerScriptConfirm()
+              }
+            "
+            >{{ $t('i18n_f71316d0dd') }}</a-button
+          >
+          <a-button
+            type="primary"
+            @click="
+              () => {
+                $refs['scriptLibraryRef'].handerTagConfirm()
+              }
+            "
+            >{{ $t('i18n_9300692fac') }}</a-button
+          >
+        </a-space>
+      </template>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import { deleteCommand, editCommand, executeBatch, getCommandList, syncToWorkspace, getTriggerUrl } from '@/api/command'
-import { CHANGE_PAGE, COMPUTED_PAGINATION, CRON_DATA_SOURCE, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
+import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
+import { CRON_DATA_SOURCE } from '@/utils/const-i18n'
 import { getSshListAll } from '@/api/ssh'
 import codeEditor from '@/components/codeEditor'
 import CommandLog from './command-view-log'
-
+import ScriptLibraryNoPermission from '@/pages/system/assets/script-library/no-permission'
 import { getWorkSpaceListAll } from '@/api/workspace'
 import { mapState } from 'pinia'
 import { useAppStore } from '@/stores/app'
 export default {
-  components: { codeEditor, CommandLog },
+  components: { codeEditor, CommandLog, ScriptLibraryNoPermission },
   data() {
     return {
       listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
@@ -435,25 +495,25 @@ export default {
       },
       columns: [
         {
-          title: '命令名称',
+          title: this.$t('i18n_6496a5a043'),
           dataIndex: 'name',
           ellipsis: true,
           width: 200
         },
         {
-          title: '命令描述',
+          title: this.$t('i18n_bf91239ad7'),
           dataIndex: 'desc',
           ellipsis: true,
           width: 250
         },
         {
-          title: '定时执行',
+          title: this.$t('i18n_6b2e348a2b'),
           dataIndex: 'autoExecCron',
           ellipsis: true,
           width: 120
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -463,7 +523,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           width: '170px',
           ellipsis: true,
@@ -473,13 +533,13 @@ export default {
           }
         },
         {
-          title: '最后操作人',
+          title: this.$t('i18n_26c1f8d83e'),
           dataIndex: 'modifyUser',
           width: 120,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
 
@@ -487,6 +547,8 @@ export default {
           width: '240px'
         }
       ],
+
+      scriptLibraryVisible: false,
       tableSelections: [],
       syncToWorkspaceVisible: false,
       workspaceList: [],
@@ -523,7 +585,7 @@ export default {
           for (let i = 0; i < this.commandParams.length; i++) {
             if (!this.commandParams[i].desc) {
               $notification.error({
-                message: '请填写第' + (i + 1) + '个参数的描述'
+                message: this.$t('i18n_8ae2b9915c') + (i + 1) + this.$t('i18n_c583b707ba')
               })
               return false
             }
@@ -606,11 +668,11 @@ export default {
     //  删除命令
     handleDelete(row) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除“' + row.name + '”命令？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_d921c4a0b6') + row.name + this.$t('i18n_c4a61acace'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteCommand(row.id).then((res) => {
             if (res.code === 200) {
@@ -633,7 +695,7 @@ export default {
     handleExecuteCommandOk() {
       if (!this.chooseSsh || this.chooseSsh.length <= 0) {
         $notification.error({
-          message: '请选择执行节点'
+          message: this.$t('i18n_d7471c0261')
         })
         return false
       }
@@ -680,7 +742,7 @@ export default {
     handleSyncToWorkspace() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }
@@ -740,7 +802,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .config-editor {
   overflow-y: scroll;

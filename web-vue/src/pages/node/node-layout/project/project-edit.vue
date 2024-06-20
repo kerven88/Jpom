@@ -1,21 +1,23 @@
 <template>
   <div>
     <!-- 编辑区 -->
-    <a-spin tip="加载项目数据中..." :spinning="loading">
+    <a-spin :tip="$t('i18n_2770db3a99')" :spinning="loading">
       <a-form ref="editProjectForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="项目 ID" name="id">
+        <a-form-item :label="$t('i18n_4fdd2213b5')" name="id">
+          <template #help>{{ $t('i18n_e2b0f27424') }}</template>
+
           <a-input
             v-if="temp.type === 'edit'"
             v-model:value="temp.id"
             :max-length="50"
             :disabled="temp.type === 'edit'"
-            placeholder="创建之后不能修改"
+            :placeholder="$t('i18n_7ce511154f')"
           />
           <template v-else>
             <a-input-search
               v-model:value="temp.id"
               :max-length="50"
-              placeholder="创建之后不能修改"
+              :placeholder="$t('i18n_7ce511154f')"
               @search="
                 () => {
                   temp = { ...temp, id: randomStr(6) }
@@ -23,26 +25,26 @@
               "
             >
               <template #enterButton>
-                <a-button type="primary"> 随机生成 </a-button>
+                <a-button type="primary"> {{ $t('i18n_6709f4548f') }} </a-button>
               </template>
             </a-input-search>
           </template>
         </a-form-item>
 
-        <a-form-item label="项目名称" name="name">
+        <a-form-item :label="$t('i18n_738a41f965')" name="name">
           <a-row>
             <a-col :span="10">
-              <a-input v-model:value="temp.name" :max-length="50" placeholder="项目名称" />
+              <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_738a41f965')" />
             </a-col>
-            <a-col :span="4" style="text-align: right">分组名称：</a-col>
+            <a-col :span="4" style="text-align: right">{{ $t('i18n_1b973fc4d1') }}</a-col>
             <a-col :span="10">
               <a-form-item-rest>
                 <custom-select
                   v-model:value="temp.group"
                   :max-length="50"
                   :data="groupList"
-                  input-placeholder="新增分组"
-                  select-placeholder="选择分组"
+                  :input-placeholder="$t('i18n_bd0362bed3')"
+                  :select-placeholder="$t('i18n_3e8c9c54ee')"
                 >
                 </custom-select>
               </a-form-item-rest>
@@ -52,23 +54,29 @@
         <a-form-item name="runMode">
           <template #label>
             <a-tooltip>
-              运行方式
+              {{ $t('i18n_17d444b642') }}
               <template #title>
                 <ul>
-                  <li><b>Dsl</b> 配合脚本模版实现自定义项目管理</li>
-                  <li><b>ClassPath</b> java -classpath xxx 运行项目</li>
-                  <li><b>Jar</b> java -jar xxx 运行项目</li>
-                  <li><b>JarWar</b> java -jar Springboot war 运行项目</li>
-                  <li><b>JavaExtDirsCp</b> java -Djava.ext.dirs=lib -cp conf:run.jar $MAIN_CLASS 运行项目</li>
-                  <li><b>File</b> 项目为静态文件夹,没有项目状态以及控制等功能</li>
+                  <li><b>Dsl</b> {{ $t('i18n_2356fe4af2') }}</li>
+                  <li><b>ClassPath</b> java -classpath xxx {{ $t('i18n_fa4aa1b93b') }}</li>
+                  <li><b>Jar</b> java -jar xxx {{ $t('i18n_fa4aa1b93b') }}</li>
+                  <li>
+                    <b>JarWar</b> java -jar Springboot war
+                    {{ $t('i18n_fa4aa1b93b') }}
+                  </li>
+                  <li>
+                    <b>JavaExtDirsCp</b> java -Djava.ext.dirs=lib -cp conf:run.jar $MAIN_CLASS
+                    {{ $t('i18n_fa4aa1b93b') }}
+                  </li>
+                  <li><b>File</b> {{ $t('i18n_5d6f47d670') }},{{ $t('i18n_61955b0e4b') }}</li>
                 </ul>
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
-          <a-select v-model:value="temp.runMode" placeholder="请选择运行方式" @change="changeRunMode">
+          <a-select v-model:value="temp.runMode" :placeholder="$t('i18n_26a3378645')" @change="changeRunMode">
             <a-select-option v-for="item in runModeArray" :key="item.name">
-              <template v-if="item.desc.indexOf('不推荐') > -1">
+              <template v-if="item.desc.indexOf($t('i18n_888df7a89e')) > -1">
                 <s>
                   <b>[{{ item.name }}]</b> {{ item.desc }}
                 </s>
@@ -80,8 +88,8 @@
           </a-select>
         </a-form-item>
         <template v-if="temp.runMode === 'Link'">
-          <a-form-item label="软链的项目" name="linkId">
-            <a-select v-model:value="temp.linkId" placeholder="请选择软链的项目" @change="changeLinkId">
+          <a-form-item :label="$t('i18n_be166de983')" name="linkId">
+            <a-select v-model:value="temp.linkId" :placeholder="$t('i18n_1ba141c9ac')" @change="changeLinkId">
               <a-select-option
                 v-for="item in projectList"
                 :key="item.projectId"
@@ -96,13 +104,15 @@
           <a-form-item name="whitelistDirectory">
             <template #label>
               <a-tooltip>
-                项目路径
+                {{ $t('i18n_aabdc3b7c0') }}
                 <template #title>
                   <ul>
-                    <li>授权路径是指项目文件存放到服务中的文件夹</li>
-                    <li>可以到节点管理中的【插件端配置】=>【授权配置】修改</li>
-                    <li>项目文件夹是项目实际存放的目录名称</li>
-                    <li>项目文件会存放到 <br />&nbsp;&nbsp;<b>项目授权路径+项目文件夹</b></li>
+                    <li>{{ $t('i18n_f89cc4807e') }}</li>
+                    <li>{{ $t('i18n_94763baf5f') }}</li>
+                    <li>{{ $t('i18n_fe828cefd9') }}</li>
+                    <li>
+                      {{ $t('i18n_556499017a') }} <br />&nbsp;&nbsp;<b>{{ $t('i18n_67141abed6') }}</b>
+                    </li>
                   </ul>
                 </template>
                 <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
@@ -110,7 +120,7 @@
             </template>
             <template #help>
               <div>
-                需要提前为机器配置授权目录
+                {{ $t('i18n_fde1b6fb37') }}
                 <a-button
                   type="link"
                   size="small"
@@ -120,18 +130,18 @@
                     }
                   "
                 >
-                  <InfoCircleOutlined /> 快速配置
+                  <InfoCircleOutlined /> {{ $t('i18n_23b444d24c') }}
                 </a-button>
               </div>
             </template>
             <a-input-group compact>
-              <a-select v-model:value="temp.whitelistDirectory" style="width: 50%" placeholder="请选择项目授权路径">
+              <a-select v-model:value="temp.whitelistDirectory" style="width: 50%" :placeholder="$t('i18n_1d38b2b2bc')">
                 <a-select-option v-for="access in accessList" :key="access">
                   <a-tooltip :title="access">{{ access }}</a-tooltip>
                 </a-select-option>
               </a-select>
               <a-form-item-rest>
-                <a-input v-model:value="temp.lib" style="width: 50%" placeholder="项目存储的文件夹" />
+                <a-input v-model:value="temp.lib" style="width: 50%" :placeholder="$t('i18n_1dc518bddb')" />
               </a-form-item-rest>
             </a-input-group>
             <template #extra>
@@ -139,43 +149,48 @@
             </template>
           </a-form-item>
 
-          <a-form-item v-show="filePath !== ''" label="项目完整目录">
+          <a-form-item v-show="filePath !== ''" :label="$t('i18n_8283f063d7')">
             <a-alert :message="filePath" type="success" />
           </a-form-item>
         </template>
         <a-form-item v-show="temp.runMode === 'Dsl'" name="dslContent">
           <template #label>
             <a-tooltip>
-              DSL 内容
+              DSL {{ $t('i18n_2d711b09bd') }}
               <template #title>
-                <p>
-                  以 yaml/yml 格式配置,scriptId
-                  为项目路径下的脚本文件的相对路径或者脚本模版ID，可以到脚本模版编辑弹窗中查看 scriptId
-                </p>
-                <p>脚本里面支持的变量有：${PROJECT_ID}、${PROJECT_NAME}、${PROJECT_PATH}</p>
+                <p>{{ $t('i18n_73d8160821') }}</p>
+                <p>{{ $t('i18n_3517aa30c2') }}</p>
                 <p>
                   <b>status</b>
-                  流程执行完脚本后，输出的内容最后一行必须为：running:$pid
-                  <b>$pid 为当前项目实际的进程ID</b>。如果输出最后一行不是预期格式项目状态将是未运行
+                  {{ $t('i18n_ca69dad8fc') }}:$pid <b>$pid {{ $t('i18n_07a8af8c03') }}</b
+                  >{{ $t('i18n_d2f484ff7e') }}
                 </p>
-                <p>配置详情请参考配置示例</p>
+                <p>{{ $t('i18n_9f52492fbc') }}</p>
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
           <template #help>
-            scriptId可以使用节点脚本：
-            <a-button
-              type="link"
-              size="small"
-              @click="
-                () => {
-                  drawerVisible = true
-                }
-              "
-            >
-              查看节点脚本
-            </a-button>
+            <!-- <a-space>
+              <template #split>
+                <a-divider type="vertical" />
+              </template> -->
+            <div>
+              scriptId{{ $t('i18n_21da885538') }}
+              <a-button
+                type="link"
+                size="small"
+                @click="
+                  () => {
+                    drawerVisible = true
+                  }
+                "
+              >
+                {{ $t('i18n_35134b6f94') }}
+              </a-button>
+            </div>
+            <div>{{ $t('i18n_6a359e2ab3') }}</div>
+            <!-- </a-space> -->
           </template>
           <a-form-item-rest>
             <code-editor
@@ -184,14 +199,14 @@
               height="40vh"
               :show-tool="true"
               :options="{ mode: 'yaml', tabSize: 2 }"
-              placeholder="请填写项目 DSL 配置内容,可以点击上方切换 tab 查看配置示例"
+              :placeholder="$t('i18n_1c8190b0eb')"
             >
               <template #tool_before>
                 <a-segmented
                   v-model:value="dslEditTabKey"
                   :options="[
-                    { label: 'DSL 配置', value: 'content' },
-                    { label: '配置示例', value: 'demo' }
+                    { label: `DSL ${$t('i18n_224e2ccda8')}`, value: 'content' },
+                    { label: $t('i18n_da79c2ec32'), value: 'demo' }
                   ]"
                 />
               </template>
@@ -207,8 +222,8 @@
                 <a-segmented
                   v-model:value="dslEditTabKey"
                   :options="[
-                    { label: 'DSL 配置', value: 'content' },
-                    { label: '配置示例', value: 'demo' }
+                    { label: `DSL ${$t('i18n_224e2ccda8')}`, value: 'content' },
+                    { label: $t('i18n_da79c2ec32'), value: 'demo' }
                   ]"
                 />
               </template>
@@ -218,19 +233,19 @@
         <a-form-item v-show="noFileModes.includes(temp.runMode) && temp.runMode !== 'Link'">
           <template #label>
             <a-tooltip>
-              日志目录
+              {{ $t('i18n_2ce44aba57') }}
               <template #title>
                 <ul>
-                  <li>日志目录是指控制台日志存储目录</li>
-                  <li>默认是在插件端数据目录/${projectId}/${projectId}.log</li>
-                  <li>可选择的列表和项目授权目录是一致的，即相同配置</li>
+                  <li>{{ $t('i18n_12934d1828') }}</li>
+                  <li>{{ $t('i18n_138776a1dc') }}</li>
+                  <li>{{ $t('i18n_95c5c939e4') }}</li>
                 </ul>
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
-          <a-select v-model:value="temp.logPath" placeholder="请选择项目授权路径">
-            <a-select-option key="" value="">默认是在插件端数据目录/${projectId}/${projectId}.log</a-select-option>
+          <a-select v-model:value="temp.logPath" :placeholder="$t('i18n_1d38b2b2bc')">
+            <a-select-option key="" value="">{{ $t('i18n_138776a1dc') }}</a-select-option>
             <a-select-option v-for="access in accessList" :key="access">{{ access }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -243,7 +258,7 @@
           label="Main Class"
           name="mainClass"
         >
-          <a-input v-model:value="temp.mainClass" placeholder="程序运行的 main 类(jar 模式运行可以不填)" />
+          <a-input v-model:value="temp.mainClass" :placeholder="$t('i18n_ef800ed466')" />
         </a-form-item>
         <a-form-item
           v-show="
@@ -253,49 +268,83 @@
           label="JavaExtDirsCp"
           name="javaExtDirsCp"
         >
-          <a-input v-model:value="temp.javaExtDirsCp" placeholder="-Dext.dirs=xxx: -cp xx  填写【xxx:xx】" />
+          <a-input
+            v-model:value="temp.javaExtDirsCp"
+            :placeholder="`-Dext.dirs=xxx: -cp xx  ${$t('i18n_c53021f06d')}:xx】`"
+          />
         </a-form-item>
         <a-form-item
           v-show="javaModes.includes(temp.runMode) || javaModes.includes(linkProjectData.runMode)"
-          label="JVM 参数"
+          :label="$t('i18n_497bc3532b')"
           name="jvm"
         >
           <a-textarea
             v-model:value="temp.jvm"
             :auto-size="{ minRows: 3, maxRows: 3 }"
-            placeholder="jvm参数,非必填.如：-Xms512m -Xmx512m"
+            :placeholder="$t('i18n_eef3653e9a', { slot1: $t('i18n_3d0a2df9ec'), slot2: $t('i18n_eb5bab1c31') })"
           />
         </a-form-item>
         <a-form-item
           v-show="javaModes.includes(temp.runMode) || javaModes.includes(linkProjectData.runMode)"
-          label="args 参数"
+          :label="$t('i18n_e5098786d3')"
           name="args"
         >
           <a-textarea
             v-model:value="temp.args"
             :auto-size="{ minRows: 3, maxRows: 3 }"
-            placeholder="Main 函数 args 参数，非必填. 如：--server.port=8080"
+            :placeholder="`Main ${$t('i18n_6a9231c3ba')}. ${$t('i18n_848e4e21da')}.port=8080`"
           />
         </a-form-item>
         <a-form-item
           v-if="temp.runMode === 'Dsl' || linkProjectData.runMode === 'Dsl'"
           name="dslEnv"
-          label="DSL环境变量"
+          :label="$t('i18n_fba5f4f19a')"
         >
-          <a-input v-model:value="temp.dslEnv" placeholder="DSL环境变量,如：key1=values1&keyvalue2" />
+          <!-- <a-input
+            v-model:value="temp.dslEnv"
+            placeholder="DSL{{$t('i18n_3867e350eb')}},{{$t('i18n_9324290bfe')}}=values1&keyvalue2"
+          /> -->
+          <parameter-widget v-model:value="temp.dslEnv"></parameter-widget>
         </a-form-item>
 
         <a-form-item v-show="noFileModes.includes(temp.runMode)" name="autoStart">
           <template #label>
             <a-tooltip>
-              自启动
-              <template #title>插件端启动的时候检查项目状态，如果项目状态是未运行则尝试执行启动项目</template>
+              {{ $t('i18n_8388c637f6') }}
+              <template #title>{{ $t('i18n_d4e03f60a9') }}</template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
-          <template #help><div>非服务器开机自启,如需开机自启建议配置<b>插件端开机自启</b>并开启此开关</div></template>
-          <a-switch v-model:checked="temp.autoStart" checked-children="开" un-checked-children="关" />
-          插件端启动时自动检查项目如未启动将尝试启动
+          <template #help>
+            <div>
+              {{ $t('i18n_71584de972') }}<b>{{ $t('i18n_1e4a59829d') }}</b
+              >{{ $t('i18n_0360fffb40') }}
+            </div>
+          </template>
+          <div>
+            <a-switch
+              v-model:checked="temp.autoStart"
+              :checked-children="$t('i18n_8493205602')"
+              :un-checked-children="$t('i18n_d58a55bcee')"
+            />
+            {{ $t('i18n_1022c545d1') }}
+          </div>
+        </a-form-item>
+
+        <a-form-item name="disableScanDir">
+          <template #label>
+            <a-tooltip> {{ $t('i18n_df59a2804d') }} </a-tooltip>
+          </template>
+          <template #help>
+            <div>{{ $t('i18n_b7c139ed75') }}</div>
+          </template>
+          <div>
+            <a-switch
+              v-model:checked="temp.disableScanDir"
+              :checked-children="$t('i18n_ced3d28cd1')"
+              :un-checked-children="$t('i18n_56525d62ac')"
+            />
+          </div>
         </a-form-item>
 
         <a-form-item v-show="noFileModes.includes(temp.runMode)" name="token">
@@ -304,36 +353,34 @@
               WebHooks
               <template #title>
                 <ul>
-                  <li>项目启动,停止,重启,文件变动都将请求对应的地址</li>
-                  <li>传入参数有：projectId、projectName、type、result</li>
-                  <li>type 的值有：stop、beforeStop、start、beforeRestart、fileChange</li>
-                  <li>DSL 类型项目特有的 type：reload、restart</li>
+                  <li>{{ $t('i18n_a24d80c8fa') }}</li>
+                  <li>{{ $t('i18n_b91961bf0b') }}</li>
+                  <li>type {{ $t('i18n_5a63277941') }}</li>
+                  <li>DSL {{ $t('i18n_f8f456eb9a') }}</li>
                 </ul>
               </template>
               <QuestionCircleOutlined v-show="temp.type !== 'edit'" />
             </a-tooltip>
           </template>
-          <a-input
-            v-model:value="temp.token"
-            placeholder="项目启动,停止,重启,文件变动都将请求对应的地址,非必填，GET请求"
-          />
+          <a-input v-model:value="temp.token" :placeholder="$t('i18n_6c776e9d91')" />
         </a-form-item>
 
         <a-form-item
           v-if="temp.runCommand"
           v-show="temp.type === 'edit' && javaModes.includes(temp.runMode)"
-          label="运行命令"
+          :label="$t('i18n_ce559ba296')"
           name="runCommand"
         >
-          <a-alert :message="temp.runCommand || '无'" type="success" />
+          <a-alert :message="temp.runCommand || $t('i18n_d81bb206a8')" type="success" />
         </a-form-item>
       </a-form>
     </a-spin>
     <!-- 配置节点授权目录 -->
-    <a-modal
+    <CustomModal
+      v-if="configDir"
       v-model:open="configDir"
       destroy-on-close
-      :title="`配置授权目录`"
+      :title="`${$t('i18n_eee6510292')}`"
       :footer="null"
       :mask-closable="false"
       @cancel="
@@ -352,12 +399,12 @@
           }
         "
       ></whiteList>
-    </a-modal>
+    </CustomModal>
     <!-- 管理节点 -->
     <NodeFunc
       v-if="drawerVisible"
       :id="nodeId"
-      name="查看节点脚本"
+      :name="$t('i18n_35134b6f94')"
       :tabs="['scripct']"
       @close="
         () => {
@@ -367,12 +414,12 @@
     ></NodeFunc>
   </div>
 </template>
-
 <script>
 import CustomSelect from '@/components/customSelect'
 import NodeFunc from '@/pages/node/node-func'
 import codeEditor from '@/components/codeEditor'
-import { PROJECT_DSL_DEFATUL, randomStr } from '@/utils/const'
+import { randomStr } from '@/utils/const'
+import { PROJECT_DSL_DEFATUL } from '@/utils/const-i18n'
 import whiteList from '@/pages/node/node-layout/system/white-list.vue'
 
 import {
@@ -418,11 +465,15 @@ export default {
       temp: {},
       drawerVisible: false,
       rules: {
-        id: [{ required: true, message: '请输入项目ID', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-        runMode: [{ required: true, message: '请选择项目运行方式', trigger: 'blur' }],
-        whitelistDirectory: [{ required: true, message: '请选择项目授权路径', trigger: 'blur' }],
-        lib: [{ required: true, message: '请输入项目文件夹', trigger: 'blur' }]
+        id: [{ required: true, message: this.$t('i18n_646a518953'), trigger: 'blur' }],
+
+        name: [{ required: true, message: this.$t('i18n_4371e2b426'), trigger: 'blur' }],
+
+        runMode: [{ required: true, message: this.$t('i18n_4310e9ed7d'), trigger: 'blur' }],
+
+        whitelistDirectory: [{ required: true, message: this.$t('i18n_1d38b2b2bc'), trigger: 'blur' }],
+
+        lib: [{ required: true, message: this.$t('i18n_d9657e2b5f'), trigger: 'blur' }]
       },
       linkProjectData: {},
       loading: true,
@@ -536,7 +587,7 @@ export default {
       return new Promise((resolve, reject) => {
         if (this.temp.outGivingProject) {
           $notification.warning({
-            message: '独立的项目分发请到分发管理中去修改'
+            message: this.$t('i18n_869b506d66')
           })
           reject(false)
           return

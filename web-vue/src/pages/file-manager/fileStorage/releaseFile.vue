@@ -7,23 +7,21 @@
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
     >
-      <a-form-item label="任务名" name="name">
-        <a-input v-model:value="temp.name" placeholder="请输入任务名" :max-length="50" />
+      <a-form-item :label="$t('i18n_ce23a42b47')" name="name">
+        <a-input v-model:value="temp.name" :placeholder="$t('i18n_5f4c724e61')" :max-length="50" />
       </a-form-item>
 
-      <a-form-item label="发布方式" name="taskType">
+      <a-form-item :label="$t('i18n_f98994f7ec')" name="taskType">
         <a-radio-group v-model:value="temp.taskType" @change="taskTypeChange">
           <a-radio :value="0"> SSH </a-radio>
-          <a-radio :value="1"> 节点 </a-radio>
+          <a-radio :value="1"> {{ $t('i18n_3bf3c0a8d6') }} </a-radio>
         </a-radio-group>
         <template #help>
-          <template v-if="temp.taskType === 0"
-            >发布后的文件名是：文件ID.后缀，并非文件真实名称 （可以使用上传后脚本随意修改）
-          </template>
+          <template v-if="temp.taskType === 0">{{ $t('i18n_28bf369f34') }} </template>
         </template>
       </a-form-item>
 
-      <a-form-item v-if="temp.taskType === 0" name="taskDataIds" label="发布的SSH">
+      <a-form-item v-if="temp.taskType === 0" name="taskDataIds" :label="$t('i18n_b188393ea7')">
         <a-row>
           <a-col :span="22">
             <a-select
@@ -40,7 +38,7 @@
                 }
               "
               mode="multiple"
-              placeholder="请选择SSH"
+              :placeholder="$t('i18n_260a3234f2')"
             >
               <a-select-option v-for="ssh in sshList" :key="ssh.id">
                 <a-tooltip :title="ssh.name"> {{ ssh.name }}</a-tooltip>
@@ -52,7 +50,7 @@
           </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item v-else-if="temp.taskType === 1" name="taskDataIds" label="发布的节点">
+      <a-form-item v-else-if="temp.taskType === 1" name="taskDataIds" :label="$t('i18n_473badc394')">
         <a-row>
           <a-col :span="22">
             <a-select
@@ -69,7 +67,7 @@
                 }
               "
               mode="multiple"
-              placeholder="请选择节点"
+              :placeholder="$t('i18n_f8a613d247')"
             >
               <a-select-option v-for="ssh in nodeList" :key="ssh.id">
                 <a-tooltip :title="ssh.name"> {{ ssh.name }}</a-tooltip>
@@ -82,9 +80,9 @@
         </a-row>
       </a-form-item>
 
-      <a-form-item name="releasePathParent" label="发布目录">
+      <a-form-item name="releasePathParent" :label="$t('i18n_dbb2df00cf')">
         <template #help>
-          <a-tooltip title="需要配置授权目录（授权才能正常使用发布）,授权目录主要是用于确定可以发布到哪些目录中"
+          <a-tooltip :title="$t('i18n_bfe8fab5cd')"
             ><a-button
               size="small"
               type="link"
@@ -94,7 +92,7 @@
                 }
               "
             >
-              <InfoCircleOutlined />配置目录
+              <InfoCircleOutlined />{{ $t('i18n_1e5533c401') }}
             </a-button>
           </a-tooltip>
         </template>
@@ -104,7 +102,7 @@
             show-search
             allow-clear
             style="width: 30%"
-            placeholder="请选择发布的一级目录"
+            :placeholder="$t('i18n_edd716f524')"
           >
             <a-select-option v-for="item in accessList" :key="item">
               <a-tooltip :title="item">{{ item }}</a-tooltip>
@@ -114,32 +112,38 @@
             </template>
           </a-select>
           <a-form-item-rest>
-            <a-input v-model:value="temp.releasePathSecondary" style="width: 70%" placeholder="请填写发布的二级目录" />
+            <a-input
+              v-model:value="temp.releasePathSecondary"
+              style="width: 70%"
+              :placeholder="$t('i18n_dc0d06f9c7')"
+            />
           </a-form-item-rest>
         </a-input-group>
       </a-form-item>
 
       <a-form-item name="releaseBeforeCommand">
         <template #label>
-          执行脚本
+          {{ $t('i18n_cfb00269fd') }}
           <a-tooltip>
             <template #title>
               <ul>
-                <li>支持变量引用：${TASK_ID}、${FILE_ID}、${FILE_NAME}、${FILE_EXT_NAME}</li>
-                <li>可以引用工作空间的环境变量 变量占位符 ${xxxx} xxxx 为变量名称</li>
-                <li>建议在上传后的脚本中对文件进行自定义更名，SSH 上传默认为：${FILE_ID}.${FILE_EXT_NAME}</li>
+                <li>{{ $t('i18n_799ac8bf40') }}</li>
+                <li>{{ $t('i18n_5fbde027e3') }}</li>
+                <li>{{ $t('i18n_a9c999e0bd') }}</li>
               </ul>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
         </template>
         <template #help>
-          <div v-if="scriptTabKey === 'before'">文件上传前需要执行的脚本(非阻塞命令)</div>
-          <div v-else-if="scriptTabKey === 'after'">文件上传成功后需要执行的脚本(非阻塞命令)</div>
+          <div v-if="scriptTabKey === 'before'">{{ $t('i18n_00de0ae1da') }}</div>
+          <div v-else-if="scriptTabKey === 'after'">
+            {{ $t('i18n_08ac1eace7') }}
+          </div>
         </template>
         <a-form-item-rest>
           <a-tabs v-model:activeKey="scriptTabKey" tab-position="right" type="card">
-            <a-tab-pane key="before" tab="上传前">
+            <a-tab-pane key="before" :tab="$t('i18n_d0c879f900')">
               <code-editor
                 v-model:content="temp.beforeScript"
                 height="40vh"
@@ -149,11 +153,25 @@
                 }"
               >
                 <template #tool_before>
-                  <a-tag><b>上传前</b>执行</a-tag>
+                  <a-space>
+                    <a-tag>
+                      <b>{{ $t('i18n_d0c879f900') }}</b>
+                      {{ $t('i18n_1a6aa24e76') }}
+                    </a-tag>
+                    <a-button
+                      type="link"
+                      @click="
+                        () => {
+                          chooseScriptVisible = 1
+                        }
+                      "
+                      >{{ $t('i18n_54f271cd41') }}</a-button
+                    >
+                  </a-space>
                 </template>
               </code-editor>
             </a-tab-pane>
-            <a-tab-pane key="after" tab="上传后">
+            <a-tab-pane key="after" :tab="$t('i18n_9b1c5264a0')">
               <code-editor
                 v-model:content="temp.afterScript"
                 height="40vh"
@@ -162,18 +180,32 @@
                   mode: 'shell'
                 }"
               >
-                <template #tool_before> <a-tag>上传后执行</a-tag></template>
+                <template #tool_before>
+                  <a-space>
+                    <a-tag>{{ $t('i18n_e7ffc33d05') }}</a-tag>
+                    <a-button
+                      type="link"
+                      @click="
+                        () => {
+                          chooseScriptVisible = 2
+                        }
+                      "
+                      >{{ $t('i18n_54f271cd41') }}</a-button
+                    >
+                  </a-space>
+                </template>
               </code-editor>
             </a-tab-pane>
           </a-tabs>
         </a-form-item-rest>
       </a-form-item>
     </a-form>
-
-    <a-modal
-      v-model:value="configDir"
+    <!-- 配置授权目录 -->
+    <CustomModal
+      v-if="configDir"
+      v-model:open="configDir"
       destroy-on-close
-      :title="`配置授权目录`"
+      :title="`${$t('i18n_eee6510292')}`"
       :footer="null"
       :mask-closable="false"
       @cancel="
@@ -191,42 +223,114 @@
           }
         "
       ></whiteList>
-    </a-modal>
+    </CustomModal>
+    <!-- 选择脚本 -->
+    <CustomDrawer
+      v-if="chooseScriptVisible != 0"
+      destroy-on-close
+      :title="$t('i18n_a056d9c4b3')"
+      placement="right"
+      :open="chooseScriptVisible != 0"
+      width="70vw"
+      :footer-style="{ textAlign: 'right' }"
+      @close="
+        () => {
+          chooseScriptVisible = 0
+        }
+      "
+    >
+      <scriptPage
+        v-if="chooseScriptVisible"
+        ref="scriptPage"
+        choose="radio"
+        :choose-val="
+          chooseScriptVisible === 1
+            ? temp.beforeScript?.indexOf('$ref.script.') !== -1
+              ? temp.beforeScript?.replace('$ref.script.', '')
+              : ''
+            : temp.afterScript?.indexOf('$ref.script.') !== -1
+            ? temp.afterScript?.replace('$ref.script.', '')
+            : ''
+        "
+        mode="choose"
+        @confirm="
+          (id) => {
+            if (chooseScriptVisible === 1) {
+              temp = { ...temp, beforeScript: '$ref.script.' + id }
+            } else if (chooseScriptVisible === 2) {
+              temp = { ...temp, afterScript: '$ref.script.' + id }
+            }
+            chooseScriptVisible = 0
+          }
+        "
+        @cancel="
+          () => {
+            chooseScriptVisible = 0
+          }
+        "
+      ></scriptPage>
+      <template #footer>
+        <a-space>
+          <a-button
+            @click="
+              () => {
+                chooseScriptVisible = false
+              }
+            "
+            >{{ $t('i18n_625fb26b4b') }}</a-button
+          >
+          <a-button
+            type="primary"
+            @click="
+              () => {
+                $refs['scriptPage'].handerConfirm()
+              }
+            "
+            >{{ $t('i18n_e83a256e4f') }}</a-button
+          >
+        </a-space>
+      </template>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import { getSshListAll } from '@/api/ssh'
 import { getDispatchWhiteList } from '@/api/dispatch'
 import { getNodeListAll } from '@/api/node'
 import codeEditor from '@/components/codeEditor'
 import whiteList from '@/pages/dispatch/white-list.vue'
+import scriptPage from '@/pages/script/script-list.vue'
 export default {
   components: {
     codeEditor,
-    whiteList
+    whiteList,
+    scriptPage
   },
   emits: ['commit'],
   data() {
     return {
       temp: {},
       releaseFileRules: {
-        name: [{ required: true, message: '请输入文件任务名', trigger: 'blur' }],
-        taskType: [{ required: true, message: '请选择发布方式', trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_89d18c88a3'), trigger: 'blur' }],
+
+        taskType: [{ required: true, message: this.$t('i18n_29b48a76be'), trigger: 'blur' }],
+
         releasePath: [
           {
             required: true,
-            message: '请选择发布的一级目录和填写二级目录',
+            message: this.$t('i18n_be28f10eb6'),
             trigger: 'blur'
           }
         ],
-        taskDataIds: [{ required: true, message: '请选择发布的SSH', trigger: 'blur' }]
+
+        taskDataIds: [{ required: true, message: this.$t('i18n_3e51d1bc9c'), trigger: 'blur' }]
       },
       sshList: [],
       accessList: [],
       nodeList: [],
       configDir: false,
-      scriptTabKey: 'before'
+      scriptTabKey: 'before',
+      chooseScriptVisible: 0
     }
   },
   created() {

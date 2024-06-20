@@ -19,7 +19,7 @@
       default-auto-refresh
       :auto-refresh-time="5"
       table-name="buildList"
-      :empty-description="$tl('p.noBuild')"
+      :empty-description="$t('i18n_1c2e9d0c76')"
       :active-page="activePage"
       :layout="layout"
       size="middle"
@@ -58,7 +58,7 @@
             v-model:value="listQuery['%name%']"
             allow-clear
             class="search-input-item"
-            :placeholder="$tl('p.buildName')"
+            :placeholder="$t('i18n_50a299c847')"
             @press-enter="loadData"
           />
           <a-select
@@ -75,7 +75,7 @@
                 )
               }
             "
-            :placeholder="$tl('c.status')"
+            :placeholder="$t('i18n_3fea7ca76c')"
             class="search-input-item"
           >
             <a-select-option v-for="(val, key) in statusMap" :key="key">{{ val }}</a-select-option>
@@ -94,7 +94,7 @@
               }
             "
             allow-clear
-            :placeholder="$tl('c.publishMethod')"
+            :placeholder="$t('i18n_f98994f7ec')"
             class="search-input-item"
           >
             <a-select-option v-for="(val, key) in releaseMethodMap" :key="key">{{ val }}</a-select-option>
@@ -113,7 +113,7 @@
               }
             "
             allow-clear
-            :placeholder="$tl('c.group')"
+            :placeholder="$t('i18n_829abe5a8d')"
             class="search-input-item"
           >
             <a-select-option v-for="item in groupList" :key="item">{{ item }}</a-select-option>
@@ -122,27 +122,29 @@
             v-model:value="listQuery['%resultDirFile%']"
             allow-clear
             class="search-input-item"
-            :placeholder="$tl('c.artifactCatalog')"
+            :placeholder="$t('i18n_c972010694')"
             @press-enter="loadData"
           />
-          <a-tooltip :title="$tl('p.backToFirstPage')">
-            <a-button type="primary" :loading="loading" @click="loadData">{{ $tl('p.search') }}</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">{{ $tl('p.new') }}</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
           <template v-if="tableSelections && tableSelections.length">
             <a-dropdown>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item key="1" @click="batchBuild"> {{ $tl('p.batchBuild') }} </a-menu-item>
-                  <a-menu-item key="2" @click="batchCancel"> {{ $tl('p.batchCancel') }} </a-menu-item>
-                  <a-menu-item key="3" @click="handleBatchDelete"> {{ $tl('p.batchDelete') }} </a-menu-item>
+                  <a-menu-item key="1" @click="batchBuild"> {{ $t('i18n_67e3d3e09c') }} </a-menu-item>
+                  <a-menu-item key="2" @click="batchCancel"> {{ $t('i18n_32112950da') }} </a-menu-item>
+                  <a-menu-item key="3" @click="handleBatchDelete">
+                    {{ $t('i18n_7fb62b3011') }}
+                  </a-menu-item>
                 </a-menu>
               </template>
-              <a-button type="primary"> {{ $tl('c.batchOperation') }}<DownOutlined /> </a-button>
+              <a-button type="primary"> {{ $t('i18n_7f7c624a84') }}<DownOutlined /> </a-button>
             </a-dropdown>
           </template>
-          <a-tooltip v-else :title="$tl('p.batchOperationNote')">
-            <a-button :disabled="true" type="primary"> {{ $tl('c.batchOperation') }} <DownOutlined /> </a-button>
+          <a-tooltip v-else :title="$t('i18n_98357846a2')">
+            <a-button :disabled="true" type="primary"> {{ $t('i18n_7f7c624a84') }} <DownOutlined /> </a-button>
           </a-tooltip>
 
           <!-- <a-button v-if="!layout" type="primary" @click="changeLayout">
@@ -174,10 +176,12 @@
               </a-col>
               <a-col :span="7" style="text-align: right" class="text-overflow-hidden">
                 <a-tooltip
-                  :title="`${$tl('p.currentStatus')}${statusMap[item.status]} ${item.statusMsg ? $tl('p.statusMessage') + item.statusMsg : ''}`"
+                  :title="`${$t('i18n_e703c7367c')}${statusMap[item.status]} ${
+                    item.statusMsg ? $t('i18n_8d13037eb7') + item.statusMsg : ''
+                  }`"
                 >
                   <a-tag :color="statusColor[item.status]" style="margin-right: 0">
-                    {{ statusMap[item.status] || $tl('p.unknownStatus') }}</a-tag
+                    {{ statusMap[item.status] || $t('i18n_903b25f64e') }}</a-tag
                   >
                 </a-tooltip>
               </a-col>
@@ -187,17 +191,17 @@
           <a-tooltip>
             <template #title>
               <div v-if="item.branchTagName">
-                <div>{{ $tl('c.tagName') }}{{ item.branchTagName }}</div>
-                <div>{{ $tl('c.lastCommitId') }}{{ item.repositoryLastCommitId }}</div>
+                <div>{{ $t('i18n_8086beecb3') }}{{ item.branchTagName }}</div>
+                <div>{{ $t('i18n_ca774ec5b4') }}{{ item.repositoryLastCommitId }}</div>
               </div>
               <div v-else>
-                <div>{{ $tl('c.branchName') }}{{ item.branchName }}</div>
-                <div>{{ $tl('c.lastCommitId') }}{{ item.repositoryLastCommitId }}</div>
+                <div>{{ $t('i18n_f240f9d69c') }}{{ item.branchName }}</div>
+                <div>{{ $t('i18n_ca774ec5b4') }}{{ item.repositoryLastCommitId }}</div>
               </div>
             </template>
 
             <a-row class="item-info">
-              <a-col :span="6" class="title text-overflow-hidden">{{ $tl('p.groupTag') }}</a-col>
+              <a-col :span="6" class="title text-overflow-hidden">{{ $t('i18n_88ab27cfd0') }}</a-col>
               <a-col :span="18" class="content text-overflow-hidden">
                 {{ item.branchName }} {{ item.branchTagName }}</a-col
               >
@@ -205,7 +209,7 @@
           </a-tooltip>
           <a-tooltip :title="item.resultDirFile">
             <a-row class="item-info">
-              <a-col :span="6" class="title text-overflow-hidden">{{ $tl('p.product') }}</a-col>
+              <a-col :span="6" class="title text-overflow-hidden">{{ $t('i18n_cc637e17a0') }}</a-col>
               <a-col :span="18" class="content text-overflow-hidden">
                 {{ item.resultDirFile }}
               </a-col>
@@ -213,7 +217,7 @@
           </a-tooltip>
 
           <a-row class="item-info">
-            <a-col :span="6" class="title text-overflow-hidden">{{ $tl('p.buildId') }}:</a-col>
+            <a-col :span="6" class="title text-overflow-hidden">{{ $t('i18n_b5d0091ae3') }}:</a-col>
             <a-col :span="18" class="content text-overflow-hidden">
               <a-tag v-if="item.buildId <= 0">-</a-tag>
               <a-tag v-else color="#108ee9" @click="handleBuildLog(item)">#{{ item.buildId }}</a-tag>
@@ -221,20 +225,20 @@
           </a-row>
 
           <a-row class="item-info">
-            <a-col :span="6" class="title text-overflow-hidden">{{ $tl('p.buildMethod') }}</a-col>
+            <a-col :span="6" class="title text-overflow-hidden">{{ $t('i18n_c530a094f9') }}</a-col>
             <a-col :span="18" class="content text-overflow-hidden">
               <template v-if="item.buildMode === 1">
                 <CloudOutlined />
-                {{ $tl('c.containerBuild') }}
+                {{ $t('i18n_685e5de706') }}
               </template>
               <template v-else>
                 <CodeOutlined />
-                {{ $tl('c.localBuild') }}
+                {{ $t('i18n_69c3b873c1') }}
               </template>
             </a-col>
           </a-row>
           <a-row class="item-info">
-            <a-col :span="6" class="title text-overflow-hidden">{{ $tl('p.publishMethod') }}</a-col>
+            <a-col :span="6" class="title text-overflow-hidden">{{ $t('i18n_65894da683') }}</a-col>
             <a-col :span="18" class="content text-overflow-hidden">
               {{ releaseMethodMap[item.releaseMethod] }}
             </a-col>
@@ -248,11 +252,11 @@
                 type="primary"
                 danger
                 @click="handleStopBuild(item)"
-                >{{ $tl('c.stop') }}
+                >{{ $t('i18n_095e938e2a') }}
               </a-button>
               <a-dropdown v-else>
                 <a-button size="small" type="primary" @click="handleConfirmStartBuild(item)">
-                  {{ $tl('c.build') }}
+                  {{ $t('i18n_fcba60e773') }}
                   <DownOutlined />
                 </a-button>
                 <template #overlay>
@@ -262,7 +266,7 @@
                         size="small"
                         type="primary"
                         @click="reqStartBuild({ id: item.id, buildEnvParameter: item.buildEnvParameter }, true)"
-                        >{{ $tl('c.directBuild') }}
+                        >{{ $t('i18n_16b5e7b472') }}
                       </a-button>
                     </a-menu-item>
                     <a-menu-item key="2">
@@ -271,38 +275,38 @@
                         type="primary"
                         @click="reqStartBuild({ id: item.id, buildEnvParameter: item.buildEnvParameter }, false)"
                       >
-                        {{ $tl('c.backgroundBuild') }}
+                        {{ $t('i18n_f1fdaffdf0') }}
                       </a-button>
                     </a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
               <a-dropdown>
-                <a-button size="small" type="primary" @click="handleEdit(item)">{{ $tl('c.edit') }}</a-button>
+                <a-button size="small" type="primary" @click="handleEdit(item)">{{ $t('i18n_95b351c862') }}</a-button>
                 <template #overlay>
                   <a-menu>
                     <a-menu-item @click="handleEdit(item, 0)">
-                      <a href="javascript:;">{{ $tl('c.buildMethod') }}</a>
+                      <a href="javascript:;">{{ $t('i18n_17a74824de') }}</a>
                     </a-menu-item>
                     <a-menu-item @click="handleEdit(item, 1)">
-                      <a href="javascript:;">{{ $tl('c.basicInfo') }}</a>
+                      <a href="javascript:;">{{ $t('i18n_6ea1fe6baa') }}</a>
                     </a-menu-item>
                     <a-menu-item @click="handleEdit(item, 2)">
-                      <a href="javascript:;">{{ $tl('c.buildProcess') }}</a>
+                      <a href="javascript:;">{{ $t('i18n_a2ae15f8a7') }}</a>
                     </a-menu-item>
                     <a-menu-item @click="handleEdit(item, 3)">
-                      <a href="javascript:;">{{ $tl('c.publishOperation') }}</a>
+                      <a href="javascript:;">{{ $t('i18n_3c91490844') }}</a>
                     </a-menu-item>
                     <a-menu-item @click="handleEdit(item, 4)">
-                      <a href="javascript:;">{{ $tl('c.otherConfig') }}</a>
+                      <a href="javascript:;">{{ $t('i18n_9ab433e930') }}</a>
                     </a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
-              <a-button size="small" @click="handleDelete(item)">{{ $tl('c.delete') }}</a-button>
-              <a-tooltip placement="leftBottom" :title="$tl('c.clearCode')">
+              <a-button size="small" @click="handleDelete(item)">{{ $t('i18n_2f4aaddde3') }}</a-button>
+              <a-tooltip placement="leftBottom" :title="$t('i18n_19675b9d36')">
                 <a-button size="small" :disabled="!item.sourceDirExist" @click="handleClear(item)"
-                  >{{ $tl('p.clearCode') }}
+                  >{{ $t('i18n_c37ac7f024') }}
                 </a-button>
               </a-tooltip>
             </a-button-group>
@@ -313,7 +317,7 @@
         <template v-if="column.dataIndex === 'name'">
           <a-tooltip
             placement="topLeft"
-            :title="`${$tl('p.name')}${text} ${$tl('p.viewDetails')}`"
+            :title="`${$t('i18n_d7ec2d3fea')}${text} ${$t('i18n_84632d372f')}`"
             @click="handleDetails(record)"
           >
             <a-button type="link" style="padding: 0" size="small"> <FullscreenOutlined />{{ text }}</a-button>
@@ -323,12 +327,12 @@
           <a-tooltip placement="topLeft">
             <template #title>
               <div v-if="record.branchTagName">
-                <div>{{ $tl('c.tagName') }}{{ record.branchTagName }}</div>
-                <div>{{ $tl('c.lastCommitId') }}{{ record.repositoryLastCommitId }}</div>
+                <div>{{ $t('i18n_8086beecb3') }}{{ record.branchTagName }}</div>
+                <div>{{ $t('i18n_ca774ec5b4') }}{{ record.repositoryLastCommitId }}</div>
               </div>
               <div v-else>
-                <div>{{ $tl('c.branchName') }}{{ text }}</div>
-                <div>{{ $tl('c.lastCommitId') }}{{ record.repositoryLastCommitId }}</div>
+                <div>{{ $t('i18n_f240f9d69c') }}{{ text }}</div>
+                <div>{{ $t('i18n_ca774ec5b4') }}{{ record.repositoryLastCommitId }}</div>
               </div>
             </template>
             <span v-if="record.branchTagName"><TagOutlined />{{ record.branchTagName }}</span>
@@ -337,7 +341,7 @@
         </template>
 
         <template v-else-if="column.dataIndex === 'buildMode'">
-          <a-tooltip placement="topLeft" :title="text === 1 ? $tl('c.containerBuild') : $tl('c.localBuild')">
+          <a-tooltip placement="topLeft" :title="text === 1 ? $t('i18n_685e5de706') : $t('i18n_69c3b873c1')">
             <CloudOutlined v-if="text === 1" />
             <CodeOutlined v-else />
           </a-tooltip>
@@ -346,25 +350,25 @@
           <a-tooltip>
             <template #title>
               <ul>
-                <li>{{ $tl('p.publishMethod') }}{{ releaseMethodMap[text] }}</li>
-                <li>{{ $tl('p.artifactCatalog') }}{{ record.resultDirFile }}</li>
-                <li v-if="record.buildMode !== 1">{{ $tl('p.buildCommand') }}{{ record.script }}</li>
+                <li>{{ $t('i18n_65894da683') }}{{ releaseMethodMap[text] }}</li>
+                <li>{{ $t('i18n_113576ce91') }}{{ record.resultDirFile }}</li>
+                <li v-if="record.buildMode !== 1">{{ $t('i18n_1160ab56fd') }}{{ record.script }}</li>
               </ul>
             </template>
             <span>{{ releaseMethodMap[text] }}</span>
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'status'">
-          <a-tooltip :title="record.statusMsg || statusMap[text] || $tl('c.unknown')">
+          <a-tooltip :title="record.statusMsg || statusMap[text] || $t('i18n_1622dc9b6b')">
             <a-tag
               :color="statusColor[record.status]"
-              :title="record.statusMsg || statusMap[text] || $tl('c.unknown')"
-              >{{ statusMap[text] || $tl('c.unknown') }}</a-tag
+              :title="record.statusMsg || statusMap[text] || $t('i18n_1622dc9b6b')"
+              >{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag
             >
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'buildId'">
-          <a-tooltip placement="topLeft" :title="text + ` ( ${$tl('p.viewLog')} ) `">
+          <a-tooltip placement="topLeft" :title="text + ` ( ${$t('i18n_aac62bc255')} ) `">
             <span v-if="record.buildId <= 0"></span>
             <a-tag v-else color="#108ee9" @click="handleBuildLog(record)">#{{ text }}</a-tag>
           </a-tooltip>
@@ -382,11 +386,11 @@
               type="primary"
               danger
               @click="handleStopBuild(record)"
-              >{{ $tl('c.stop') }}
+              >{{ $t('i18n_095e938e2a') }}
             </a-button>
             <a-dropdown v-else>
               <a-button size="small" type="primary" @click="handleConfirmStartBuild(record)"
-                >{{ $tl('c.build') }}<DownOutlined
+                >{{ $t('i18n_fcba60e773') }}<DownOutlined
               /></a-button>
               <template #overlay>
                 <a-menu>
@@ -395,7 +399,7 @@
                       size="small"
                       type="primary"
                       @click="reqStartBuild({ id: record.id, buildEnvParameter: record.buildEnvParameter }, true)"
-                      >{{ $tl('c.directBuild') }}</a-button
+                      >{{ $t('i18n_16b5e7b472') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item key="2">
@@ -403,43 +407,47 @@
                       size="small"
                       type="primary"
                       @click="reqStartBuild({ id: record.id, buildEnvParameter: record.buildEnvParameter }, false)"
-                      >{{ $tl('c.backgroundBuild') }}</a-button
+                      >{{ $t('i18n_f1fdaffdf0') }}</a-button
                     >
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
             <a-dropdown>
-              <a-button size="small" type="primary" @click="handleEdit(record, 1)">{{ $tl('c.edit') }}</a-button>
+              <a-button size="small" type="primary" @click="handleEdit(record, 1)">{{
+                $t('i18n_95b351c862')
+              }}</a-button>
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="handleEdit(record, 0)">
-                    <a href="javascript:;">{{ $tl('c.buildMethod') }}</a>
+                    <a href="javascript:;">{{ $t('i18n_17a74824de') }}</a>
                   </a-menu-item>
                   <a-menu-item @click="handleEdit(record, 1)">
-                    <a href="javascript:;">{{ $tl('c.basicInfo') }}</a>
+                    <a href="javascript:;">{{ $t('i18n_6ea1fe6baa') }}</a>
                   </a-menu-item>
                   <a-menu-item @click="handleEdit(record, 2)">
-                    <a href="javascript:;">{{ $tl('c.buildProcess') }}</a>
+                    <a href="javascript:;">{{ $t('i18n_a2ae15f8a7') }}</a>
                   </a-menu-item>
                   <a-menu-item @click="handleEdit(record, 3)">
-                    <a href="javascript:;">{{ $tl('c.publishOperation') }}</a>
+                    <a href="javascript:;">{{ $t('i18n_3c91490844') }}</a>
                   </a-menu-item>
                   <a-menu-item @click="handleEdit(record, 4)">
-                    <a href="javascript:;">{{ $tl('c.otherConfig') }}</a>
+                    <a href="javascript:;">{{ $t('i18n_9ab433e930') }}</a>
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
             <a-dropdown>
               <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-                {{ $tl('p.more') }}
+                {{ $t('i18n_0ec9eaf9c3') }}
                 <DownOutlined />
               </a>
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
-                    <a-button size="small" type="primary" @click="copyItem(record)">{{ $tl('p.copy') }}</a-button>
+                    <a-button size="small" type="primary" @click="copyItem(record)">{{
+                      $t('i18n_79d3abe929')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
                     <a-button
@@ -447,24 +455,24 @@
                       :disabled="!record.resultHasFile"
                       type="primary"
                       @click="handleDownloadFile(record)"
-                      >{{ $tl('p.downloadArtifact') }}</a-button
+                      >{{ $t('i18n_635391aa5d') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
                     <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
-                      $tl('c.delete')
+                      $t('i18n_2f4aaddde3')
                     }}</a-button>
                   </a-menu-item>
 
                   <a-menu-item>
-                    <a-tooltip placement="leftBottom" :title="$tl('c.clearCode')">
+                    <a-tooltip placement="leftBottom" :title="$t('i18n_19675b9d36')">
                       <a-button
                         size="small"
                         type="primary"
                         danger
                         :disabled="!record.sourceDirExist"
                         @click="handleClear(record)"
-                        >{{ $tl('p.clearCode') }}
+                        >{{ $t('i18n_c37ac7f024') }}
                       </a-button>
                     </a-tooltip>
                   </a-menu-item>
@@ -475,7 +483,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'top')"
-                      >{{ $tl('p.pin') }}</a-button
+                      >{{ $t('i18n_3d43ff1199') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -484,7 +492,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'up')"
-                      >{{ $tl('p.moveUp') }}</a-button
+                      >{{ $t('i18n_315eacd193') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -494,7 +502,7 @@
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) === listQuery.total"
                       @click="sortItemHander(record, index, 'down')"
                     >
-                      {{ $tl('p.moveDown') }}
+                      {{ $t('i18n_17acd250da') }}
                     </a-button>
                   </a-menu-item>
                 </a-menu>
@@ -570,36 +578,37 @@
       "
     />
     <!-- 构建确认 -->
-    <a-modal
+    <CustomModal
+      v-if="buildConfirmVisible"
       v-model:open="buildConfirmVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="40vw"
-      :title="$tl('p.buildConfirmDialog')"
+      :title="$t('i18n_0a1d18283e')"
       :mask-closable="false"
       @ok="handleStartBuild"
     >
       <a-form :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-        <a-form-item :label="$tl('p.name')" name="name">
+        <a-form-item :label="$t('i18n_d7ec2d3fea')" name="name">
           <a-input v-model:value="temp.name" read-only disabled />
         </a-form-item>
-        <a-form-item :label="$tl('p.branch')" name="branchName">
+        <a-form-item :label="$t('i18n_bfc04cfda7')" name="branchName">
           <custom-select
             v-model:value="temp.branchName"
             :data="branchList"
             :disabled="temp.branchTagName ? true : false"
             :can-reload="true"
-            :input-placeholder="$tl('p.customBranchWildcard')"
-            :select-placeholder="$tl('p.selectBranch')"
+            :input-placeholder="$t('i18n_c618659cea')"
+            :select-placeholder="$t('i18n_121e76bb63')"
             @on-refresh-select="loadBranchListById(temp.repositoryId)"
           >
             <template #inputTips>
               <div>
-                {{ $tl('c.xxx') }}(AntPathMatcher)
+                {{ $t('i18n_89f5ca6928') }}(AntPathMatcher)
                 <ul>
-                  <li>? {{ $tl('c.x') }}</li>
-                  <li>* {{ $tl('c.y') }}</li>
-                  <li>** {{ $tl('c.z') }}</li>
+                  <li>? {{ $t('i18n_9973159a4d') }}</li>
+                  <li>* {{ $t('i18n_32f882ae24') }}</li>
+                  <li>** {{ $t('i18n_45b88fc569') }}</li>
                 </ul>
               </div>
             </template>
@@ -607,45 +616,45 @@
         </a-form-item>
         <a-form-item
           v-if="(branchTagList && branchTagList.length) || (temp.branchTagName && temp.branchTagName.length)"
-          :label="$tl('p.tag')"
+          :label="$t('i18n_977bfe8508')"
           name="branchTagName"
         >
           <custom-select
             v-model:value="temp.branchTagName"
             :data="branchTagList"
             :can-reload="true"
-            :input-placeholder="$tl('p.customTagWildcard')"
-            :select-placeholder="$tl('p.selectTag')"
+            :input-placeholder="$t('i18n_30e6f71a18')"
+            :select-placeholder="$t('i18n_2d58b0e650')"
             @on-refresh-select="loadBranchListById(temp.repositoryId)"
           >
             <template #inputTips>
               <div>
-                {{ $tl('c.xxx') }}(AntPathMatcher)
+                {{ $t('i18n_89f5ca6928') }}(AntPathMatcher)
                 <ul>
-                  <li>? {{ $tl('c.x') }}</li>
-                  <li>* {{ $tl('c.y') }}</li>
-                  <li>** {{ $tl('c.z') }}</li>
+                  <li>? {{ $t('i18n_9973159a4d') }}</li>
+                  <li>* {{ $t('i18n_32f882ae24') }}</li>
+                  <li>** {{ $t('i18n_45b88fc569') }}</li>
                 </ul>
               </div>
             </template>
           </custom-select>
         </a-form-item>
-        <a-form-item name="resultDirFile" :label="$tl('c.artifactCatalog')">
-          <a-input v-model:value="temp.resultDirFile" :placeholder="$tl('p.notUpdate')" />
+        <a-form-item name="resultDirFile" :label="$t('i18n_c972010694')">
+          <a-input v-model:value="temp.resultDirFile" :placeholder="$t('i18n_2bef5b58ab')" />
         </a-form-item>
-        <a-form-item name="checkRepositoryDiff" :label="$tl('p.diffBuild')" help="">
+        <a-form-item name="checkRepositoryDiff" :label="$t('i18n_0b23d2f584')" help="">
           <a-space>
             <a-switch
               v-model:checked="temp.checkRepositoryDiff"
-              :checked-children="$tl('p.yes')"
-              :un-checked-children="$tl('p.no')"
+              :checked-children="$t('i18n_0a60ac8f02')"
+              :un-checked-children="$t('i18n_c9744f45e7')"
             />
             <span>
               <a-tooltip>
-                <template #title> {{ $tl('p.diffBuildDescription') }} </template>
+                <template #title> {{ $t('i18n_4cbc5505c7') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
-              {{ $tl('p.onlyThisTime') }}
+              {{ $t('i18n_1d263b7efb') }}
             </span>
           </a-space>
         </a-form-item>
@@ -653,35 +662,35 @@
         <a-form-item
           v-if="temp.releaseMethod === 1 || temp.releaseMethod === 2"
           name="projectSecondaryDirectory"
-          :label="$tl('p.subDirectory')"
+          :label="$t('i18n_871cc8602a')"
         >
-          <a-input v-model:value="temp.projectSecondaryDirectory" :placeholder="$tl('p.notFillRoot')" />
+          <a-input v-model:value="temp.projectSecondaryDirectory" :placeholder="$t('i18n_9c99e8bec9')" />
         </a-form-item>
-        <a-form-item :label="$tl('p.envVariable')" name="buildEnvParameter" :help="$tl('p.saveToCurrentBuild')">
+        <a-form-item :label="$t('i18n_3867e350eb')" name="buildEnvParameter" :help="$t('i18n_220650a1f5')">
           <a-textarea
             v-model:value="temp.buildEnvParameter"
-            :placeholder="$tl('p.buildEnvVariable')"
+            :placeholder="$t('i18n_b3913b9bb7')"
             :auto-size="{ minRows: 3, maxRows: 5 }"
           />
         </a-form-item>
-        <a-form-item :label="$tl('p.buildNote')" name="buildRemark" :help="$tl('p.onlyThisBuild')">
+        <a-form-item :label="$t('i18n_d1498d9dbf')" name="buildRemark" :help="$t('i18n_111e786daa')">
           <a-textarea
             v-model:value="temp.buildRemark"
             :max-length="240"
-            :placeholder="$tl('p.inputNote')"
+            :placeholder="$t('i18n_7777a83497')"
             :auto-size="{ minRows: 2, maxRows: 5 }"
           />
         </a-form-item>
         <a-form-item
           v-if="dispatchProjectList && dispatchProjectList.length"
           name="selectProject"
-          :label="$tl('p.filterProject')"
-          :help="$tl('p.filterEffect')"
+          :label="$t('i18n_c4e0c6b6fe')"
+          :help="$t('i18n_25be899f66')"
         >
           <a-select
             v-model:value="temp.dispatchSelectProjectArray"
             mode="multiple"
-            :placeholder="$tl('p.selectProject')"
+            :placeholder="$t('i18n_b29fd18c93')"
           >
             <a-select-option
               v-for="item in dispatchProjectList"
@@ -693,10 +702,9 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import BuildLog from './log'
 import BuildItem from './item'
@@ -776,28 +784,28 @@ export default {
       buildConfirmVisible: false,
       columns: [
         {
-          title: this.$tl('p.name'),
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           sorter: true,
           width: 200,
           ellipsis: true
         },
         {
-          title: this.$tl('c.group'),
+          title: this.$t('i18n_829abe5a8d'),
           dataIndex: 'group',
           width: 100,
           ellipsis: true,
           tooltip: true
         },
         {
-          title: this.$tl('p.branchTag'),
+          title: this.$t('i18n_f4bbbaf882'),
           dataIndex: 'branchName',
           ellipsis: true,
           width: 100
         },
 
         {
-          title: this.$tl('p.method'),
+          title: this.$t('i18n_7220e4d5f9'),
           dataIndex: 'buildMode',
           align: 'center',
           width: '80px',
@@ -805,14 +813,14 @@ export default {
           ellipsis: true
         },
         {
-          title: this.$tl('c.status'),
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           align: 'center',
           width: '100px',
           ellipsis: true
         },
         {
-          title: this.$tl('p.buildId'),
+          title: this.$t('i18n_b5d0091ae3'),
           dataIndex: 'buildId',
           width: '90px',
           ellipsis: true,
@@ -820,27 +828,27 @@ export default {
         },
 
         {
-          title: this.$tl('c.publishMethod'),
+          title: this.$t('i18n_f98994f7ec'),
           dataIndex: 'releaseMethod',
           width: '100px',
           ellipsis: true
         },
         {
-          title: this.$tl('p.artifact'),
+          title: this.$t('i18n_7dfcab648d'),
           dataIndex: 'resultDirFile',
           width: 100,
           ellipsis: true,
           tooltip: true
         },
         {
-          title: this.$tl('p.timingBuild'),
+          title: this.$t('i18n_db9296212a'),
           dataIndex: 'autoBuildCron',
           width: 100,
           ellipsis: true,
           tooltip: true
         },
         {
-          title: this.$tl('p.modifier'),
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           width: '130px',
           ellipsis: true,
@@ -848,7 +856,7 @@ export default {
         },
 
         {
-          title: this.$tl('p.createTime'),
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -856,20 +864,20 @@ export default {
           width: '160px'
         },
         {
-          title: this.$tl('p.modifyTime'),
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           customRender: ({ text }) => parseTime(text),
           width: '160px'
         },
         {
-          title: this.$tl('p.sortValue'),
+          title: this.$t('i18n_c35c1a1330'),
           dataIndex: 'sortValue',
           sorter: true,
           width: '80px'
         },
         {
-          title: this.$tl('p.operation'),
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           width: '200px',
 
@@ -917,9 +925,7 @@ export default {
   },
   methods: {
     CHANGE_PAGE,
-    $tl(key, ...args) {
-      return this.$t(`pages.build.listInfo.${key}`, ...args)
-    },
+
     // PAGE_DEFAULT_SHOW_TOTAL,
     // getCachePageLimit,
     // 分组数据
@@ -980,7 +986,7 @@ export default {
       const temp = Object.assign({}, record)
       delete temp.id
       delete temp.triggerToken
-      temp.name = temp.name + this.$tl('p.duplicate')
+      temp.name = temp.name + this.$t('i18n_0428b36ab1')
       this.temp = temp
       this.editBuildVisible = 2
       this.editSteps = 1
@@ -1013,11 +1019,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: this.$tl('p.deleteConfirm'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_48281fd3f0'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           // 删除
           return deleteBuild(record.id).then((res) => {
@@ -1035,16 +1041,16 @@ export default {
     handleBatchDelete() {
       if (!this.tableSelections || this.tableSelections.length <= 0) {
         $notification.warning({
-          message: this.$tl('c.noData')
+          message: this.$t('i18n_5d817c403e')
         })
         return
       }
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: this.$tl('p.batchDeleteConfirm'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_79076b6882'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           // 删除
           return deleteatchBuild({ ids: this.tableSelections.join(',') }).then((res) => {
@@ -1061,11 +1067,11 @@ export default {
     // 清除构建
     handleClear(record) {
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: this.$tl('p.clearConfirm'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_e15f22df2d'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return clearBuid(record.id).then((res) => {
             if (res.code === 200) {
@@ -1160,12 +1166,12 @@ export default {
     // 停止构建
     handleStopBuild(record) {
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         // TODO 后续抽优化
-        content: this.$tl('p.cancelConfirm') + record.name + this.$tl('p.cancelConfirmEnd'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_25f6a95de3') + record.name + this.$t('i18n_c16ab7c424'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.temp = Object.assign({}, record)
           return stopBuild(this.temp.id).then((res) => {
@@ -1195,22 +1201,22 @@ export default {
     // 排序
     sortItemHander(record, index, method) {
       const msgData = {
-        top: this.$tl('p.pinConfirm'),
-        up: this.$tl('p.moveUpConfirm'),
-        down: this.$tl('p.moveDownConfirm')
+        top: this.$t('i18n_0079d91f95'),
+        up: this.$t('i18n_b166a66d67'),
+        down: this.$t('i18n_7a7e25e9eb')
       }
-      let msg = msgData[method] || this.$tl('p.confirmOperation')
+      let msg = msgData[method] || this.$t('i18n_49574eee58')
       if (!record.sortValue) {
-        msg += this.$tl('p.currentDataIsDefault')
+        msg += this.$t('i18n_461e675921')
       }
       // console.log(this.list, index, this.list[method === "top" ? index : method === "up" ? index - 1 : index + 1]);
       const compareId = this.list[method === 'top' ? index : method === 'up' ? index - 1 : index + 1].id
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: msg,
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return sortItem({
             id: record.id,
@@ -1236,16 +1242,16 @@ export default {
     batchBuild() {
       if (!this.tableSelections || this.tableSelections.length <= 0) {
         $notification.warning({
-          message: this.$tl('c.noData')
+          message: this.$t('i18n_5d817c403e')
         })
         return
       }
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: this.$tl('p.batchBuildConfirm'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_9341881037'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.tableSelections.forEach((item) => {
             startBuild({
@@ -1265,16 +1271,16 @@ export default {
     batchCancel() {
       if (!this.tableSelections || this.tableSelections.length <= 0) {
         $notification.warning({
-          message: this.$tl('c.noData')
+          message: this.$t('i18n_5d817c403e')
         })
         return
       }
       $confirm({
-        title: this.$tl('c.alert'),
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: this.$tl('p.batchCancelConfirm'),
-        okText: this.$tl('c.confirm'),
-        cancelText: this.$tl('c.cancel'),
+        content: this.$t('i18n_2d3fd578ce'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.tableSelections.forEach((item) => {
             stopBuild(item).then((res) => {
@@ -1308,7 +1314,7 @@ export default {
     handerConfirm() {
       if (!this.tableSelections.length) {
         $notification.warning({
-          message: this.$tl('c.selectBuild')
+          message: this.$t('i18n_2b4cf3d74e')
         })
         return
       }
@@ -1317,7 +1323,7 @@ export default {
       })
       if (!selectData.length) {
         $notification.warning({
-          message: this.$tl('c.selectBuild')
+          message: this.$t('i18n_2b4cf3d74e')
         })
         return
       }
@@ -1326,7 +1332,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .item-info {
   padding: 4px 0;

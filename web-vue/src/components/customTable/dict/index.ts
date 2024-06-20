@@ -7,29 +7,29 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 export const tableSizeList = [
   {
     value: 'large',
-    label: '超大'
+    label: t('i18n_949934d97c')
   },
   {
     value: 'middle',
-    label: '中等'
+    label: t('i18n_eadd05ba6a')
   },
   {
     value: 'small',
-    label: '紧凑'
+    label: t('i18n_03e59bb33c')
   }
 ]
 
 export const tableLayoutList = [
   {
     value: 'table',
-    label: '表格'
+    label: t('i18n_b339aa8710')
   },
   {
     value: 'card',
-    label: '卡片'
+    label: t('i18n_d87f215d9a')
   }
 ]

@@ -1,77 +1,93 @@
 <template>
   <div class="">
     <a-tabs default-active-key="1" tab-position="left">
-      <a-tab-pane key="1" tab="缓存信息">
-        <a-alert
-          message="请勿手动删除数据目录下面文件,如果需要删除需要提前备份或者已经确定对应文件弃用后才能删除"
-          style="margin-top: 10px; margin-bottom: 40px"
-          banner
-        />
+      <a-tab-pane key="1" :tab="$t('i18n_3c6248b364')">
+        <a-alert :message="$t('i18n_5785f004ea')" style="margin-top: 10px; margin-bottom: 40px" banner />
         <a-timeline>
           <a-timeline-item v-if="temp.dateTime">
             <span class="layui-elem-quote">
-              插件端时间：{{ temp.dateTime }}
+              {{ $t('i18n_9ddaa182bd') }}{{ temp.dateTime }}
               <a-tag>{{ temp.timeZoneId }}</a-tag>
             </span>
           </a-timeline-item>
           <a-timeline-item>
-            <span class="layui-elem-quote">数据目录占用空间：{{ renderSize(temp.dataSize) }}</span>
+            <span class="layui-elem-quote">{{ $t('i18n_37f1931729') }}{{ renderSize(temp.dataSize) }}</span>
           </a-timeline-item>
           <a-timeline-item v-if="temp.fileSize">
             <a-space>
-              <span class="layui-elem-quote">临时文件占用空间：{{ renderSize(temp.fileSize) }}</span>
-              <a-button size="small" type="primary" class="btn" @click="clear('fileSize')">清空</a-button>
+              <span class="layui-elem-quote">{{ $t('i18n_ea3c5c0d25') }}{{ renderSize(temp.fileSize) }}</span>
+              <a-button size="small" type="primary" class="btn" @click="clear('fileSize')">{{
+                $t('i18n_288f0c404c')
+              }}</a-button>
             </a-space>
           </a-timeline-item>
           <a-timeline-item v-if="temp.oldJarsSize">
             <a-space>
-              <span class="layui-elem-quote">旧版程序包占有空间：{{ renderSize(temp.oldJarsSize) }}</span>
-              <a-button size="small" type="primary" class="btn" @click="clear('oldJarsSize')">清空</a-button>
+              <span class="layui-elem-quote">{{ $t('i18n_413d8ba722') }}{{ renderSize(temp.oldJarsSize) }}</span>
+              <a-button size="small" type="primary" class="btn" @click="clear('oldJarsSize')">{{
+                $t('i18n_288f0c404c')
+              }}</a-button>
             </a-space>
           </a-timeline-item>
 
           <a-timeline-item>
             <a-space>
-              <span class="layui-elem-quote">进程端口缓存：{{ temp.pidPort }}</span>
-              <a-button v-if="temp.pidPort" size="small" type="primary" class="btn" @click="clear('pidPort')"
-                >清空</a-button
-              >
+              <span class="layui-elem-quote">{{ $t('i18n_775fde44cf') }}{{ temp.pidPort }}</span>
+              <a-button v-if="temp.pidPort" size="small" type="primary" class="btn" @click="clear('pidPort')">{{
+                $t('i18n_288f0c404c')
+              }}</a-button>
             </a-space>
           </a-timeline-item>
           <a-timeline-item>
-            <span class="layui-elem-quote">脚本日志数：{{ temp.scriptExecLogSize }}</span>
+            <span class="layui-elem-quote">{{ $t('i18n_25f29ebbe6') }}{{ temp.scriptExecLogSize }}</span>
           </a-timeline-item>
           <a-timeline-item>
-            <span class="layui-elem-quote">在读取的日志文件数：{{ temp.readFileOnLineCount }}</span>
+            <span class="layui-elem-quote">{{ $t('i18n_9b9e426d16') }}{{ temp.readFileOnLineCount }}</span>
           </a-timeline-item>
           <a-timeline-item>
-            <span class="layui-elem-quote">插件数：{{ temp.pluginSize || 0 }}</span>
+            <span class="layui-elem-quote">{{ $t('i18n_b6ee682dac') }}{{ temp.pluginSize || 0 }}</span>
           </a-timeline-item>
           <a-timeline-item>
             <div class="layui-elem-quote">
-              环境变量：
-              <a-tag v-for="(item, index) in temp.envVarKeys" :key="index">
-                <a-tooltip :title="`环境变量的key:${item}`">
-                  {{ item }}
-                </a-tooltip>
-              </a-tag>
+              {{ $t('i18n_4ab578f3df') }}
+              <template v-if="temp.envVarKeys?.length">
+                <a-tag v-for="(item, index) in temp.envVarKeys" :key="index">
+                  <a-tooltip :title="`${$t('i18n_6835ed12b9')}:${item}`">
+                    {{ item }}
+                  </a-tooltip>
+                </a-tag>
+              </template>
+              <template v-else>-</template>
+            </div>
+          </a-timeline-item>
+          <a-timeline-item>
+            <div class="layui-elem-quote">
+              {{ $t('i18n_eb7f9ceb71')
+              }}<template v-if="temp.scriptLibraryTagMap && Object.keys(temp.scriptLibraryTagMap).length">
+                <a-tag v-for="(item, key) in temp.scriptLibraryTagMap" :key="key">
+                  <a-tooltip :title="$t('i18n_3a57a51660', { item: item })">
+                    {{ key }}
+                  </a-tooltip>
+                </a-tag>
+              </template>
+              <template v-else>-</template>
             </div>
           </a-timeline-item>
         </a-timeline>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="定时任务"> <task-stat :task-list="taskList" @refresh="loadData" /></a-tab-pane>
-      <a-tab-pane key="3" tab="孤独数据">
+      <a-tab-pane key="2" :tab="$t('i18n_a1bd9760fc')">
+        <task-stat :task-list="taskList" @refresh="loadData"
+      /></a-tab-pane>
+      <a-tab-pane key="3" :tab="$t('i18n_f06f95f8e6')">
         <a-space direction="vertical" style="width: 100%">
-          <a-alert message="何为孤独数据" type="warning" show-icon>
+          <a-alert :message="$t('i18n_406a2b3538')" type="warning" show-icon>
             <template #description>
               <ul>
-                <li>
-                  孤独数据是指机器节点里面存在数据，但是无法和当前系统绑定上关系（关系绑定=节点ID+工作空间ID对应才行），一般情况下不会出现这样的数据
-                </li>
-                <li>通常情况为项目迁移工作空间、迁移物理机器等一些操作可能产生孤独数据</li>
-                <li>如果孤独数据被工作空间下的其他功能关联，修正后关联的数据将失效对应功能无法查询到关联数据</li>
-                <li>低版本项目数据未存储节点ID，对应项目数据也将出来在孤独数据中（此类数据不影响使用）</li>
-                <li>一个物理节点被多个服务端绑定也会产生孤独数据奥</li>
+                <li>{{ $t('i18n_17a101c23e') }}</li>
+                <li>{{ $t('i18n_3929e500e0') }}</li>
+                <li>{{ $t('i18n_0a47f12ef2') }}</li>
+                <li>{{ $t('i18n_7785d9e038') }}</li>
+                <li>{{ $t('i18n_083b8a2ec9') }}</li>
               </ul>
             </template>
           </a-alert>
@@ -79,61 +95,62 @@
             <template #renderItem="{ item }">
               <a-list-item>
                 <a-space>
-                  <span>项目名称：{{ item.name }}</span>
-                  <span>项目ID：{{ item.id }}</span>
-                  <span>工作空间ID：{{ item.workspaceId }}</span>
-                  <span>节点ID：{{ item.nodeId }}</span>
-                  <a-button type="primary" size="small" danger @click="openCorrectLonely(item, 'project')"
-                    >修正</a-button
-                  >
+                  <span>{{ $t('i18n_fa7f6fccfd') }}{{ item.name }}</span>
+                  <span>{{ $t('i18n_116d22f2ab') }}{{ item.id }}</span>
+                  <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
+                  <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
+                  <a-button type="primary" size="small" danger @click="openCorrectLonely(item, 'project')">{{
+                    $t('i18n_23231543a4')
+                  }}</a-button>
                 </a-space>
               </a-list-item>
             </template>
             <template #header>
-              <div>项目孤独数据</div>
+              <div>{{ $t('i18n_45fbb7e96a') }}</div>
             </template>
           </a-list>
           <a-list size="small" bordered :data-source="machineLonelyData.scripts">
             <template #renderItem="{ item }">
               <a-list-item
                 ><a-space>
-                  <span>脚本名称：{{ item.name }}</span>
-                  <span>脚本ID：{{ item.id }}</span>
-                  <span>工作空间ID：{{ item.workspaceId }}</span>
-                  <span>节点ID：{{ item.nodeId }}</span>
-                  <a-button type="primary" size="small" danger @click="openCorrectLonely(item, 'script')"
-                    >修正</a-button
-                  >
+                  <span>{{ $t('i18n_b61a7e3ace') }}{{ item.name }}</span>
+                  <span>{{ $t('i18n_d0f53484dc') }}{{ item.id }}</span>
+                  <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
+                  <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
+                  <a-button type="primary" size="small" danger @click="openCorrectLonely(item, 'script')">{{
+                    $t('i18n_23231543a4')
+                  }}</a-button>
                 </a-space>
               </a-list-item>
             </template>
             <template #header>
-              <div>脚本孤独数据</div>
+              <div>{{ $t('i18n_c2b2f87aca') }}</div>
             </template>
           </a-list></a-space
         >
       </a-tab-pane>
     </a-tabs>
     <!-- 分配到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="correctLonelyOpen"
       v-model:open="correctLonelyOpen"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="修正孤独数据"
+      :title="$t('i18n_46097a1225')"
       :mask-closable="false"
       @ok="handleCorrectLonely"
     >
       <a-space direction="vertical" style="width: 100%">
-        <a-alert message="温馨提示" type="warning">
+        <a-alert :message="$t('i18n_947d983961')" type="warning">
           <template #description>
             <ul>
-              <li>修改后如果有原始关联数据将失效，需要重新配置关联</li>
-              <li>如果节点选项是禁用，则表示对应数据有推荐关联节点（低版本项目数据可能出现此情况）</li>
+              <li>{{ $t('i18n_a3f1390bf1') }}</li>
+              <li>{{ $t('i18n_2e51ca19eb') }}</li>
             </ul>
           </template>
         </a-alert>
         <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
-          <a-form-item label="选择节点" name="nodeId">
+          <a-form-item :label="$t('i18n_7e2b40fc86')" name="nodeId">
             <a-select
               v-model:value="temp.toNodeId"
               show-search
@@ -148,7 +165,7 @@
                 }
               "
               :disabled="temp.toNodeId && temp.recommend"
-              placeholder="请选择节点"
+              :placeholder="$t('i18n_f8a613d247')"
             >
               <a-select-option v-for="item in nodeList" :key="item.id">
                 【{{ item.workspace && item.workspace.name }}】{{ item.name }}
@@ -157,10 +174,9 @@
           </a-form-item>
         </a-form>
       </a-space>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { getNodeCache, clearCache } from '@/api/system'
 import TaskStat from '@/pages/system/taskStat'
@@ -264,7 +280,7 @@ export default {
     handleCorrectLonely() {
       if (!this.temp.toNodeId) {
         $notification.warn({
-          message: '请选择节点'
+          message: this.$t('i18n_f8a613d247')
         })
         return false
       }

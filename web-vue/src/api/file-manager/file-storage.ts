@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from '@/api/config'
 
 // 文件列表
@@ -88,14 +88,14 @@ export function triggerUrl(params) {
 }
 
 export const sourceMap = {
-  0: '上传',
-  1: '构建',
-  2: '下载',
-  3: '证书'
+  0: t('i18n_d5a73b0c7f'),
+  1: t('i18n_fcba60e773'),
+  2: t('i18n_f26ef91424'),
+  3: t('i18n_d40b511510')
 }
 
 export const statusMap = {
-  0: '下载中',
-  1: '下载成功',
-  2: '下载异常'
+  0: t('i18n_2d455ce5cd'),
+  1: t('i18n_50940ed76f'),
+  2: t('i18n_af924a1a14')
 }

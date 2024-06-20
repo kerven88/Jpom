@@ -1,21 +1,19 @@
 <template>
   <div class="">
     <template v-if="useSuggestions">
-      <a-result title="当前工作空间还没有节点">
-        <template #subTitle> 需要您在需要被管理的服务器中安装 agent ，并将 agent 信息新增到系统中 </template>
+      <a-result :title="$t('i18n_79698c57a2')">
+        <template #subTitle> {{ $t('i18n_0373ba5502') }} </template>
         <template #extra>
-          <a-button type="primary" @click="fastInstallNodeShow">快速安装 </a-button>
+          <a-button type="primary" @click="fastInstallNodeShow">{{ $t('i18n_70b5b45591') }} </a-button>
           <router-link to="/system/assets/machine-list">
-            <a-button key="console" type="primary">手动新增</a-button></router-link
+            <a-button key="console" type="primary">{{ $t('i18n_c494fbec77') }}</a-button></router-link
           >
         </template>
-        <a-alert message="解决办法" type="info" show-icon>
+        <a-alert :message="$t('i18n_81c1dff69c')" type="info" show-icon>
           <template #description>
             <ol>
-              <li>【推荐】使用快速安装方式导入机器并自动新增逻辑节点</li>
-              <li>
-                请到【系统管理】-> 【资产管理】-> 【机器管理】新增节点，或者将已新增的机器授权关联、分配到此工作空间
-              </li>
+              <li>{{ $t('i18n_da317c3682') }}</li>
+              <li>{{ $t('i18n_9c3a5e1dad') }}</li>
             </ol>
           </template>
         </a-alert>
@@ -29,7 +27,7 @@
         :auto-refresh-time="30"
         :active-page="activePage"
         table-name="nodeSearch"
-        empty-description="没有任何节点"
+        :empty-description="$t('i18n_17b4c9c631')"
         :columns="columns"
         :data-source="list"
         bordered
@@ -62,7 +60,7 @@
       >
         <template #title>
           <a-space>
-            <a-input v-model:value="listQuery['%name%']" placeholder="节点名称" @press-enter="loadData" />
+            <a-input v-model:value="listQuery['%name%']" :placeholder="$t('i18n_b1785ef01e')" @press-enter="loadData" />
 
             <a-select
               v-model:value="listQuery.group"
@@ -78,13 +76,13 @@
                 }
               "
               allow-clear
-              placeholder="分组"
+              :placeholder="$t('i18n_829abe5a8d')"
               class="search-input-item"
             >
               <a-select-option v-for="item in groupList" :key="item">{{ item }}</a-select-option>
             </a-select>
-            <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-              <a-button :loading="loading" type="primary" @click="loadData">搜索</a-button>
+            <a-tooltip :title="$t('i18n_4838a3bd20')">
+              <a-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
             </a-tooltip>
             <a-button
               type="primary"
@@ -93,18 +91,18 @@
                   fastInstallNode = true
                 }
               "
-              >快速安装
+              >{{ $t('i18n_70b5b45591') }}
             </a-button>
             <a-dropdown v-if="layoutType === 'table'">
               <a-button
                 type="primary"
                 :disabled="!tableSelections || !tableSelections.length"
                 @click="syncToWorkspaceShow"
-                >工作空间同步</a-button
+                >{{ $t('i18n_398ce396cd') }}</a-button
               >
             </a-dropdown>
-            <a-tooltip v-else title="表格视图才能使用工作空间同步功能">
-              <a-button :disabled="true" type="primary"> 工作空间同步 </a-button>
+            <a-tooltip v-else :title="$t('i18n_68af00bedb')">
+              <a-button :disabled="true" type="primary"> {{ $t('i18n_398ce396cd') }} </a-button>
             </a-tooltip>
           </a-space>
         </template>
@@ -113,13 +111,11 @@
             <template #title>
               <div>
                 <ul>
-                  <li>监控频率可以到服务端配置文件中修改</li>
-                  <li>悬停到仪表盘上显示具体含义</li>
-                  <li>点击仪表盘查看监控历史数据</li>
-                  <li>点击延迟可以查看对应节点网络延迟历史数据</li>
-                  <li>
-                    为了避免部分节点不能及时响应造成监控阻塞,节点统计超时时间不受节点超时配置影响将采用默认超时时间(10秒)
-                  </li>
+                  <li>{{ $t('i18n_c75b14a04e') }}</li>
+                  <li>{{ $t('i18n_8b6e758e4c') }}</li>
+                  <li>{{ $t('i18n_4642113bba') }}</li>
+                  <li>{{ $t('i18n_2213206d43') }}</li>
+                  <li>{{ $t('i18n_ee4fac2f3c') }}</li>
                 </ul>
               </div>
             </template>
@@ -142,7 +138,7 @@
               </a-tooltip>
             </template>
             <template v-else>
-              <a-tooltip :title="`${text} 点击进入节点管理`" @click="handleNode(record)">
+              <a-tooltip :title="`${text} ${$t('i18n_8a4dbe88b8')}`" @click="handleNode(record)">
                 <a-button type="link" style="padding: 0" size="small">
                   <FullscreenOutlined /><span>{{ text }}</span>
                 </a-button>
@@ -152,7 +148,7 @@
           <template v-else-if="column.dataIndex === 'status'">
             <a-tooltip
               placement="topLeft"
-              :title="`${statusMap[record.machineNodeData && record.machineNodeData.status] || '未知'} ${
+              :title="`${statusMap[record.machineNodeData && record.machineNodeData.status] || $t('i18n_1622dc9b6b')} ${
                 record.machineNodeData && record.machineNodeData.statusMsg
               }`"
             >
@@ -161,10 +157,10 @@
                   :color="record.machineNodeData && record.machineNodeData.status === 1 ? 'green' : 'pink'"
                   style="margin-right: 0"
                 >
-                  {{ statusMap[record.machineNodeData && record.machineNodeData.status] || '未知' }}
+                  {{ statusMap[record.machineNodeData && record.machineNodeData.status] || $t('i18n_1622dc9b6b') }}
                 </a-tag>
               </template>
-              <a-tag v-else>未启用</a-tag>
+              <a-tag v-else>{{ $t('i18n_4637765b0a') }}</a-tag>
             </a-tooltip>
           </template>
           <template v-else-if="column.dataIndex === 'osName'">
@@ -180,9 +176,11 @@
           <template v-else-if="column.dataIndex === 'jvmInfo'">
             <a-tooltip
               placement="topLeft"
-              :title="`剩余内存：${renderSize(
+              :title="`${$t('i18n_3574d38d3e')}${renderSize(
                 record.machineNodeData && record.machineNodeData.jvmFreeMemory
-              )} 总内存：${renderSize(record.machineNodeData && record.machineNodeData.jvmTotalMemory)}`"
+              )} ${$t('i18n_a0a3d583b9')}${renderSize(
+                record.machineNodeData && record.machineNodeData.jvmTotalMemory
+              )}`"
             >
               <span
                 >{{ renderSize(record.machineNodeData && record.machineNodeData.jvmFreeMemory) }}
@@ -205,9 +203,9 @@
               <a-tooltip placement="topLeft">
                 <template #title>
                   <ul>
-                    <li>工作空间中逻辑节点中的项目数量：{{ text || 0 }}</li>
-                    <li>物理节点项目数量：{{ record.machineNodeData.jpomProjectCount }}</li>
-                    <li>点击重新同步当前工作空间逻辑节点项目信息</li>
+                    <li>{{ $t('i18n_56d9d84bff') }}{{ text || 0 }}</li>
+                    <li>{{ $t('i18n_af98c31607') }}{{ record.machineNodeData.jpomProjectCount }}</li>
+                    <li>{{ $t('i18n_143bfbc3a1') }}</li>
                   </ul>
                 </template>
                 <a-tag>{{ text || 0 }} </a-tag>
@@ -221,9 +219,9 @@
               <a-tooltip placement="topLeft">
                 <template #title>
                   <ul>
-                    <li>工作空间中逻辑节点中脚本模版数量：{{ text || 0 }}</li>
-                    <li>物理节点脚本模板数据：{{ record.machineNodeData.jpomScriptCount }}</li>
-                    <li>点击重新同步当前工作空间逻辑节点脚本模版信息</li>
+                    <li>{{ $t('i18n_cc5dccd757') }}{{ text || 0 }}</li>
+                    <li>{{ $t('i18n_375118fad1') }}{{ record.machineNodeData.jpomScriptCount }}</li>
+                    <li>{{ $t('i18n_5baaef6996') }}</li>
                   </ul>
                 </template>
                 <a-tag>{{ text || 0 }} </a-tag>
@@ -235,39 +233,42 @@
 
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a-tooltip title="如果按钮不可用则表示当前节点已经关闭啦,需要去编辑中启用">
-                <a-button size="small" type="primary" :disabled="record.openStatus !== 1" @click="handleNode(record)"
-                  >管理</a-button
-                >
+              <a-tooltip :title="$t('i18n_e96705ead1')">
+                <a-button size="small" type="primary" :disabled="record.openStatus !== 1" @click="handleNode(record)">{{
+                  $t('i18n_08b55fea3c')
+                }}</a-button>
               </a-tooltip>
-              <a-tooltip title="需要到编辑中去为一个节点绑定一个 ssh信息才能启用该功能">
+              <a-tooltip :title="$t('i18n_7f0abcf48d')">
                 <a-button size="small" type="primary" :disabled="!record.sshId" @click="handleTerminal(record)"
-                  ><CodeOutlined />终端</a-button
+                  ><CodeOutlined />{{ $t('i18n_4722bc0c56') }}</a-button
                 >
               </a-tooltip>
 
               <a-dropdown>
                 <a @click="(e) => e.preventDefault()">
-                  更多
+                  {{ $t('i18n_0ec9eaf9c3') }}
                   <DownOutlined />
                 </a>
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
+                      <a-button size="small" type="primary" @click="handleEdit(record)">{{
+                        $t('i18n_95b351c862')
+                      }}</a-button>
                     </a-menu-item>
 
                     <a-menu-item>
-                      <a-tooltip placement="leftBottom" title="删除会检查数据关联性,并且节点不存在项目或者脚本">
-                        <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+                      <a-tooltip placement="leftBottom" :title="$t('i18n_58e998a751')">
+                        <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+                          $t('i18n_2f4aaddde3')
+                        }}</a-button>
                       </a-tooltip>
                     </a-menu-item>
                     <a-menu-item>
-                      <a-tooltip
-                        placement="leftBottom"
-                        title="解绑会检查数据关联性,同时将自动删除节点项目和脚本缓存信息,一般用于服务器无法连接且已经确定不再使用"
-                      >
-                        <a-button size="small" type="primary" danger @click="handleUnbind(record)">解绑</a-button>
+                      <a-tooltip placement="leftBottom" :title="$t('i18n_88e6615734')">
+                        <a-button size="small" type="primary" danger @click="handleUnbind(record)">{{
+                          $t('i18n_663393986e')
+                        }}</a-button>
                       </a-tooltip>
                     </a-menu-item>
                     <a-menu-divider />
@@ -277,7 +278,7 @@
                         type="primary"
                         :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                         @click="sortItemHander(record, index, 'top')"
-                        >置顶</a-button
+                        >{{ $t('i18n_3d43ff1199') }}</a-button
                       >
                     </a-menu-item>
                     <a-menu-item>
@@ -286,7 +287,7 @@
                         type="primary"
                         :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                         @click="sortItemHander(record, index, 'up')"
-                        >上移</a-button
+                        >{{ $t('i18n_315eacd193') }}</a-button
                       >
                     </a-menu-item>
                     <a-menu-item>
@@ -296,7 +297,7 @@
                         :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) === listQuery.total"
                         @click="sortItemHander(record, index, 'down')"
                       >
-                        下移
+                        {{ $t('i18n_17acd250da') }}
                       </a-button>
                     </a-menu-item>
                   </a-menu>
@@ -312,9 +313,9 @@
                 <a-col :span="17" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
                   <a-tooltip>
                     <template #title>
-                      点击进入节点管理
-                      <div>节点名称：{{ item.name }}</div>
-                      <div>节点地址：{{ item.url }}</div>
+                      {{ $t('i18n_8a4dbe88b8') }}
+                      <div>{{ $t('i18n_5d83794cfa') }}{{ item.name }}</div>
+                      <div>{{ $t('i18n_cab7517cb4') }}{{ item.url }}</div>
                     </template>
 
                     <a-button type="link" style="padding: 0" size="small" @click="handleNode(item)">
@@ -325,8 +326,12 @@
                 <a-col :span="7" style="text-align: right">
                   <a-tooltip>
                     <template #title>
-                      <div>当前状态：{{ statusMap[item.machineNodeData && item.machineNodeData.status] }}</div>
-                      <div>状态描述：{{ (item.machineNodeData && item.machineNodeData.statusMsg) || '' }}</div>
+                      <div>
+                        {{ $t('i18n_e703c7367c') }}{{ statusMap[item.machineNodeData && item.machineNodeData.status] }}
+                      </div>
+                      <div>
+                        {{ $t('i18n_fb3a2241bb') }}{{ (item.machineNodeData && item.machineNodeData.statusMsg) || '' }}
+                      </div>
                     </template>
                     <a-tag
                       :color="item.machineNodeData && item.machineNodeData.status === 1 ? 'green' : 'pink'"
@@ -341,7 +346,10 @@
 
             <a-row :gutter="[8, 8]">
               <a-col :span="8" style="text-align: center">
-                <a-tooltip :title="`CPU 占用率：${item.occupyCpu}%`" @click="handleHistory(item, 'nodeTop')">
+                <a-tooltip
+                  :title="`CPU ${$t('i18n_b0fa44acbb')}${item.occupyCpu}%`"
+                  @click="handleHistory(item, 'nodeTop')"
+                >
                   <a-progress
                     type="circle"
                     :size="80"
@@ -356,7 +364,10 @@
                 </a-tooltip>
               </a-col>
               <a-col :span="8" style="text-align: center">
-                <a-tooltip :title="`硬盘占用率：${item.occupyDisk}%`" @click="handleHistory(item, 'nodeTop')">
+                <a-tooltip
+                  :title="`${$t('i18n_570eb1c04f')}${item.occupyDisk}%`"
+                  @click="handleHistory(item, 'nodeTop')"
+                >
                   <a-progress
                     type="circle"
                     :size="80"
@@ -371,7 +382,10 @@
                 </a-tooltip>
               </a-col>
               <a-col :span="8" style="text-align: center">
-                <a-tooltip :title="`实际内存占用率：${item.occupyMemory}%`" @click="handleHistory(item, 'nodeTop')">
+                <a-tooltip
+                  :title="`${$t('i18n_09e7d24952')}${item.occupyMemory}%`"
+                  @click="handleHistory(item, 'nodeTop')"
+                >
                   <a-progress
                     :size="80"
                     type="circle"
@@ -391,14 +405,14 @@
               <a-col :span="8">
                 <a-tooltip
                   :title="`${
-                    '延迟' +
+                    $t('i18n_db732ecb48') +
                     (formatDuration(item.machineNodeData && item.machineNodeData.networkDelay, '', 2) || '-') +
-                    ' 点击查看历史趋势'
+                    $t('i18n_69384c9d71')
                   }`"
                   @click="handleHistory(item, 'networkDelay')"
                 >
                   <a-statistic
-                    title="延迟"
+                    :title="$t('i18n_db732ecb48')"
                     :value="item.machineNodeData && item.machineNodeData.networkDelay"
                     :value-style="statValueStyle"
                     :formatter="
@@ -414,7 +428,7 @@
                   :title="formatDuration(item.machineNodeData && item.machineNodeData.jpomUptime, '', 1) || '-'"
                 >
                   <a-statistic
-                    title="运行时间"
+                    :title="$t('i18n_9f70e40e04')"
                     :value-style="statValueStyle"
                     :formatter="
                       (v) => {
@@ -427,7 +441,7 @@
               <a-col :span="8">
                 <a-tooltip :title="`${parseTime(item.machineNodeData && item.machineNodeData.modifyTimeMillis)}`">
                   <a-statistic
-                    title="更新时间"
+                    :title="$t('i18n_a001a226fd')"
                     :value-style="statValueStyle"
                     :formatter="
                       (v) => {
@@ -488,33 +502,34 @@
 
     <!-- 编辑区 -->
     <customModal
+      v-if="editNodeVisible"
       v-model:open="editNodeVisible"
       destroy-on-close
       width="50%"
-      title="编辑节点"
+      :title="$t('i18n_61e7fa1227')"
       :confirm-loading="confirmLoading"
       :mask-closable="false"
       @ok="handleEditNodeOk"
     >
       <a-form ref="editNodeForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-        <a-form-item label="节点名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="节点名称" />
+        <a-form-item :label="$t('i18n_b1785ef01e')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_b1785ef01e')" />
         </a-form-item>
-        <a-form-item label="分组名称" name="group">
+        <a-form-item :label="$t('i18n_1014b33d22')" name="group">
           <custom-select
             v-model:value="temp.group"
             :data="groupList"
-            input-placeholder="新增分组"
-            select-placeholder="选择分组名"
+            :input-placeholder="$t('i18n_bd0362bed3')"
+            :select-placeholder="$t('i18n_9cac799f2f')"
           >
           </custom-select>
         </a-form-item>
 
-        <a-form-item label="节点状态" name="openStatus">
+        <a-form-item :label="$t('i18n_b86224e030')" name="openStatus">
           <a-switch
             :checked="temp.openStatus == 1"
-            checked-children="启用"
-            un-checked-children="停用"
+            :checked-children="$t('i18n_7854b52a88')"
+            :un-checked-children="$t('i18n_5c56a88945')"
             default-checked
             @change="
               (checked) => {
@@ -523,7 +538,7 @@
             "
           />
         </a-form-item>
-        <a-form-item label="绑定 SSH " name="sshId">
+        <a-form-item :label="$t('i18n_c5aae76124')" name="sshId">
           <a-select
             v-model:value="temp.sshId"
             show-search
@@ -537,9 +552,9 @@
                 )
               }
             "
-            placeholder="请选择SSH"
+            :placeholder="$t('i18n_260a3234f2')"
           >
-            <a-select-option value="">不绑定</a-select-option>
+            <a-select-option value="">{{ $t('i18n_a9b50d245b') }}</a-select-option>
             <a-select-option v-for="ssh in sshList" :key="ssh.id" :disabled="ssh.disabled">{{
               ssh.name
             }}</a-select-option>
@@ -551,6 +566,7 @@
     <NodeFunc v-if="drawerVisible" :id="temp.id" :name="temp.name" @close="onClose"></NodeFunc>
     <!-- Terminal -->
     <customModal
+      v-if="terminalVisible"
       v-model:open="terminalVisible"
       :body-style="{
         padding: '0 10px',
@@ -568,10 +584,11 @@
 
     <!-- 快速安装插件端 -->
     <CustomModal
+      v-if="fastInstallNode"
       v-model:open="fastInstallNode"
       destroy-on-close
       width="80%"
-      title="快速安装插件端"
+      :title="$t('i18n_8f7a163ee9')"
       :footer="null"
       :mask-closable="false"
       @cancel="
@@ -585,25 +602,26 @@
     </CustomModal>
     <!-- 同步到其他工作空间 -->
     <customModal
+      v-if="syncToWorkspaceVisible"
       v-model:open="syncToWorkspaceVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="同步到其他工作空间"
+      :title="$t('i18n_1a44b9e2f7')"
       :mask-closable="false"
       @ok="handleSyncToWorkspace"
     >
-      <a-alert message="温馨提示" type="warning">
+      <a-alert :message="$t('i18n_947d983961')" type="warning">
         <template #description>
           <ul>
-            <li>同步机制采用节点地址确定是同一个服务器（节点）</li>
-            <li>当目标工作空间不存在对应的节点时候将自动创建一个新的节点（逻辑节点）</li>
-            <li>当目标工作空间已经存在节点时候将自动同步节点授权信息、代理配置信息</li>
+            <li>{{ $t('i18n_6a4a0f2b3b') }}</li>
+            <li>{{ $t('i18n_2611dd8703') }}</li>
+            <li>{{ $t('i18n_cd998f12fa') }}</li>
           </ul>
         </template>
       </a-alert>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -617,7 +635,7 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id" :disabled="getWorkspaceId() === item.id">{{
               item.name
@@ -628,10 +646,11 @@
     </customModal>
     <!-- 历史监控 -->
     <customModal
+      v-if="monitorVisible"
       v-model:open="monitorVisible"
       destroy-on-close
       width="75%"
-      :title="`${temp.name}历史监控图表`"
+      :title="`${temp.name}${$t('i18n_5068552b18')}`"
       :footer="null"
       :mask-closable="false"
     >
@@ -639,7 +658,6 @@
     </customModal>
   </div>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import { Empty } from 'ant-design-vue'
@@ -707,7 +725,7 @@ export default {
 
       columns: [
         {
-          title: '节点名称',
+          title: this.$t('i18n_b1785ef01e'),
           dataIndex: 'name',
           width: 200,
           sorter: true,
@@ -715,34 +733,34 @@ export default {
           ellipsis: true
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '节点地址',
+          title: this.$t('i18n_c1786d9e11'),
           dataIndex: 'url',
           key: 'url',
           width: '190px',
           ellipsis: true
         },
         {
-          title: '系统名',
+          title: this.$t('i18n_cdc478d90c'),
           dataIndex: 'osName',
           key: 'osName',
           width: '100px',
           ellipsis: true
         },
         {
-          title: 'JDK 版本',
+          title: `JDK ${this.$t('i18n_fe2df04a16')}`,
           dataIndex: 'javaVersion',
           width: 100,
           key: 'javaVersion',
           ellipsis: true
         },
         {
-          title: 'JVM 信息',
+          title: `JVM ${this.$t('i18n_d8c7e04c8e')}`,
           dataIndex: 'jvmInfo',
           width: 100,
           ellipsis: true
@@ -750,25 +768,25 @@ export default {
         // { title: "JVM 剩余内存", dataIndex: "machineNodeData.jvmFreeMemory", ellipsis: true, },
 
         {
-          title: '项目数',
+          title: this.$t('i18n_607558dbd4'),
           dataIndex: 'jpomProjectCount',
           width: '90px'
         },
         {
-          title: '脚本数',
+          title: this.$t('i18n_e39f4a69f4'),
           dataIndex: 'jpomScriptCount',
           width: '90px'
         },
 
         {
-          title: '插件运行',
+          title: this.$t('i18n_5fffcb255d'),
           dataIndex: 'runTime',
           width: '100px',
           key: 'runTime',
           ellipsis: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -776,7 +794,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -784,13 +802,13 @@ export default {
           width: '170px'
         },
         {
-          title: '排序值',
+          title: this.$t('i18n_c35c1a1330'),
           dataIndex: 'sortValue',
           sorter: true,
           width: '80px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           key: 'operation',
           fixed: 'right',
@@ -801,7 +819,7 @@ export default {
       ],
 
       rules: {
-        name: [{ required: true, message: '请输入节点名称', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_32cb0ec70e'), trigger: 'blur' }]
       },
       workspaceList: [],
       tableSelections: [],
@@ -959,11 +977,11 @@ export default {
     },
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除节点么？删除会检查数据关联性,并且节点不存在项目或者脚本',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_6636793319'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteNode(record.id).then((res) => {
             if (res.code === 200) {
@@ -978,21 +996,23 @@ export default {
     },
     // 解绑
     handleUnbind(record) {
-      const html =
-        "<b style='font-size: 20px;'>真的要解绑节点么？</b>" +
-        "<ul style='font-size: 20px;color:red;font-weight: bold;'>" +
-        '<li>解绑会检查数据关联性,同时将自动删除节点项目和脚本缓存信息</b></li>' +
-        '<li>一般用于服务器无法连接且已经确定不再使用</li>' +
-        '<li>如果误操作会产生冗余数据！！！</li>' +
-        ' </ul>'
+      const html = `
+      <b style='font-size: 20px;'>${this.$t('i18n_db5cafdc67')}</b>
+      <ul style='font-size: 20px;color:red;font-weight: bold;'>
+        <li>${this.$t('i18n_eeef8ced69')}</li>
+        <li>${this.$t('i18n_5c93055d9c')}</li>
+        <li>${this.$t('i18n_27d0c8772c')}</li>
+      </ul>
+
+      `
       $confirm({
-        title: '危险操作！！！',
+        title: this.$t('i18n_9362e6ddf8'),
         zIndex: 1009,
         content: h('div', null, [h('p', { innerHTML: html }, null)]),
         okButtonProps: { size: 'small', danger: true, type: 'primary' },
         cancelButtonProps: { type: 'primary' },
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return unbind(record.id).then((res) => {
             if (res.code === 200) {
@@ -1069,7 +1089,7 @@ export default {
     handleSyncToWorkspace() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }
@@ -1096,22 +1116,22 @@ export default {
     // 排序
     sortItemHander(record, index, method) {
       const msgData = {
-        top: '确定要将此数据置顶吗？',
-        up: '确定要将此数上移吗？',
-        down: '确定要将此数据下移吗？下移操作可能因为列表后续数据没有排序值操作无效！'
+        top: this.$t('i18n_0079d91f95'),
+        up: this.$t('i18n_b166a66d67'),
+        down: this.$t('i18n_7a7e25e9eb')
       }
-      let msg = msgData[method] || '确定要操作吗？'
+      let msg = msgData[method] || this.$t('i18n_49574eee58')
       if (!record.sortValue) {
-        msg += ' 当前数据为默认状态,操后上移或者下移可能不会达到预期排序,还需要对相关数据都操作后才能达到预期排序'
+        msg += `${this.$t('i18n_57c0a41ec6')},${this.$t('i18n_066f903d75')},${this.$t('i18n_c4e2cd2266')}`
       }
       // console.log(this.list, index, this.list[method === "top" ? index : method === "up" ? index - 1 : index + 1]);
       const compareId = this.list[method === 'top' ? index : method === 'up' ? index - 1 : index + 1].id
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return sortItem({
             id: record.id,
@@ -1168,5 +1188,3 @@ export default {
   }
 }
 </script>
-
-<style scoped></style>

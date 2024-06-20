@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from './config'
 import { loadRouterBase } from './config'
 
@@ -38,7 +38,7 @@ export function getTableNameList() {
 
 /**
  * 创建备份信息
- * @param tableNameList 需要备份的表名称列表，没有默认表示全量备份
+ * @param tableNameList 需要备份的表名称列表，没有默认表示api.backup-info.945bddc
  */
 export function createBackup(tableNameList) {
   const data = {
@@ -112,10 +112,10 @@ export function uploadBackupFile(formData) {
 }
 
 export const backupTypeArray = [
-  { key: 0, value: '全量备份', disabled: false },
-  { key: 1, value: '部分备份', disabled: false },
-  { key: 2, value: '导入备份', disabled: true },
-  { key: 3, value: '自动备份', disabled: true }
+  { key: 0, value: t('i18n_6d68bd5458'), disabled: false },
+  { key: 1, value: t('i18n_67b667bf98'), disabled: false },
+  { key: 2, value: t('i18n_90c0458a4c'), disabled: true },
+  { key: 3, value: t('i18n_590e5b46a0'), disabled: true }
 ]
 
 export const arrayToMap = (arra) => {
@@ -129,7 +129,7 @@ export const arrayToMap = (arra) => {
 export const backupTypeMap = arrayToMap(backupTypeArray)
 
 export const backupStatusMap = {
-  0: '处理中',
-  1: '处理成功',
-  2: '处理失败'
+  0: t('i18n_5d459d550a'),
+  1: t('i18n_3ba621d736'),
+  2: t('i18n_1012e09849')
 }

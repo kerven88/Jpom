@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from '@/api/config'
 import { loadRouterBase } from '@/api/config'
 
@@ -123,7 +123,7 @@ export function importData(formData) {
 }
 
 export const statusMap = {
-  0: { desc: '无法连接', color: 'red' },
-  1: { desc: '正常', color: 'green' },
-  2: { desc: '禁用监控', color: 'orange' }
+  0: { desc: t('i18n_757a730c9e'), color: 'red' },
+  1: { desc: t('i18n_fd6e80f1e0'), color: 'green' },
+  2: { desc: t('i18n_46158d0d6e'), color: 'orange' }
 }

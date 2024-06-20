@@ -1,11 +1,7 @@
 <template>
   <div class="">
     <template v-if="useSuggestions">
-      <a-result
-        title="当前工作空间还没有项目并且也没有任何节点"
-        sub-title="需要您先新增资产机器再分配机器节点（逻辑节点）到当前工作空间"
-      >
-      </a-result>
+      <a-result :title="$t('i18n_a396da3e22')" :sub-title="$t('i18n_13d947ea19')"> </a-result>
     </template>
 
     <CustomTable
@@ -35,7 +31,7 @@
             v-if="!nodeId"
             v-model:value="listQuery.nodeId"
             allow-clear
-            placeholder="请选择节点"
+            :placeholder="$t('i18n_f8a613d247')"
             class="search-input-item"
           >
             <a-select-option v-for="(nodeName, key) in nodeMap" :key="key">{{ nodeName }}</a-select-option>
@@ -43,7 +39,7 @@
           <a-select
             v-model:value="listQuery.group"
             allow-clear
-            placeholder="请选择分组"
+            :placeholder="$t('i18n_ec22193ed1')"
             class="search-input-item"
             @change="getNodeProjectData"
           >
@@ -51,22 +47,29 @@
           </a-select>
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="搜索项目名"
+            :placeholder="$t('i18n_1e93bdad2a')"
             class="search-input-item"
             @press-enter="getNodeProjectData"
           />
           <a-input
             v-model:value="listQuery['%projectId%']"
-            placeholder="搜索项目ID"
+            :placeholder="$t('i18n_47dd8dbc7d')"
             class="search-input-item"
             @press-enter="getNodeProjectData"
           />
 
-          <a-select v-model:value="listQuery.runMode" allow-clear placeholder="运行方式" class="search-input-item">
+          <a-select
+            v-model:value="listQuery.runMode"
+            allow-clear
+            :placeholder="$t('i18n_17d444b642')"
+            class="search-input-item"
+          >
             <a-select-option v-for="item in runModeList" :key="item">{{ item }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button :loading="loading" type="primary" @click="getNodeProjectData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button :loading="loading" type="primary" @click="getNodeProjectData">{{
+              $t('i18n_e5f71fc31e')
+            }}</a-button>
           </a-tooltip>
 
           <!-- <a-statistic-countdown format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="silenceLoadData" /> -->
@@ -74,27 +77,29 @@
       </template>
       <template #toolPrefix>
         <a-dropdown v-if="selectedRowKeys && selectedRowKeys.length">
-          <a-button type="primary" size="small"> 批量操作 <DownOutlined /> </a-button>
+          <a-button type="primary" size="small"> {{ $t('i18n_7f7c624a84') }} <DownOutlined /> </a-button>
           <template #overlay>
             <a-menu>
               <a-menu-item>
-                <a-button type="primary" @click="batchStart">批量启动</a-button>
+                <a-button type="primary" @click="batchStart">{{ $t('i18n_93e894325d') }}</a-button>
               </a-menu-item>
               <a-menu-item>
-                <a-button type="primary" @click="batchRestart">批量重启</a-button>
+                <a-button type="primary" @click="batchRestart">{{ $t('i18n_73651ba2db') }}</a-button>
               </a-menu-item>
               <a-menu-item>
-                <a-button type="primary" danger @click="batchStop">批量关闭</a-button>
+                <a-button type="primary" danger @click="batchStop">{{ $t('i18n_a03c00714f') }}</a-button>
               </a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
-        <a-button v-else type="primary" size="small" :disabled="true"> 批量操作 <DownOutlined /> </a-button>
+        <a-button v-else type="primary" size="small" :disabled="true">
+          {{ $t('i18n_7f7c624a84') }} <DownOutlined />
+        </a-button>
 
-        <a-button type="primary" size="small" @click="openAdd"><PlusOutlined />新增</a-button>
+        <a-button type="primary" size="small" @click="openAdd"><PlusOutlined />{{ $t('i18n_66ab5e9f24') }}</a-button>
         <template v-if="!nodeId">
           <a-dropdown v-if="nodeMap && Object.keys(nodeMap).length">
-            <a-button type="primary" size="small" danger> 同步 <DownOutlined /></a-button>
+            <a-button type="primary" size="small" danger> {{ $t('i18n_6a620e3c07') }} <DownOutlined /></a-button>
             <template #overlay>
               <a-menu>
                 <a-menu-item v-for="(nodeName, key) in nodeMap" :key="key" @click="reSyncProject(key)">
@@ -105,17 +110,19 @@
           </a-dropdown>
         </template>
         <a-button v-else type="primary" size="small" danger @click="reSyncProject(nodeId)">
-          <SyncOutlined />同步
+          <SyncOutlined />{{ $t('i18n_6a620e3c07') }}
         </a-button>
 
         <a-button v-if="nodeId" size="small" type="primary" @click="handlerExportData()"
-          ><DownloadOutlined />导出</a-button
+          ><DownloadOutlined />{{ $t('i18n_55405ea6ff') }}</a-button
         >
         <a-dropdown v-if="nodeId">
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">
-                <a-button type="primary" size="small" @click="handlerImportTemplate()">下载导入模板</a-button>
+                <a-button type="primary" size="small" @click="handlerImportTemplate()">{{
+                  $t('i18n_2e505d23f7')
+                }}</a-button>
               </a-menu-item>
             </a-menu>
           </template>
@@ -128,7 +135,9 @@
             :multiple="false"
             :before-upload="importBeforeUpload"
           >
-            <a-button size="small" type="primary"><UploadOutlined /> 导入 <DownOutlined /> </a-button>
+            <a-button size="small" type="primary"
+              ><UploadOutlined /> {{ $t('i18n_8d9a071ee2') }} <DownOutlined />
+            </a-button>
           </a-upload>
         </a-dropdown>
       </template>
@@ -137,8 +146,8 @@
           <template #title>
             <div>
               <ul>
-                <li>状态数据是异步获取有一定时间延迟</li>
-                <li>在单页列表里面 file 类型项目将自动排序到最后</li>
+                <li>{{ $t('i18n_2141ffaec9') }}</li>
+                <li>{{ $t('i18n_74d980d4f4') }}</li>
               </ul>
             </div>
           </template>
@@ -194,7 +203,7 @@
           <template v-else>
             <a-tooltip
               v-if="noFileModes.includes(record.runMode)"
-              :title="`状态操作请到控制台中控制   ${
+              :title="`${$t('i18n_d7bebd0e5e')}   ${
                 (projectStatusMap[record.nodeId] &&
                   projectStatusMap[record.nodeId][record.projectId] &&
                   projectStatusMap[record.nodeId][record.projectId].statusMsg) ||
@@ -208,8 +217,8 @@
                   projectStatusMap[record.nodeId][record.projectId].pid > 0
                 "
                 disabled
-                checked-children="开"
-                un-checked-children="关"
+                :checked-children="$t('i18n_8493205602')"
+                :un-checked-children="$t('i18n_d58a55bcee')"
               />
             </a-tooltip>
             <span v-else>-</span>
@@ -219,7 +228,7 @@
         <template v-else-if="column.dataIndex === 'port'">
           <a-tooltip
             placement="topLeft"
-            :title="`进程号：${(
+            :title="`${$t('i18n_2b04210d33')}${(
               (projectStatusMap[record.nodeId] &&
                 projectStatusMap[record.nodeId][record.projectId] &&
                 projectStatusMap[record.nodeId][record.projectId].pids) || [
@@ -228,7 +237,7 @@
                   projectStatusMap[record.nodeId][record.projectId].pid) ||
                   '-'
               ]
-            ).join(',')} / 端口号：${
+            ).join(',')} / ${$t('i18n_4c096c51a3')}${
               (projectStatusMap[record.nodeId] &&
                 projectStatusMap[record.nodeId][record.projectId] &&
                 projectStatusMap[record.nodeId][record.projectId].port) ||
@@ -258,51 +267,63 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleFile(record)">文件</a-button>
+            <a-button size="small" type="primary" @click="handleFile(record)">{{ $t('i18n_2a0c4740f1') }}</a-button>
             <template v-if="noFileModes.includes(record.runMode)">
-              <a-button size="small" type="primary" @click="handleConsole(record)">控制台</a-button>
+              <a-button size="small" type="primary" @click="handleConsole(record)">{{
+                $t('i18n_b5c3770699')
+              }}</a-button>
             </template>
             <template v-else>
-              <a-tooltip title="文件类型没有控制台功能">
-                <a-button size="small" type="primary" :disabled="true">控制台</a-button></a-tooltip
+              <a-tooltip :title="$t('i18n_904615588b')">
+                <a-button size="small" type="primary" :disabled="true">{{ $t('i18n_b5c3770699') }}</a-button></a-tooltip
               >
             </template>
 
             <a-dropdown>
               <a @click="(e) => e.preventDefault()">
-                更多
+                {{ $t('i18n_0ec9eaf9c3') }}
                 <DownOutlined />
               </a>
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
                     <template v-if="noFileModes.includes(record.runMode)">
-                      <a-button size="small" type="primary" @click="handleTrigger(record)">触发器</a-button>
+                      <a-button size="small" type="primary" @click="handleTrigger(record)">{{
+                        $t('i18n_4696724ed3')
+                      }}</a-button>
                     </template>
                     <template v-else>
-                      <a-tooltip title="文件类型没有触发器功能">
-                        <a-button size="small" type="primary" :disabled="true">触发器</a-button></a-tooltip
+                      <a-tooltip :title="$t('i18n_4e54369108')">
+                        <a-button size="small" type="primary" :disabled="true">{{
+                          $t('i18n_4696724ed3')
+                        }}</a-button></a-tooltip
                       >
                     </template>
                   </a-menu-item>
                   <a-menu-item v-if="noFileModes.includes(record.runMode)">
-                    <a-button size="small" type="primary" @click="handleLogBack(record)">项目日志 </a-button>
+                    <a-button size="small" type="primary" @click="handleLogBack(record)"
+                      >{{ $t('i18n_2926598213') }}
+                    </a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" @click="copyItem(record)">复制</a-button>
+                    <a-button size="small" type="primary" @click="copyItem(record)">{{
+                      $t('i18n_79d3abe929')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" danger @click="handleDelete(record, '')">逻辑删除</a-button>
+                    <a-button size="small" type="primary" danger @click="handleDelete(record, '')">{{
+                      $t('i18n_c0f4a31865')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" danger @click="handleDelete(record, 'thorough')"
-                      >彻底删除</a-button
-                    >
+                    <a-button size="small" type="primary" danger @click="handleDelete(record, 'thorough')">{{
+                      $t('i18n_7327966572')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-button size="small" type="primary" danger @click="migrateWorkspace(record)"
-                      >迁移工作空间</a-button
-                    >
+                    <a-button size="small" type="primary" danger @click="migrateWorkspace(record)">{{
+                      $t('i18n_3adb55fbb5')
+                    }}</a-button>
                   </a-menu-item>
                   <a-menu-item>
                     <a-button
@@ -310,7 +331,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'top')"
-                      >置顶</a-button
+                      >{{ $t('i18n_3d43ff1199') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -319,7 +340,7 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) <= 1"
                       @click="sortItemHander(record, index, 'up')"
-                      >上移</a-button
+                      >{{ $t('i18n_315eacd193') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -328,9 +349,8 @@
                       type="primary"
                       :disabled="(listQuery.page - 1) * listQuery.limit + (index + 1) === listQuery.total"
                       @click="sortItemHander(record, index, 'down')"
+                      >{{ $t('i18n_17acd250da') }}</a-button
                     >
-                      下移
-                    </a-button>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -340,7 +360,8 @@
       </template>
     </CustomTable>
     <!-- 项目文件组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerFileVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -356,9 +377,10 @@
         @go-console="goConsole"
         @go-read-file="goReadFile"
       />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 项目控制台组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerConsoleVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -373,9 +395,10 @@
         :project-id="temp.projectId"
         @go-file="goFile"
       />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 项目跟踪文件组件 -->
-    <a-drawer
+    <CustomDrawer
+      v-if="drawerReadFileVisible"
       destroy-on-close
       :title="drawerTitle"
       placement="right"
@@ -391,9 +414,16 @@
         :project-id="temp.projectId"
         @go-file="goFile"
       />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 批量操作状态 -->
-    <a-modal v-model:open="batchVisible" destroy-on-close :title="temp.title" :footer="null" @cancel="batchClose">
+    <CustomModal
+      v-if="batchVisible"
+      v-model:open="batchVisible"
+      destroy-on-close
+      :title="temp.title"
+      :footer="null"
+      @cancel="batchClose"
+    >
       <a-list bordered :data-source="temp.data">
         <template #renderItem="{ item }">
           <a-list-item>
@@ -404,17 +434,20 @@
               </template>
             </a-list-item-meta>
             <div>
-              <a-tooltip :title="`${item.cause || '未开始'}`">{{ item.cause || '未开始' }} </a-tooltip>
+              <a-tooltip :title="`${item.cause || $t('i18n_dd4e55c39c')}`"
+                >{{ item.cause || $t('i18n_dd4e55c39c') }}
+              </a-tooltip>
             </div>
           </a-list-item>
         </template>
       </a-list>
-    </a-modal>
+    </CustomModal>
     <!-- 触发器 -->
-    <a-modal
+    <CustomModal
+      v-if="triggerVisible"
       v-model:open="triggerVisible"
       destroy-on-close
-      title="触发器"
+      :title="$t('i18n_4696724ed3')"
       width="50%"
       :footer="null"
       :mask-closable="false"
@@ -422,20 +455,18 @@
       <a-form ref="editTriggerForm" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
         <a-tabs default-active-key="1">
           <template #rightExtra>
-            <a-tooltip title="重置触发器 token 信息,重置后之前的触发器 token 将失效">
-              <a-button type="primary" size="small" @click="resetTrigger">重置</a-button>
+            <a-tooltip :title="$t('i18n_01ad26f4a9')">
+              <a-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</a-button>
             </a-tooltip>
           </template>
-          <a-tab-pane key="1" tab="执行">
+          <a-tab-pane key="1" :tab="$t('i18n_1a6aa24e76')">
             <a-space direction="vertical" style="width: 100%">
-              <a-alert message="温馨提示" type="warning">
+              <a-alert :message="$t('i18n_947d983961')" type="warning">
                 <template #description>
                   <ul>
-                    <li>单个触发器地址中：第一个随机字符串为项目ID(服务端)，第二个随机字符串为 token</li>
-                    <li>
-                      重置为重新生成触发地址,重置成功后之前的触发器地址将失效,触发器绑定到生成触发器到操作人上,如果将对应的账号删除触发器将失效
-                    </li>
-                    <li>批量触发参数 BODY json： [ { "id":"1", "token":"a","action":"status" } ]</li>
+                    <li>{{ $t('i18n_9a00e13160') }}</li>
+                    <li>{{ $t('i18n_632a907224') }}</li>
+                    <li>{{ $t('i18n_cb9b3ec760') }}</li>
                   </ul>
                 </template>
               </a-alert>
@@ -444,7 +475,7 @@
                 v-for="item in triggerUses"
                 :key="item.value"
                 type="info"
-                :message="`${item.desc}触发器地址(点击可以复制)`"
+                :message="`${item.desc}${$t('i18n_b9a4098131')}(${$t('i18n_00a070c696')})`"
               >
                 <template #description>
                   <a-typography-paragraph
@@ -456,7 +487,7 @@
                 </template>
               </a-alert>
 
-              <a-alert type="info" :message="`批量触发器地址(点击可以复制)`">
+              <a-alert type="info" :message="`${$t('i18n_8d202b890c')}(${$t('i18n_00a070c696')})`">
                 <template #description>
                   <a-typography-paragraph :copyable="{ tooltip: false, text: temp.batchTriggerUrl }">
                     <a-tag>POST</a-tag> <span>{{ temp.batchTriggerUrl }} </span>
@@ -467,13 +498,14 @@
           </a-tab-pane>
         </a-tabs>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editProjectVisible"
       v-model:open="editProjectVisible"
       destroy-on-close
       width="60vw"
-      title="编辑项目"
+      :title="$t('i18n_bd49bc196c')"
       :confirm-loading="confirmLoading"
       :mask-closable="false"
       @ok="
@@ -486,8 +518,8 @@
       "
     >
       <a-form :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="选择节点" help="编辑过程中可以切换节点但是要注意数据是否匹配">
-          <a-select v-model:value="temp.nodeId" allow-clear placeholder="请选择节点">
+        <a-form-item :label="$t('i18n_7e2b40fc86')" :help="$t('i18n_dd23fdf796')">
+          <a-select v-model:value="temp.nodeId" allow-clear :placeholder="$t('i18n_f8a613d247')">
             <a-select-option v-for="(nodeName, key) in nodeMap" :key="key">{{ nodeName }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -507,51 +539,50 @@
           }
         "
       />
-    </a-modal>
+    </CustomModal>
     <!-- 迁移到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="migrateWorkspaceVisible"
       v-model:open="migrateWorkspaceVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="50vw"
-      title="迁移到其他工作空间"
+      :title="$t('i18n_c6f6a9b234')"
       :mask-closable="false"
       @ok="migrateWorkspaceOk"
     >
       <a-space direction="vertical" style="width: 100%">
-        <a-alert message="温馨提示" type="warning" show-icon>
+        <a-alert :message="$t('i18n_947d983961')" type="warning" show-icon>
           <template #description>
-            项目可能支持关联如下数据：
+            {{ $t('i18n_8e6184c0d3') }}
             <ul>
               <li>
-                在线构建（构建关联仓库、构建历史）
+                {{ $t('i18n_829706defc') }}
 
                 <ol>
-                  <li>如果关联的构建关联的仓库被多个构建绑定（使用）不能迁移</li>
-                  <li>仓库自动迁移后可能会重复存在请手动解决</li>
+                  <li>{{ $t('i18n_3c070ea334') }}</li>
+                  <li>{{ $t('i18n_d84323ba8d') }}</li>
                 </ol>
               </li>
-              <li>节点分发【暂不支持迁移】</li>
-              <li>项目监控 【暂不支持迁移】</li>
-              <li>日志阅读 【暂不支持迁移】</li>
+              <li>{{ $t('i18n_cb28aee4f0') }}</li>
+              <li>{{ $t('i18n_44ef546ded') }}</li>
+              <li>{{ $t('i18n_cb46672712') }}</li>
             </ul>
           </template>
         </a-alert>
-        <a-alert message="风险提醒" type="error" show-icon>
+        <a-alert :message="$t('i18n_b15689296a')" type="error" show-icon>
           <template #description>
             <ul>
-              <li>如果垮机器（资产机器）迁移之前机器中的项目数据仅是逻辑删除（项目文件和日志均会保留）</li>
-              <li>迁移操作不具有事务性质，如果流程被中断或者限制条件不满足可能产生冗余数据！！！！</li>
-              <li>
-                迁移前您检查迁出机器和迁入机器的连接状态和网络状态避免未知错误或者中断造成流程失败产生冗余数据！！！！
-              </li>
+              <li>{{ $t('i18n_24ad6f3354') }}</li>
+              <li>{{ $t('i18n_8f0c429b46') }}</li>
+              <li>{{ $t('i18n_471c6b19cf') }}</li>
             </ul>
           </template>
         </a-alert>
       </a-space>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -565,13 +596,13 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
             @change="loadMigrateWorkspaceNodeList"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="选择逻辑节点" name="nodeId">
+        <a-form-item :label="$t('i18n_6953a488e3')" name="nodeId">
           <a-select
             v-model:value="temp.nodeId"
             show-search
@@ -585,27 +616,27 @@
                 )
               }
             "
-            placeholder="请选择逻辑节点"
+            :placeholder="$t('i18n_1d53247d61')"
           >
             <a-select-option v-for="item in migrateWorkspaceNodeList" :key="item.id">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 日志备份 -->
-    <a-modal
+    <CustomModal
+      v-if="lobbackVisible"
       v-model:open="lobbackVisible"
       destroy-on-close
-      title="日志备份列表"
+      :title="$t('i18n_15f01c43e8')"
       width="850px"
       :footer="null"
       :mask-closable="false"
     >
       <ProjectLog v-if="lobbackVisible" :node-id="temp.nodeId" :project-id="temp.projectId"></ProjectLog>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { getNodeListAll, getProjectList, sortItemProject, syncProject } from '@/api/node'
 import {
@@ -674,20 +705,20 @@ export default {
 
       columns: [
         {
-          title: '项目ID',
+          title: this.$t('i18n_33c9e2388e'),
           dataIndex: 'projectId',
           width: 100,
           ellipsis: true
         },
 
         {
-          title: '项目名称',
+          title: this.$t('i18n_738a41f965'),
           dataIndex: 'name',
           // width: 200,
           ellipsis: true
         },
         {
-          title: '项目分组',
+          title: this.$t('i18n_d438e83c16'),
           dataIndex: 'group',
           sorter: true,
           width: '100px',
@@ -695,40 +726,40 @@ export default {
           tooltip: true
         },
         {
-          title: '节点名称',
+          title: this.$t('i18n_b1785ef01e'),
           dataIndex: 'nodeId',
           width: 90,
           ellipsis: true
         },
         {
-          title: '运行状态',
+          title: this.$t('i18n_e4b51d5cd0'),
           dataIndex: 'status',
           align: 'center',
           width: 100,
           ellipsis: true
         },
         {
-          title: '项目路径',
+          title: this.$t('i18n_aabdc3b7c0'),
           dataIndex: 'path',
           ellipsis: true,
           width: 120
         },
         {
-          title: '日志路径',
+          title: this.$t('i18n_03a74a9a8a'),
           dataIndex: 'logPath',
           ellipsis: true,
           width: 120
         },
 
         {
-          title: '端口/PID',
+          title: this.$t('i18n_504c43b70a'),
           dataIndex: 'port',
           width: 100,
           ellipsis: true
         },
 
         {
-          title: '运行方式',
+          title: this.$t('i18n_17d444b642'),
           dataIndex: 'runMode',
           width: 90,
           ellipsis: true
@@ -741,7 +772,7 @@ export default {
           tooltip: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -749,7 +780,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -757,20 +788,20 @@ export default {
           width: '170px'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           width: '130px',
           ellipsis: true,
           sorter: true
         },
         {
-          title: '排序值',
+          title: this.$t('i18n_c35c1a1330'),
           dataIndex: 'sortValue',
           sorter: true,
           width: '80px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           fixed: 'right',
@@ -778,13 +809,15 @@ export default {
           width: '190px'
         }
       ],
+
       triggerVisible: false,
       triggerUses: [
-        { desc: '查看状态', value: 'status' },
-        { desc: '启动项目', value: 'start' },
-        { desc: '停止项目', value: 'stop' },
-        { desc: '重启项目', value: 'restart' }
+        { desc: this.$t('i18n_0e16902c1e'), value: 'status' },
+        { desc: this.$t('i18n_6b29a6e523'), value: 'start' },
+        { desc: this.$t('i18n_d75c02d050'), value: 'stop' },
+        { desc: this.$t('i18n_f3e93355ee'), value: 'restart' }
       ],
+
       editProjectVisible: false,
       // countdownTime: Date.now(),
       // refreshInterval: 5,
@@ -941,7 +974,7 @@ export default {
                   data2[item.projectId] = {
                     port: 0,
                     pid: 0,
-                    error: '网络异常'
+                    error: this.$t('i18n_44ed625b19')
                   }
                 })
                 this.projectStatusMap = {
@@ -957,7 +990,7 @@ export default {
     // 文件管理
     handleFile(record) {
       this.temp = Object.assign({}, record)
-      this.drawerTitle = `文件管理(${this.temp.name})`
+      this.drawerTitle = `${this.$t('i18n_8780e6b3d1')}(${this.temp.name})`
       this.drawerFileVisible = true
     },
     // 关闭文件管理对话框
@@ -968,7 +1001,7 @@ export default {
     // 控制台
     handleConsole(record) {
       this.temp = Object.assign({}, record)
-      this.drawerTitle = `控制台(${this.temp.name})`
+      this.drawerTitle = `${this.$t('i18n_b5c3770699')}(${this.temp.name})`
       this.drawerConsoleVisible = true
     },
     // 关闭控制台
@@ -994,7 +1027,7 @@ export default {
       this.onFileClose()
       this.drawerReadFileVisible = true
       this.temp.readFilePath = (path + '/' + filename).replace(new RegExp('//', 'gm'), '/')
-      this.drawerTitle = `跟踪文件(${filename})`
+      this.drawerTitle = `${this.$t('i18n_5854370b86')}(${filename})`
     },
     onReadFileClose() {
       this.drawerReadFileVisible = false
@@ -1040,17 +1073,17 @@ export default {
     batchStart() {
       if (this.selectedRowKeys.length <= 0) {
         $notification.warning({
-          message: '请选中要启动的项目'
+          message: this.$t('i18n_576669e450')
         })
         return
       }
       this.temp = {
-        title: '批量启动',
+        title: this.$t('i18n_93e894325d'),
         data: this.selectedRowKeysToId()
       }
 
       this.batchVisible = true
-      this.batchOptInfo(0, '启动', 'start')
+      this.batchOptInfo(0, this.$t('i18n_8e54ddfe24'), 'start')
     },
     // 批量操作
     batchOptInfo(index, msg, opt) {
@@ -1058,7 +1091,7 @@ export default {
         return
       }
       const value = this.temp.data[index]
-      value.cause = msg + '中'
+      value.cause = msg + this.$t('i18n_aed1dfbc31')
       this.updateBatchData(index, value)
       if (value.runMode !== 'File') {
         const params = {
@@ -1074,12 +1107,12 @@ export default {
             this.batchOptInfo(index + 1, msg, opt)
           })
           .catch(() => {
-            value.cause = msg + '失败'
+            value.cause = msg + this.$t('i18n_acd5cb847a')
             this.updateBatchData(index, value)
             this.batchOptInfo(index + 1, msg, opt)
           })
       } else {
-        value.cause = '跳过'
+        value.cause = this.$t('i18n_92636e8c8f')
         this.updateBatchData(index, value)
         this.batchOptInfo(index + 1, msg, opt)
       }
@@ -1089,31 +1122,31 @@ export default {
     batchRestart() {
       if (this.selectedRowKeys.length <= 0) {
         $notification.warning({
-          message: '请选中要重启的项目'
+          message: this.$t('i18n_03580275cb')
         })
         return
       }
       this.temp = {
-        title: '批量重新启动',
+        title: this.$t('i18n_7737f088de'),
         data: this.selectedRowKeysToId()
       }
       this.batchVisible = true
-      this.batchOptInfo(0, '重启', 'restart')
+      this.batchOptInfo(0, this.$t('i18n_01b4e06f39'), 'restart')
     },
 
     //批量关闭
     batchStop() {
       if (this.selectedRowKeys.length <= 0) {
         $notification.warning({
-          message: '请选中要关闭的项目'
+          message: this.$t('i18n_373a1efdc0')
         })
       }
       this.temp = {
-        title: '批量关闭启动',
+        title: this.$t('i18n_b30d07c036'),
         data: this.selectedRowKeysToId()
       }
       this.batchVisible = true
-      this.batchOptInfo(0, '停止', 'stop')
+      this.batchOptInfo(0, this.$t('i18n_095e938e2a'), 'stop')
     },
 
     // 获取复选框属性 判断是否可以勾选
@@ -1132,11 +1165,11 @@ export default {
     },
     reSyncProject(nodeId) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '确定要重新同步当前节点项目缓存信息吗？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_24384ba6c1'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return syncProject(nodeId).then((res) => {
             if (res.code == 200) {
@@ -1152,22 +1185,22 @@ export default {
     // 排序
     sortItemHander(record, index, method) {
       const msgData = {
-        top: '确定要将此数据置顶吗？',
-        up: '确定要将此数上移吗？',
-        down: '确定要将此数据下移吗？下移操作可能因为列表后续数据没有排序值操作无效！'
+        top: this.$t('i18n_0079d91f95'),
+        up: this.$t('i18n_b166a66d67'),
+        down: this.$t('i18n_7a7e25e9eb')
       }
-      let msg = msgData[method] || '确定要操作吗？'
+      let msg = msgData[method] || this.$t('i18n_49574eee58')
       if (!record.sortValue) {
-        msg += ' 当前数据为默认状态,操后上移或者下移可能不会达到预期排序,还需要对相关数据都操作后才能达到预期排序'
+        msg += `${this.$t('i18n_57c0a41ec6')},${this.$t('i18n_066f903d75')},${this.$t('i18n_c4e2cd2266')}`
       }
       // console.log(this.list, index, this.list[method === "top" ? index : method === "up" ? index - 1 : index + 1]);
       const compareId = this.projList[method === 'top' ? index : method === 'up' ? index - 1 : index + 1].id
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return sortItemProject({
             id: record.id,
@@ -1249,7 +1282,7 @@ export default {
       delete temp.outGivingProject
       this.temp = {
         ...temp,
-        name: temp.name + '副本',
+        name: temp.name + this.$t('i18n_0428b36ab1'),
         id: temp.projectId + '_copy',
         lib: temp.lib + '_copy'
       }
@@ -1265,14 +1298,17 @@ export default {
     },
     // 删除
     handleDelete(record, thorough) {
+      const msg = thorough ? this.$t('i18n_8580ad66b0') : this.$t('i18n_954fb7fa21')
+      const html = thorough
+        ? "<b style='font-size: 24px;color:red;font-weight: bold;'>" + msg + '</b>'
+        : "<b style='font-size: 20px;font-weight: bold;'>" + msg + '</b>'
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: thorough
-          ? '真的要彻底删除项目么？彻底项目会自动删除项目相关文件奥(包含项目日志，日志备份，项目文件)'
-          : '真的要删除项目么？删除项目不会删除项目相关文件奥,建议先清理项目相关文件再删除项目',
-        okText: '确认',
-        cancelText: '取消',
+        content: h('p', { innerHTML: html }, null),
+        okButtonProps: { type: 'primary', danger: !!thorough, size: thorough ? 'small' : 'middle' },
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteProject({
             nodeId: record.nodeId,
@@ -1324,13 +1360,13 @@ export default {
     migrateWorkspaceOk() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }
       if (!this.temp.nodeId) {
         $notification.warn({
-          message: '请选择逻辑节点'
+          message: this.$t('i18n_1d53247d61')
         })
         return false
       }
@@ -1389,13 +1425,3 @@ export default {
   }
 }
 </script>
-
-<!-- <style scoped>
-:deep(.ant-statistic div) {
-  display: inline-block;
-}
-
-:deep(.ant-statistic-content-value, .ant-statistic-content) {
-  font-size: 16px;
-}
-</style> -->

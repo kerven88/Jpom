@@ -21,7 +21,7 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="任务名"
+            :placeholder="$t('i18n_ce23a42b47')"
             class="search-input-item"
             @press-enter="loadData"
           />
@@ -39,7 +39,7 @@
               }
             "
             allow-clear
-            placeholder="状态"
+            :placeholder="$t('i18n_3fea7ca76c')"
             class="search-input-item"
           >
             <a-select-option v-for="(val, key) in statusMap" :key="key">{{ val }}</a-select-option>
@@ -58,13 +58,13 @@
               }
             "
             allow-clear
-            placeholder="发布类型"
+            :placeholder="$t('i18n_8aa25f5fbe')"
             class="search-input-item"
           >
             <a-select-option v-for="(val, key) in taskTypeMap" :key="key">{{ val }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
         </a-space>
       </template>
@@ -84,34 +84,36 @@
         </template>
 
         <template v-else-if="column.dataIndex === 'status'">
-          <a-tag v-if="text === 2" color="green">{{ statusMap[text] || '未知' }}</a-tag>
-          <a-tag v-else-if="text === 0 || text === 1" color="orange">{{ statusMap[text] || '未知' }}</a-tag>
+          <a-tag v-if="text === 2" color="green">{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
+          <a-tag v-else-if="text === 0 || text === 1" color="orange">{{
+            statusMap[text] || $t('i18n_1622dc9b6b')
+          }}</a-tag>
           <a-tag v-else-if="text === 4" color="blue">
-            {{ statusMap[text] || '未知' }}
+            {{ statusMap[text] || $t('i18n_1622dc9b6b') }}
           </a-tag>
-          <a-tag v-else-if="text === 3" color="red">{{ statusMap[text] || '未知' }}</a-tag>
-          <a-tag v-else>{{ statusMap[text] || '未知' }}</a-tag>
+          <a-tag v-else-if="text === 3" color="red">{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
+          <a-tag v-else>{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'taskType'">
-          <span>{{ taskTypeMap[text] || '未知' }}</span>
+          <span>{{ taskTypeMap[text] || $t('i18n_1622dc9b6b') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'fileType'">
-          <span v-if="text == 2">静态文件</span>
-          <span v-else>文件中心</span>
+          <span v-if="text == 2">{{ $t('i18n_28f6e7a67b') }}</span>
+          <span v-else>{{ $t('i18n_26183c99bf') }}</span>
         </template>
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button type="primary" size="small" @click="handleView(record)">查看</a-button>
+            <a-button type="primary" size="small" @click="handleView(record)">{{ $t('i18n_607e7a4f37') }}</a-button>
 
-            <a-button type="primary" size="small" @click="handleRetask(record)">重建</a-button>
+            <a-button type="primary" size="small" @click="handleRetask(record)">{{ $t('i18n_9e09315960') }}</a-button>
             <a-button
               type="primary"
               danger
               size="small"
               :disabled="!(record.status === 0 || record.status === 1)"
               @click="handleCancelTask(record)"
-              >取消</a-button
+              >{{ $t('i18n_625fb26b4b') }}</a-button
             >
             <a-button
               type="primary"
@@ -119,15 +121,16 @@
               size="small"
               :disabled="record.status === 0 || record.status === 1"
               @click="handleDelete(record)"
-              >删除</a-button
+              >{{ $t('i18n_2f4aaddde3') }}</a-button
             >
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 任务详情 -->
-    <a-drawer
-      title="任务详情"
+    <CustomDrawer
+      v-if="detailsVisible"
+      :title="$t('i18n_4a98bf0c68')"
       placement="right"
       :width="'80vw'"
       :open="detailsVisible"
@@ -138,14 +141,15 @@
       "
     >
       <task-details-page v-if="detailsVisible" :task-id="temp.id" />
-    </a-drawer>
+    </CustomDrawer>
     <!-- 重建任务 -->
-    <a-modal
+    <CustomModal
+      v-if="releaseFileVisible"
       v-model:open="releaseFileVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="发布文件"
-      width="60%"
+      :title="$t('i18n_7e930b95ef')"
+      width="70%"
       :mask-closable="false"
       @ok="handleReCrateTask"
     >
@@ -156,18 +160,18 @@
         :label-col="{ span: 4 }"
         :wrapper-col="{ span: 20 }"
       >
-        <a-form-item label="任务名" name="name">
-          <a-input v-model:value="temp.name" placeholder="请输入任务名" :max-length="50" />
+        <a-form-item :label="$t('i18n_ce23a42b47')" name="name">
+          <a-input v-model:value="temp.name" :placeholder="$t('i18n_5f4c724e61')" :max-length="50" />
         </a-form-item>
 
-        <a-form-item label="发布方式" name="taskType">
+        <a-form-item :label="$t('i18n_f98994f7ec')" name="taskType">
           <a-radio-group v-model:value="temp.taskType" :disabled="true">
             <a-radio :value="0"> SSH </a-radio>
-            <a-radio :value="1"> 节点 </a-radio>
+            <a-radio :value="1"> {{ $t('i18n_3bf3c0a8d6') }} </a-radio>
           </a-radio-group>
         </a-form-item>
 
-        <a-form-item v-if="temp.taskType === 0" name="taskDataIds" label="发布的SSH">
+        <a-form-item v-if="temp.taskType === 0" name="taskDataIds" :label="$t('i18n_b188393ea7')">
           <a-row>
             <a-col :span="22">
               <a-select
@@ -184,7 +188,7 @@
                   }
                 "
                 mode="multiple"
-                placeholder="请选择SSH"
+                :placeholder="$t('i18n_260a3234f2')"
               >
                 <a-select-option v-for="ssh in sshList" :key="ssh.id">
                   <a-tooltip :title="ssh.name"> {{ ssh.name }}</a-tooltip>
@@ -196,7 +200,7 @@
             </a-col>
           </a-row>
         </a-form-item>
-        <a-form-item v-else-if="temp.taskType === 1" name="taskDataIds" label="发布的节点">
+        <a-form-item v-else-if="temp.taskType === 1" name="taskDataIds" :label="$t('i18n_473badc394')">
           <a-row>
             <a-col :span="22">
               <a-select
@@ -213,7 +217,7 @@
                   }
                 "
                 mode="multiple"
-                placeholder="请选择节点"
+                :placeholder="$t('i18n_f8a613d247')"
               >
                 <a-select-option v-for="ssh in nodeList" :key="ssh.id">
                   <a-tooltip :title="ssh.name"> {{ ssh.name }}</a-tooltip>
@@ -226,18 +230,18 @@
           </a-row>
         </a-form-item>
 
-        <a-form-item name="releasePathParent" label="发布目录">
-          <a-input v-model:value="temp.releasePath" placeholder="请输入发布目录" :disabled="true" />
+        <a-form-item name="releasePathParent" :label="$t('i18n_dbb2df00cf')">
+          <a-input v-model:value="temp.releasePath" :placeholder="$t('i18n_ee9a51488f')" :disabled="true" />
         </a-form-item>
 
-        <a-form-item name="releasePathParent" label="文件id">
-          <a-input v-model:value="temp.fileId" placeholder="请输入发布的文件id" />
+        <a-form-item name="releasePathParent" :label="$t('i18n_a91ce167c1')">
+          <a-input v-model:value="temp.fileId" :placeholder="$t('i18n_ea8a79546f')" />
         </a-form-item>
 
-        <a-form-item label="执行脚本" name="releaseBeforeCommand">
+        <a-form-item :label="$t('i18n_cfb00269fd')" name="releaseBeforeCommand">
           <a-form-item-rest>
             <a-tabs tab-position="right">
-              <a-tab-pane key="before" tab="上传前">
+              <a-tab-pane key="before" :tab="$t('i18n_d0c879f900')">
                 <code-editor
                   v-model:content="temp.beforeScript"
                   height="40vh"
@@ -246,9 +250,9 @@
                   }"
                 ></code-editor>
 
-                <div style="margin-top: 10px">文件上传前需要执行的脚本(非阻塞命令)</div>
+                <div style="margin-top: 10px">{{ $t('i18n_00de0ae1da') }}</div>
               </a-tab-pane>
-              <a-tab-pane key="after" tab="上传后">
+              <a-tab-pane key="after" :tab="$t('i18n_9b1c5264a0')">
                 <code-editor
                   v-model:content="temp.afterScript"
                   height="40vh"
@@ -257,39 +261,45 @@
                   }"
                 ></code-editor>
 
-                <div style="margin-top: 10px">文件上传成功后需要执行的脚本(非阻塞命令)</div>
+                <div style="margin-top: 10px">{{ $t('i18n_08ac1eace7') }}</div>
               </a-tab-pane>
             </a-tabs>
           </a-form-item-rest>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
     <!-- 查看文件 -->
-    <a-modal v-model:open="viewFileVisible" destroy-on-close :title="`查看文件`" :footer="null" :mask-closable="false">
+    <CustomModal
+      v-if="viewFileVisible"
+      v-model:open="viewFileVisible"
+      destroy-on-close
+      :title="`${$t('i18n_9de72a79fe')}`"
+      :footer="null"
+      :mask-closable="false"
+    >
       <a-form :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-        <a-form-item label="文件名" name="name">
+        <a-form-item :label="$t('i18n_29139c2a1a')" name="name">
           {{ temp.name }}
         </a-form-item>
-        <a-form-item label="文件ID" name="name">
+        <a-form-item :label="$t('i18n_0ff425e276')" name="name">
           {{ temp.id }}
         </a-form-item>
-        <a-form-item label="文件大小" name="size">
+        <a-form-item :label="$t('i18n_396b7d3f91')" name="size">
           {{ renderSize(temp.size) }}
         </a-form-item>
-        <a-form-item v-if="temp.validUntil" label="过期时间" name="validUntil">
+        <a-form-item v-if="temp.validUntil" :label="$t('i18n_1fa23f4daa')" name="validUntil">
           {{ parseTime(temp.validUntil) }}
         </a-form-item>
-        <a-form-item v-if="temp.workspaceId" label="文件共享" name="global">
-          {{ temp.workspaceId === 'GLOBAL' ? '全局' : '工作空间' }}
+        <a-form-item v-if="temp.workspaceId" :label="$t('i18n_3a6970ac26')" name="global">
+          {{ temp.workspaceId === 'GLOBAL' ? $t('i18n_2be75b1044') : $t('i18n_98d69f8b62') }}
         </a-form-item>
-        <a-form-item label="文件描述" name="description">
+        <a-form-item :label="$t('i18n_8d6f38b4b1')" name="description">
           {{ temp.description }}
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import {
   fileReleaseTaskLog,
@@ -324,59 +334,59 @@ export default {
       confirmLoading: false,
       columns: [
         {
-          title: '任务名称',
+          title: this.$t('i18n_78caf7115c'),
           dataIndex: 'name',
           ellipsis: true,
           width: 150,
           tooltip: true
         },
         {
-          title: '分发类型',
+          title: this.$t('i18n_9e2e02ef08'),
           dataIndex: 'taskType',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '文件来源',
+          title: this.$t('i18n_9d577fe51b'),
           dataIndex: 'fileType',
           width: '100px',
           ellipsis: true
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           width: '100px',
           ellipsis: true
         },
 
         {
-          title: '状态描述',
+          title: this.$t('i18n_920f05031b'),
           dataIndex: 'statusMsg',
           ellipsis: true,
           width: 200,
           tooltip: true
         },
         {
-          title: '文件ID',
+          title: this.$t('i18n_0ff425e276'),
           dataIndex: 'fileId',
           ellipsis: true,
           width: 150
         },
         {
-          title: '发布目录',
+          title: this.$t('i18n_dbb2df00cf'),
           dataIndex: 'releasePath',
           width: '100px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '执行人',
+          title: this.$t('i18n_a497562c8e'),
           dataIndex: 'modifyUser',
           width: '120px',
           ellipsis: true
         },
         {
-          title: '任务时间',
+          title: this.$t('i18n_b341f9a861'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -384,7 +394,7 @@ export default {
           width: '170px'
         },
         {
-          title: '任务更新时间',
+          title: this.$t('i18n_4871f7722d'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -393,7 +403,7 @@ export default {
         },
 
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
 
@@ -401,13 +411,14 @@ export default {
           width: '230px'
         }
       ],
+
       sshList: [],
       nodeList: [],
       releaseFileVisible: false,
       releaseFileRules: {
-        name: [{ required: true, message: '请输入文件任务名', trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_89d18c88a3'), trigger: 'blur' }],
 
-        taskDataIds: [{ required: true, message: '请选择发布的SSH', trigger: 'blur' }]
+        taskDataIds: [{ required: true, message: this.$t('i18n_3e51d1bc9c'), trigger: 'blur' }]
       },
       viewFileVisible: false
     }
@@ -445,11 +456,11 @@ export default {
     //  删除命令
     handleDelete(row) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除该执行记录吗？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_50fe3400c7'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteReleaseTask({
             id: row.id
@@ -538,11 +549,11 @@ export default {
     // 取消
     handleCancelTask(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的取消当前发布任务吗？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_7824ed010c'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         oonOk: () => {
           return cancelReleaseTask({ id: record.id }).then((res) => {
             if (res.code === 200) {
@@ -568,7 +579,7 @@ export default {
               this.viewFileVisible = true
             } else {
               $notification.warning({
-                message: '文件不存在啦'
+                message: this.$t('i18n_3e445d03aa')
               })
             }
           }
@@ -583,7 +594,7 @@ export default {
               this.viewFileVisible = true
             } else {
               $notification.warning({
-                message: '文件不存在啦'
+                message: this.$t('i18n_3e445d03aa')
               })
             }
           }

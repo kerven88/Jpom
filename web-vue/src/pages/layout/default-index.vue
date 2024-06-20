@@ -3,9 +3,14 @@
     <a-layout-sider v-model:collapsed="collapsed" :theme="menuTheme" :trigger="null" collapsible>
       <a-layout-sider v-model:collapsed="collapsed" class="sider" :theme="menuTheme" :trigger="null" collapsible>
         <div class="sider-content">
-          <a-tooltip placement="right" title="点击可以折叠左侧菜单栏">
+          <a-tooltip placement="right">
+            <template #title>
+              {{ subTitle }}
+              <div>&nbsp;</div>
+              <div>{{ $t('i18n_7548ea6316') }}</div>
+            </template>
             <div
-              class="logo"
+              class="logo text-overflow-hidden"
               :style="`color:${menuTheme === 'light' && theme === 'light' ? '#000' : '#fff'}`"
               @click="changeCollapsed()"
             >
@@ -35,7 +40,7 @@
             :type="systemNotificationData.level || 'info'"
             :closable="systemNotificationData.closable"
             banner
-            :afterClose="notificationAfterClose"
+            :after-close="notificationAfterClose"
           >
             <template #message> <div v-html="systemNotificationData.title"></div> </template>
             <template #description> <div v-html="systemNotificationData.content"></div> </template>
@@ -58,7 +63,11 @@
       >
         <router-view v-slot="{ Component, route }">
           <keep-alive :include="menuTabKeyList">
-            <component :is="wrap(String(route.name), Component)" :key="String(route.name)" />
+            <component
+              :is="wrap(String(route.name), Component)"
+              v-if="menuTabKeyList.length"
+              :key="String(route.name)"
+            />
           </keep-alive>
         </router-view>
       </a-layout-content>
@@ -68,7 +77,7 @@
     </a-layout>
   </a-layout>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import SideMenu from './side-menu.vue'
 // import UserHeader from "./user-header";
 import ContentTab from './content-tab.vue'
@@ -77,13 +86,15 @@ import defaultLogo from '@/assets/images/jpom.svg'
 import { useAllMenuStore } from '@/stores/menu2'
 import { UserNotificationType, systemNotification } from '@/api/user/user-notification'
 // import { SpaceSize } from 'ant-design-vue/es/space'
+import { useI18n } from 'vue-i18n'
+const { t: $t } = useI18n()
 defineProps({
   mode: {
     type: String,
     required: true
   }
 })
-
+const useUserStore2 = userStore()
 // 页面缓存对象
 const wrapperMap = shallowRef(new Map())
 // 组件套壳，动态添加name属性
@@ -113,7 +124,11 @@ const menuTabKeyList = computed(() => {
 watch(
   menuTabKeyList,
   (newKeys, oldKeys) => {
-    // 获取已被删除的key
+    if (!useUserStore2.getToken()) {
+      // 登录登录会触发 tab 变化，这里不改变路由缓存。避免重新加载路由触发请求接口
+      // 已经由 v-if="menuTabKeyList.length" 实现
+      // return
+    } // 获取已被删除的key
     oldKeys
       ?.filter((key) => {
         return !newKeys.includes(key)
@@ -129,7 +144,7 @@ watch(
 )
 
 const collapsed = ref(false)
-const subTitle = ref('项目运维')
+const subTitle = ref($t('i18n_03d9de2834'))
 const logoUrl = ref('')
 
 const _appStore = appStore()
@@ -208,7 +223,7 @@ const changeCollapsed = () => {
   _appStore.collapsed(collapsed.value)
 }
 </script>
-<style scoped lang="less">
+<style lang="less" scoped>
 #app-layout {
   min-height: 100vh;
 }
@@ -297,7 +312,6 @@ const changeCollapsed = () => {
   overflow-y: scroll;
 } */
 </style>
-
 <style>
 /* .layout-content { */
 /* margin: 0; */

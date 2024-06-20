@@ -20,6 +20,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Lombok;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,11 +40,14 @@ import java.util.stream.Collectors;
  */
 public class FileUtils {
 
-    private static JSONObject fileToJson(File file) {
+    private static JSONObject fileToJson(File file, boolean disableScanDir) {
         JSONObject jsonObject = new JSONObject(6);
-        jsonObject.put("isDirectory", file.isDirectory());
-        long sizeFile = FileUtil.size(file);
-        jsonObject.put("fileSizeLong", sizeFile);
+        boolean directory = file.isDirectory();
+        jsonObject.put("isDirectory", directory);
+        if (!directory || !disableScanDir) {
+            long sizeFile = FileUtil.size(file);
+            jsonObject.put("fileSizeLong", sizeFile);
+        }
         jsonObject.put("filename", file.getName());
         long mTime = file.lastModified();
         jsonObject.put("modifyTimeLong", mTime);
@@ -58,8 +62,8 @@ public class FileUtils {
      * @param startPath 开始路径
      * @return 排序后的json
      */
-    public static List<JSONObject> parseInfo(File[] files, boolean time, String startPath) {
-        return parseInfo(CollUtil.newArrayList(files), time, startPath);
+    public static List<JSONObject> parseInfo(File[] files, boolean time, String startPath, boolean disableScanDir) {
+        return parseInfo(CollUtil.newArrayList(files), time, startPath, disableScanDir);
     }
 
     /**
@@ -70,24 +74,26 @@ public class FileUtils {
      * @param startPath 开始路径
      * @return 排序后的json
      */
-    public static List<JSONObject> parseInfo(Collection<File> files, boolean time, String startPath) {
+    public static List<JSONObject> parseInfo(Collection<File> files, boolean time, String startPath, boolean disableScanDir) {
         if (files == null) {
             return new ArrayList<>();
         }
-        return files.stream().map(file -> {
-            JSONObject jsonObject = FileUtils.fileToJson(file);
-            //
-            if (startPath != null) {
-                String levelName = StringUtil.delStartPath(file, startPath, false);
-                jsonObject.put("levelName", levelName);
-            }
-            return jsonObject;
-        }).sorted((jsonObject1, jsonObject2) -> {
-            if (time) {
-                return jsonObject2.getLong("modifyTimeLong").compareTo(jsonObject1.getLong("modifyTimeLong"));
-            }
-            return jsonObject1.getString("filename").compareTo(jsonObject2.getString("filename"));
-        }).collect(Collectors.toList());
+        return files.stream()
+            .map(file -> {
+                JSONObject jsonObject = FileUtils.fileToJson(file, disableScanDir);
+                //
+                if (startPath != null) {
+                    String levelName = StringUtil.delStartPath(file, startPath, false);
+                    jsonObject.put("levelName", levelName);
+                }
+                return jsonObject;
+            })
+            .sorted((jsonObject1, jsonObject2) -> {
+                if (time) {
+                    return jsonObject2.getLong("modifyTimeLong").compareTo(jsonObject1.getLong("modifyTimeLong"));
+                }
+                return jsonObject1.getString("filename").compareTo(jsonObject2.getString("filename"));
+            }).collect(Collectors.toList());
     }
 
     /**
@@ -163,7 +169,7 @@ public class FileUtils {
      * @param dir 目录
      */
     public static void checkSlip(String dir) {
-        checkSlip(dir, e -> new IllegalArgumentException("目录不能越级：" + e.getMessage()));
+        checkSlip(dir, e -> new IllegalArgumentException(I18nMessageUtil.get("i18n.directory_cannot_skip_levels.179e") + e.getMessage()));
     }
 
     /**

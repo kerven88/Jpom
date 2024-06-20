@@ -1,7 +1,7 @@
 <template>
   <log-view
     :ref="`logView`"
-    :title-name="$tl('p.buildLog')"
+    :title-name="$t('i18n_7c0ee78130')"
     :visible="visible"
     @close="
       () => {
@@ -12,29 +12,30 @@
     <template #before>
       <a-space>
         <span v-if="status">
-          {{ $tl('c.currentStatus') }}
+          {{ $t('i18n_e703c7367c') }}
           <a-tooltip
-            :title="`${$tl('c.currentStatus')} ${statusMap[status]} ${statusMsg ? $tl('p.statusMsg') + statusMsg : ''}`"
+            :title="`${$t('i18n_e703c7367c')} ${statusMap[status]} ${
+              statusMsg ? $t('i18n_8d13037eb7') + statusMsg : ''
+            }`"
           >
             <a-tag :color="statusColor[status]" style="margin-right: 0">
-              {{ statusMap[status] || $tl('p.unknownStatus') }}
+              {{ statusMap[status] || $t('i18n_903b25f64e') }}
             </a-tag>
           </a-tooltip>
         </span>
         <span>
-          {{ $tl('p.buildId') }}
+          {{ $t('i18n_31aaaaa6ec') }}
           <a-tag>{{ temp && temp.buildId }}</a-tag>
         </span>
         <a-button type="primary" :disabled="!logId" size="small" @click="handleDownload"
           ><DownloadOutlined />
-          {{ $tl('p.download') }}
+          {{ $t('i18n_f26ef91424') }}
         </a-button>
         |
       </a-space>
     </template>
   </log-view>
 </template>
-
 <script>
 import LogView from '@/components/logView'
 
@@ -80,9 +81,6 @@ export default {
     this.pullLog()
   },
   methods: {
-    $tl(key, ...args) {
-      return this.$t(`pages.build.log.${key}`, ...args)
-    },
     nextPull() {
       if (this.logTimer) {
         clearTimeout(this.logTimer)

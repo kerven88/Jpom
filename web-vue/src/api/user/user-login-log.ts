@@ -7,7 +7,7 @@
 /// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 /// See the Mulan PSL v2 for more details.
 ///
-
+import { t } from '@/i18n'
 import axios from '../config'
 
 export function userLoginLgin(params) {
@@ -19,11 +19,11 @@ export function userLoginLgin(params) {
 }
 
 export const operateCodeMap = {
-  0: '正常登录',
-  1: '密码错误',
-  2: '账号被锁定',
-  3: '自动续期',
-  4: '账号被禁用',
-  5: '登录成功,需要验证 MFA',
+  0: t('i18n_dd95bf2d45'),
+  1: t('i18n_5a5368cf9b'),
+  2: t('i18n_18d49918f5'),
+  3: t('i18n_a093ae6a6e'),
+  4: t('i18n_8b63640eee'),
+  5: t('i18n_bb9a581f48'),
   6: 'oauth2'
 }

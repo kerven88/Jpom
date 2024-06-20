@@ -1,21 +1,29 @@
 <template>
-  <defaultBg :show-footer="false">
+  <defaultBg :show-footer="true">
     <template #content>
       <a-card class="login-card" hoverable>
         <a-card-meta :title="`${loginTitle}`" style="text-align: center" description="" />
         <br />
         <template v-if="action === 'login'">
           <a-form :model="loginForm" :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }" @finish="handleLogin">
-            <a-form-item name="loginName" :rules="[{ required: true, message: '请输入用户名' }]">
-              <a-input v-model:value="loginForm.loginName" autocomplete="true" placeholder="用户名" />
+            <a-form-item name="loginName" :rules="[{ required: true, message: $t('i18n_08b1fa1304') }]">
+              <a-input v-model:value="loginForm.loginName" autocomplete="true" :placeholder="$t('i18n_819767ada1')" />
             </a-form-item>
-            <a-form-item name="userPwd" :rules="[{ required: true, message: '请输入密码' }]">
-              <a-input-password v-model:value="loginForm.userPwd" autocomplete="true" placeholder="密码" />
+            <a-form-item name="userPwd" :rules="[{ required: true, message: $t('i18n_e39ffe99e9') }]">
+              <a-input-password
+                v-model:value="loginForm.userPwd"
+                autocomplete="true"
+                :placeholder="$t('i18n_a810520460')"
+              />
             </a-form-item>
-            <a-form-item v-if="!disabledCaptcha" name="code" :rules="[{ required: true, message: '请输入验证码' }]">
+            <a-form-item
+              v-if="!disabledCaptcha"
+              name="code"
+              :rules="[{ required: true, message: $t('i18n_d0c06a0df1') }]"
+            >
               <a-row>
                 <a-col :span="14">
-                  <a-input v-model:value="loginForm.code" placeholder="验证码" />
+                  <a-input v-model:value="loginForm.code" :placeholder="$t('i18n_983f59c9d4')" />
                 </a-col>
                 <a-col :offset="2" :span="8">
                   <div class="rand-code">
@@ -26,10 +34,12 @@
               </a-row>
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 24 }">
-              <a-button type="primary" html-type="submit" class="btn-login" :loading="loading"> 登录 </a-button>
+              <a-button type="primary" html-type="submit" class="btn-login" :loading="loading">
+                {{ $t('i18n_402d19e50f') }}
+              </a-button>
             </a-form-item>
             <template v-if="enabledOauth2Provides.length">
-              <a-divider>第三方登录</a-divider>
+              <a-divider>{{ $t('i18n_0f004c4cf7') }}</a-divider>
               <a-form-item :wrapper-col="{ span: 24 }">
                 <a-space :size="20" wrap>
                   <template v-for="(item, index) in oauth2AllProvides">
@@ -78,25 +88,27 @@
             @finish="handleMfa"
           >
             <a-form-item
-              label="验证码"
+              :label="$t('i18n_983f59c9d4')"
               name="mfaCode"
-              help="需要验证 MFA"
+              :help="$t('i18n_5c4d3c836f')"
               :rules="[
-                { required: true, message: '请输入两步验证码' },
-                { pattern: /^\d{6}$/, message: '验证码 6 为纯数字' }
+                { required: true, message: $t('i18n_7e866fece6') },
+                { pattern: /^\d{6}$/, message: $t('i18n_da1abf0865') }
               ]"
             >
-              <a-input v-model:value="mfaData.mfaCode" placeholder="mfa 验证码" />
+              <a-input v-model:value="mfaData.mfaCode" :placeholder="$t('i18n_674e7808b5')" />
             </a-form-item>
 
-            <a-button type="primary" html-type="submit" class="btn-login"> 确认 </a-button>
+            <a-button type="primary" html-type="submit" class="btn-login">
+              {{ $t('i18n_e83a256e4f') }}
+            </a-button>
           </a-form>
         </template>
       </a-card>
     </template>
   </defaultBg>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import { login, loginConfig, mfaVerify, oauth2Url, oauth2Login, loginRandCode } from '@/api/user/user'
 import { checkSystem } from '@/api/install'
 import sha1 from 'js-sha1'
@@ -112,39 +124,42 @@ import qyWeixinImg from '@/assets/images/qyweixin.svg'
 import { useGuideStore } from '@/stores/guide'
 import { Button } from 'ant-design-vue'
 
+import { useI18n } from 'vue-i18n'
+const { t: $t } = useI18n()
+
 const oauth2AllProvides = ref([
   {
-    name: '钉钉账号登录',
+    name: $t('i18n_4ba304e77a'),
     key: 'dingtalk',
     img: dingtalkImg
   },
   {
-    name: '飞书账号登录',
+    name: $t('i18n_5516b3130c'),
     key: 'feishu',
     img: feishuImg
   },
   {
-    name: '企业微信扫码账号登录',
+    name: $t('i18n_af3a9b6303'),
     key: 'wechat_enterprise',
     img: qyWeixinImg
   },
   {
-    name: 'gitee 账号登录',
+    name: `gitee ${$t('i18n_efae7764ac')}`,
     key: 'gitee',
     img: giteeImg
   },
   {
-    name: 'maxkey 平台登录',
+    name: `maxkey ${$t('i18n_b6e8fb4106')}`,
     key: 'maxkey',
     img: maxkeyImg
   },
   {
-    name: 'github 账号登录',
+    name: `github ${$t('i18n_efae7764ac')}`,
     key: 'github',
     img: githubImg
   },
   {
-    name: '自建 Gitlab 账号登录',
+    name: $t('i18n_ab13dd3381'),
     key: 'mygitlab',
     img: gitlabImg
   }
@@ -164,7 +179,7 @@ const theme = computed(() => {
 const router = useRouter()
 const route = useRoute()
 
-const loginTitle = ref('登录JPOM')
+const loginTitle = ref($t('i18n_0de68f5626'))
 const loginForm = reactive<IFormState>({
   loginName: '',
   userPwd: '',
@@ -218,7 +233,7 @@ const getLoginConfig = () => {
       const demo = res.data.demo
       const p = h('p', { innerHTML: demo.msg }, [])
       $notification.info({
-        message: '温馨提示',
+        message: $t('i18n_947d983961'),
         description: h('div', {}, [p]),
         key: login_tip_key,
         duration: null
@@ -286,7 +301,7 @@ const checkOauth2 = () => {
 const toOauth2Url = (provide: string) => {
   oauth2Url({ provide: provide }).then((res) => {
     if (res.code === 200 && res.data) {
-      $message.loading({ content: '跳转到第三方系统中', key: 'oauth2', duration: 0 })
+      $message.loading({ content: $t('i18n_4c83203419'), key: 'oauth2', duration: 0 })
       location.href = res.data.toUrl
     }
   })
@@ -367,11 +382,13 @@ const checkHasLoginInfo = () => {
   if (useUserStore.userInfo && useUserStore.getToken()) {
     const p = h(
       'p',
-      { innerHTML: `当前登录的账号是：<b>${useUserStore.userInfo.name || ''}</b> 是否自动跳转到系统页面` },
+      {
+        innerHTML: `${$t('i18n_cfbb3341d5')}<b>${useUserStore.userInfo.name || ''}</b> ${$t('i18n_17006d4d51')}`
+      },
       []
     )
     $notification.open({
-      message: '检测到当前已经登录账号',
+      message: $t('i18n_697d60299e'),
       description: h('div', {}, [p]),
       btn: () =>
         h(
@@ -384,7 +401,7 @@ const checkHasLoginInfo = () => {
               router.push({ path: '/' })
             }
           },
-          { default: () => '跳转' }
+          { default: () => $t('i18n_7653297de3') }
         ),
       key: tip_has_login_key,
       duration: null

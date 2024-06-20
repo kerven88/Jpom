@@ -9,6 +9,7 @@
  */
 package org.dromara.jpom.controller.ssh;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.keepbx.jpom.IJsonMessage;
@@ -18,11 +19,13 @@ import org.dromara.jpom.common.BaseServerController;
 import org.dromara.jpom.common.ServerConst;
 import org.dromara.jpom.common.ServerOpenApi;
 import org.dromara.jpom.common.UrlRedirectUtil;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.validator.ValidatorItem;
 import org.dromara.jpom.common.validator.ValidatorRule;
 import org.dromara.jpom.model.PageResultDto;
 import org.dromara.jpom.model.data.CommandExecLogModel;
 import org.dromara.jpom.model.data.CommandModel;
+import org.dromara.jpom.model.data.SshModel;
 import org.dromara.jpom.model.user.UserModel;
 import org.dromara.jpom.permission.ClassFeature;
 import org.dromara.jpom.permission.Feature;
@@ -31,6 +34,7 @@ import org.dromara.jpom.permission.SystemPermission;
 import org.dromara.jpom.script.CommandParam;
 import org.dromara.jpom.service.node.ssh.CommandExecLogService;
 import org.dromara.jpom.service.node.ssh.SshCommandService;
+import org.dromara.jpom.service.node.ssh.SshService;
 import org.dromara.jpom.service.user.TriggerTokenLogServer;
 import org.dromara.jpom.util.CommandUtil;
 import org.springframework.http.MediaType;
@@ -41,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,13 +62,16 @@ public class CommandInfoController extends BaseServerController {
     private final SshCommandService sshCommandService;
     private final CommandExecLogService commandExecLogService;
     private final TriggerTokenLogServer triggerTokenLogServer;
+    private final SshService sshService;
 
     public CommandInfoController(SshCommandService sshCommandService,
                                  CommandExecLogService commandExecLogService,
-                                 TriggerTokenLogServer triggerTokenLogServer) {
+                                 TriggerTokenLogServer triggerTokenLogServer,
+                                 SshService sshService) {
         this.sshCommandService = sshCommandService;
         this.commandExecLogService = commandExecLogService;
         this.triggerTokenLogServer = triggerTokenLogServer;
+        this.sshService = sshService;
     }
 
     /**
@@ -101,8 +109,8 @@ public class CommandInfoController extends BaseServerController {
         String command = data.getString("command");
         String desc = data.getString("desc");
         String defParams = data.getString("defParams");
-        Assert.hasText(name, "请输入命令名称");
-        Assert.hasText(command, "请输入命令内容");
+        Assert.hasText(name, I18nMessageUtil.get("i18n.command_name_required.49fa"));
+        Assert.hasText(command, I18nMessageUtil.get("i18n.command_content_required.6005"));
         String autoExecCron = this.checkCron(data.getString("autoExecCron"));
         String id = data.getString("id");
         //
@@ -110,7 +118,13 @@ public class CommandInfoController extends BaseServerController {
         commandModel.setName(name);
         commandModel.setCommand(command);
         commandModel.setDesc(desc);
-        commandModel.setSshIds(data.getString("sshIds"));
+        String sshIds = data.getString("sshIds");
+        List<String> sshIdList = StrUtil.split(sshIds, StrUtil.COMMA, true, true);
+        if (CollUtil.isNotEmpty(sshIdList)) {
+            List<SshModel> commandModels = sshService.getByKey(sshIdList, request);
+            Assert.state(CollUtil.size(sshIdList) == CollUtil.size(commandModels), I18nMessageUtil.get("i18n.associated_ssh_node_contains_nonexistent_node.c7f5"));
+        }
+        commandModel.setSshIds(sshIds);
         commandModel.setAutoExecCron(autoExecCron);
         //
         commandModel.setDefParams(CommandParam.checkStr(defParams));
@@ -121,7 +135,7 @@ public class CommandInfoController extends BaseServerController {
             commandModel.setId(id);
             sshCommandService.updateById(commandModel, request);
         }
-        return JsonMessage.success("操作成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.operation_succeeded.3313"));
     }
 
     /**
@@ -139,12 +153,12 @@ public class CommandInfoController extends BaseServerController {
     public IJsonMessage<Object> del(String id, HttpServletRequest request) {
         File logFileDir = CommandExecLogModel.logFileDir(id);
         boolean fastDel = CommandUtil.systemFastDel(logFileDir);
-        Assert.state(!fastDel, "清理日志文件失败");
+        Assert.state(!fastDel, I18nMessageUtil.get("i18n.log_file_cleanup_failed.3a3b"));
         //
 
         sshCommandService.delByKey(id, request);
         commandExecLogService.delByWorkspace(request, entity -> entity.set("commandId", id));
-        return JsonMessage.success("操作成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.operation_succeeded.3313"));
     }
 
     /**
@@ -163,11 +177,11 @@ public class CommandInfoController extends BaseServerController {
     @Feature(method = MethodFeature.EXECUTE)
     public IJsonMessage<String> batch(String id,
                                       String params,
-                                      @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "运行节点不能为空") String nodes) throws IOException {
-        Assert.hasText(id, "请选择执行的命令");
-        Assert.hasText(nodes, "请选择执行节点");
+                                      @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "i18n.running_node_cannot_be_empty.ffc6") String nodes) throws IOException {
+        Assert.hasText(id, I18nMessageUtil.get("i18n.execution_command_required.1cf3"));
+        Assert.hasText(nodes, I18nMessageUtil.get("i18n.execution_node_required.d747"));
         String batchId = sshCommandService.executeBatch(id, params, nodes);
-        return JsonMessage.success("操作成功", batchId);
+        return JsonMessage.success(I18nMessageUtil.get("i18n.operation_succeeded.3313"), batchId);
     }
 
     /**
@@ -185,7 +199,7 @@ public class CommandInfoController extends BaseServerController {
         //
         sshCommandService.checkUserWorkspace(toWorkspaceId);
         sshCommandService.syncToWorkspace(ids, nowWorkspaceId, toWorkspaceId);
-        return JsonMessage.success("操作成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.operation_succeeded.3313"));
     }
 
     /**
@@ -210,7 +224,8 @@ public class CommandInfoController extends BaseServerController {
             updateInfo = item;
         }
         Map<String, String> map = this.getBuildToken(updateInfo, request);
-        return JsonMessage.success(StrUtil.isEmpty(rest) ? "ok" : "重置成功", map);
+        String string = I18nMessageUtil.get("i18n.reset_success.faa3");
+        return JsonMessage.success(StrUtil.isEmpty(rest) ? "ok" : string, map);
     }
 
     private Map<String, String> getBuildToken(CommandModel item, HttpServletRequest request) {

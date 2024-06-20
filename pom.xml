@@ -36,7 +36,7 @@
         简而轻的低侵入式在线构建、自动部署、日常运维、项目监控软件
     </description>
     <inceptionYear>2017</inceptionYear>
-    <version>2.11.5</version>
+    <version>2.11.8</version>
     <url>https://gitee.com/dromara/Jpom</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,6 +54,15 @@
         <jna-version>5.14.0</jna-version>
         <mwiede.jsch-version>0.2.16</mwiede.jsch-version>
         <oshi.version>6.4.12</oshi.version>
+        <tomcat.version>9.0.86</tomcat.version>
+        <yaml.version>2.2</yaml.version>
+        <!--  h2 不能直接升级 The write format 2 is smaller than the supported format 3-->
+        <h2.version>2.1.214</h2.version>
+        <postgresql.version>42.3.10</postgresql.version>
+        <!-- logback 不能升级
+        https://github.com/spring-projects/spring-boot/issues/34708
+        https://github.com/spring-projects/spring-boot/issues/12649
+        -->
     </properties>
     <dependencies>
         <dependency>
@@ -97,13 +106,48 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.75</version>
+                <version>1.78</version>
             </dependency>
 
             <dependency>
                 <groupId>com.github.mwiede</groupId>
                 <artifactId>jsch</artifactId>
                 <version>${mwiede.jsch-version}</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>snakeyaml</artifactId>
+                <groupId>org.yaml</groupId>
+                <version>${yaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>tomcat-embed-core</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <version>${tomcat.version}</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>tomcat-embed-el</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <version>${tomcat.version}</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -158,6 +202,7 @@
                                 <!-- <exclude>web-vue2/**</exclude>-->
                                 <!-- <exclude>**/*.yml</exclude>-->
                                 <exclude>**/*.md</exclude>
+                                <exclude>**/i18n/*.properties</exclude>
                                 <exclude>**/*.txt</exclude>
                                 <exclude>**/dist/assets/**</exclude>
                             </excludes>
