@@ -4,7 +4,7 @@
       <template #tab>
         <span>
           <SettingOutlined />
-          服务端系统配置
+          {{ $t('i18n_3181790b4b') }}
         </span>
       </template>
 
@@ -18,14 +18,14 @@
             height="calc(100vh - 200px)"
           >
             <template #tool_before>
-              <a-alert v-if="temp.file" show-icon :message="`配置文件路径:${temp.file}`" />
+              <a-alert v-if="temp.file" show-icon :message="`${$t('i18n_37c1eb9b23')}:${temp.file}`" />
             </template>
           </code-editor>
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 14, offset: 2 }">
           <a-space>
-            <a-button type="primary" class="btn" @click="onSubmit(false)">保存</a-button>
-            <a-button type="primary" danger class="btn" @click="onSubmit(true)">保存并重启</a-button>
+            <a-button type="primary" class="btn" @click="onSubmit(false)">{{ $t('i18n_be5fbbe34c') }}</a-button>
+            <a-button type="primary" danger class="btn" @click="onSubmit(true)">{{ $t('i18n_6aab88d6a3') }}</a-button>
           </a-space>
         </a-form-item>
       </a-form>
@@ -34,20 +34,12 @@
       <template #tab>
         <span>
           <LockOutlined />
-          服务端IP授权配置
+          {{ $t('i18n_decef97c7c') }}
         </span>
       </template>
-      <a-alert :message="`当前访问IP：${ipTemp.ip}`" type="success" />
-      <a-alert
-        message="请仔细确认后配置，ip配置后立即生效。配置时需要保证当前ip能访问！127.0.0.1 该IP不受访问限制.支持配置IP段 192.168.1.1/192.168.1.254,192.168.1.0/24"
-        style="margin-top: 10px"
-        banner
-      />
-      <a-alert
-        message="如果配置错误需要重启服务端并新增命令行参数 --rest:ip_config 将恢复默认配置"
-        style="margin-top: 10px"
-        banner
-      />
+      <a-alert :message="`${$t('i18n_22cf31df5d')}${ipTemp.ip}`" type="success" />
+      <a-alert :message="$t('i18n_578adf7a12')" style="margin-top: 10px" banner />
+      <a-alert :message="$t('i18n_49645e398b')" style="margin-top: 10px" banner />
       <a-form
         ref="editIpConfigForm"
         style="margin-top: 10px"
@@ -59,9 +51,9 @@
           <template #label>
             <a-space align="center">
               <a-tooltip>
-                <template #title>禁止访问的 IP 地址 </template>
+                <template #title>{{ $t('i18n_02db59c146') }} </template>
                 <StopFilled />
-                IP禁止
+                IP{{ $t('i18n_ff1fda9e47') }}
               </a-tooltip>
             </a-space>
           </template>
@@ -69,16 +61,16 @@
             v-model:value="ipTemp.prohibited"
             :rows="8"
             class="ip-list-config"
-            placeholder="请输入IP禁止,多个使用换行,支持配置IP段 192.168.1.1/192.168.1.254,192.168.1.0/24"
+            :placeholder="$t('i18n_5569a840c8')"
           />
         </a-form-item>
         <a-form-item name="allowed">
           <template #label>
             <a-space align="center">
               <a-tooltip>
-                <template #title> 只允许访问的 IP 地址 </template>
+                <template #title> {{ $t('i18n_8e331a52de') }} </template>
                 <CheckCircleFilled />
-                IP授权
+                IP{{ $t('i18n_98a315c0fc') }}
               </a-tooltip>
             </a-space>
           </template>
@@ -86,12 +78,12 @@
             v-model:value="ipTemp.allowed"
             :rows="8"
             class="ip-list-config"
-            placeholder="请输入IP授权,多个使用换行,0.0.0.0 是开放所有IP,支持配置IP段 192.168.1.1/192.168.1.254,192.168.1.0/24"
+            :placeholder="$t('i18n_847afa1ff2')"
           />
         </a-form-item>
 
         <a-form-item :wrapper-col="{ offset: 10 }" class="ip-config-button">
-          <a-button type="primary" class="btn" @click="onSubmitIp()">保存</a-button>
+          <a-button type="primary" class="btn" @click="onSubmitIp()">{{ $t('i18n_be5fbbe34c') }}</a-button>
         </a-form-item>
       </a-form>
     </a-tab-pane>
@@ -101,29 +93,25 @@
       <template #tab>
         <span>
           <ApiOutlined />
-          全局代理
+          {{ $t('i18n_a0d0ebc519') }}
         </span>
       </template>
-      <a-alert
-        :message="`全局代理配置后将对服务端的网络生效，代理实现方式：ProxySelector`"
-        style="margin-top: 10px; margin-bottom: 20px"
-        banner
-      />
+      <a-alert :message="`${$t('i18n_c9b79a2b4f')}`" style="margin-top: 10px; margin-bottom: 20px" banner />
       <a-row justify="center" type="flex">
         <a-form ref="editProxyForm" :model="proxyConfigData">
           <a-row v-for="(item, index) in proxyConfigData.globalProxy" :key="index">
             <a-space>
-              <a-form-item label="通配符" name="pattern">
+              <a-form-item :label="$t('i18n_3ac34faf6d')" name="pattern">
                 <a-input
                   v-model:value="item.pattern"
                   style="width: 30vw"
                   :max-length="200"
-                  placeholder="地址通配符,* 表示所有地址都将使用代理"
+                  :placeholder="$t('i18n_0a9634edf2')"
                 >
                 </a-input>
               </a-form-item>
-              <a-form-item label="代理">
-                <a-input v-model:value="item.proxyAddress" style="width: 30vw" placeholder="代理地址 (127.0.0.1:8888)">
+              <a-form-item :label="$t('i18n_fc954d25ec')">
+                <a-input v-model:value="item.proxyAddress" style="width: 30vw" :placeholder="$t('i18n_dcf14deb0e')">
                   <template #addonBefore>
                     <a-select v-model:value="item.proxyType" style="width: 100px">
                       <a-select-option value="HTTP">HTTP</a-select-option>
@@ -145,7 +133,7 @@
                     }
                   "
                 >
-                  删除
+                  {{ $t('i18n_2f4aaddde3') }}
                 </a-button>
               </a-form-item>
             </a-space>
@@ -168,9 +156,9 @@
                     }
                   }
                 "
-                >新增</a-button
+                >{{ $t('i18n_66ab5e9f24') }}</a-button
               >
-              <a-button type="primary" @click="saveProxyConfigHannder">保存</a-button>
+              <a-button type="primary" @click="saveProxyConfigHannder">{{ $t('i18n_be5fbbe34c') }}</a-button>
             </a-space>
           </a-form-item>
         </a-form>
@@ -178,7 +166,6 @@
     </a-tab-pane>
   </a-tabs>
 </template>
-
 <script>
 import {
   editConfig,
@@ -245,11 +232,11 @@ export default {
     // submit
     onSubmit(restart) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要保存当前配置吗？如果配置有误,可能无法启动服务需要手动还原奥！！！',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_863a95c914'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.temp.restart = restart
           return editConfig(this.temp).then((res) => {
@@ -271,7 +258,7 @@ export default {
 
       this.globalLoading({
         spinning: true,
-        tip: (msg || '重启中，请稍候...') + ',请耐心等待暂时不用刷新页面,重启成功后会自动刷新'
+        tip: (msg || this.$t('i18n_85da2e5bb1')) + `,${this.$t('i18n_809b12d6a0')},${this.$t('i18n_af013dd9dc')}`
       })
       setTimeout(() => {
         //
@@ -284,7 +271,7 @@ export default {
                   spinning: false
                 })
                 $notification.success({
-                  message: '重启成功'
+                  message: this.$t('i18n_906f6102a7')
                 })
 
                 setTimeout(() => {
@@ -293,7 +280,7 @@ export default {
               } else {
                 if (this.checkCount > RESTART_UPGRADE_WAIT_TIME_COUNT) {
                   $notification.warning({
-                    message: '未重启成功：' + (res.msg || '')
+                    message: this.$t('i18n_953ec2172b') + (res.msg || '')
                   })
                   this.globalLoading({
                     spinning: false
@@ -309,7 +296,7 @@ export default {
                   spinning: false
                 })
                 $notification.error({
-                  message: '重启超时,请去服务器查看控制台日志排查问题'
+                  message: this.$t('i18n_0e502fed63')
                 })
                 clearInterval(this.timer)
               }
@@ -321,12 +308,11 @@ export default {
     // submit ip config
     onSubmitIp() {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content:
-          '真的要保存当前配置吗？IP 授权请慎重配置奥( 授权是指只允许访问的 IP ),配置后立马生效 如果配置错误将出现无法访问的情况,需要手动恢复奥！！！',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_a2e62165dc'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return editIpConfig(this.ipTemp).then((res) => {
             if (res.code === 200) {
@@ -373,5 +359,3 @@ export default {
   }
 }
 </script>
-
-<style scoped></style>

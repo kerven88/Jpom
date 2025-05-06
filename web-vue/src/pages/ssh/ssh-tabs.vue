@@ -11,6 +11,8 @@
     >
       <a-directory-tree
         v-if="treeList.length"
+        v-model:expandedKeys="expandedKeys"
+        v-model:selectedKeys="selectedKeys"
         multiple
         default-expand-all
         :tree-data="treeList"
@@ -31,7 +33,7 @@
       >
         <template #rightExtra>
           <a-button type="primary" :disabled="!activeKey" @click="changeFileVisible(activeKey, true)">
-            文件管理
+            {{ $t('i18n_8780e6b3d1') }}
           </a-button>
         </template>
         <a-tab-pane
@@ -45,31 +47,30 @@
             <div v-if="pane.open" :style="{ height: `calc(100vh - 70px) ` }">
               <terminal1 :ssh-id="pane.id" />
             </div>
-            <a-result v-else status="warning" title="未开启当前终端">
+            <a-result v-else status="warning" :title="$t('i18n_3a71e860a7')">
               <template #extra>
-                <a-button type="primary" @click="open(pane.id)"> 打开终端 </a-button>
+                <a-button type="primary" @click="open(pane.id)"> {{ $t('i18n_81301b6813') }} </a-button>
               </template>
             </a-result>
             <!-- 文件管理 -->
-            <a-drawer
+            <CustomDrawer
               v-if="pane.openFile"
               :get-container="`#paneDom${pane.id}`"
-              :title="`${pane.name}文件管理`"
+              :title="`${pane.name}${$t('i18n_8780e6b3d1')}`"
               placement="right"
               width="90vw"
               :open="pane.fileVisible"
               @close="changeFileVisible(pane.id, false)"
             >
               <ssh-file v-if="pane.openFile" :ssh-id="pane.id" />
-            </a-drawer>
+            </CustomDrawer>
           </div>
         </a-tab-pane>
       </a-tabs>
-      <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" description="未选择ssh"></a-empty>
+      <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="$t('i18n_c23fbf156b')"></a-empty>
     </a-layout-content>
   </a-layout>
 </template>
-
 <script>
 import { getSshListTree } from '@/api/ssh'
 import terminal1 from './terminal'
@@ -90,7 +91,9 @@ export default {
         children: 'children',
         title: 'name',
         key: 'id'
-      }
+      },
+      expandedKeys: [],
+      selectedKeys: []
     }
   },
   computed: {},

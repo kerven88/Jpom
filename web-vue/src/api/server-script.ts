@@ -8,6 +8,7 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
 import axios from './config'
 
 /**
@@ -121,8 +122,8 @@ export function getTriggerUrl(data) {
 }
 
 export const triggerExecTypeMap = {
-  0: '手动',
-  1: '自动',
-  2: '触发器',
-  3: '构建事件'
+  0: t('i18n_2a3e7f5c38'),
+  1: t('i18n_3aed2c11e9'),
+  2: t('i18n_4696724ed3'),
+  3: t('i18n_dba16b1b92')
 }

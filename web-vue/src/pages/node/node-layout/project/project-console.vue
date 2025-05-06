@@ -4,9 +4,9 @@
     <log-view2 :ref="`logView`" height="calc(100vh - 140px)">
       <template #before>
         <a-space>
-          <a-button size="small" :disabled="project.status" :loading="optButtonLoading" type="primary" @click="start"
-            >启动</a-button
-          >
+          <a-button size="small" :disabled="project.status" :loading="optButtonLoading" type="primary" @click="start">{{
+            $t('i18n_8e54ddfe24')
+          }}</a-button>
           <a-button
             size="small"
             :disabled="!project.status"
@@ -14,7 +14,7 @@
             type="primary"
             danger
             @click="restart"
-            >重启</a-button
+            >{{ $t('i18n_01b4e06f39') }}</a-button
           >
           <a-button
             size="small"
@@ -23,31 +23,35 @@
             type="primary"
             danger
             @click="stop"
-            >停止</a-button
+            >{{ $t('i18n_095e938e2a') }}</a-button
           >
           <template v-if="project.runMode === 'Dsl'">
             <template v-if="canReload">
-              <a-popover title="上次重载结果">
+              <a-popover :title="$t('i18n_8b2e274414')">
                 <template #content>
                   <template v-if="project.lastReloadResult">
                     <p>
-                      <a-tag v-if="project.lastReloadResult.success" color="green">成功</a-tag>
-                      <a-tag v-else color="green">成功</a-tag>
+                      <a-tag v-if="project.lastReloadResult.success" color="green">{{ $t('i18n_330363dfc5') }}</a-tag>
+                      <a-tag v-else color="green">{{ $t('i18n_330363dfc5') }}</a-tag>
                     </p>
                     <p v-for="(item, index) in project.lastReloadResult.msgs" :key="index">
                       {{ item }}
                     </p>
                   </template>
-                  <template v-else>还未执行reload</template>
+                  <template v-else>{{ $t('i18n_14dcfcc4fa') }}</template>
                 </template>
-                <a-button size="small" :loading="optButtonLoading" type="primary" @click="reload">重载</a-button>
+                <a-button size="small" :loading="optButtonLoading" type="primary" @click="reload">{{
+                  $t('i18n_aaeb54633e')
+                }}</a-button>
               </a-popover>
             </template>
             <template v-else>
-              <a-button size="small" :disabled="true" :loading="optButtonLoading" type="primary">重载</a-button>
+              <a-button size="small" :disabled="true" :loading="optButtonLoading" type="primary">{{
+                $t('i18n_aaeb54633e')
+              }}</a-button>
             </template>
           </template>
-          <a-button size="small" type="primary" @click="goFile">文件管理</a-button>
+          <a-button size="small" type="primary" @click="goFile">{{ $t('i18n_8780e6b3d1') }}</a-button>
           <a-dropdown v-if="project.dslProcessInfo">
             <template #overlay>
               <a-menu>
@@ -56,7 +60,7 @@
                     <a-tag>
                       {{ item.process }}
                     </a-tag>
-                    <template v-if="item.type === 'file'">项目文件 {{ item.scriptId }} </template>
+                    <template v-if="item.type === 'file'">{{ $t('i18n_4df483b9c7') }}{{ item.scriptId }} </template>
                     <template v-else-if="item.type === 'script'">
                       <a-button
                         type="link"
@@ -68,8 +72,13 @@
                           }
                         "
                       >
-                        <EditOutlined /> 节点脚本
+                        <EditOutlined /> {{ $t('i18n_e0ba3b9145') }}
                       </a-button>
+                    </template>
+                    <template v-else-if="item.type === 'library'">
+                      <a-button type="link" size="small" disabled=""
+                        >{{ $t('i18n_91a10b8776') }}{{ item.scriptId }}</a-button
+                      >
                     </template>
                   </template>
                   <template v-else>
@@ -85,7 +94,7 @@
                 </a-menu-item>
               </a-menu>
             </template>
-            <a-button size="small" type="primary"> 关联脚本 <DownOutlined /> </a-button>
+            <a-button size="small" type="primary"> {{ $t('i18n_ce40cd6390') }} <DownOutlined /> </a-button>
           </a-dropdown>
           <a-button
             size="small"
@@ -97,7 +106,7 @@
             "
           >
             <!-- <a-tag> -->
-            日志大小: {{ project.logSize || '-' }}
+            {{ $t('i18n_76aebf3cc6') }}: {{ project.logSize || '-' }}
             <!-- 更多 -->
             <FullscreenOutlined />
             <!-- </a-tag> -->
@@ -108,16 +117,17 @@
       </template>
     </log-view2>
     <!-- 日志备份 -->
-    <a-modal
+    <CustomModal
+      v-if="lobbackVisible"
       v-model:open="lobbackVisible"
       destroy-on-close
-      title="日志备份列表"
+      :title="$t('i18n_15f01c43e8')"
       width="850px"
       :footer="null"
       :mask-closable="false"
     >
       <ProjectLog v-if="lobbackVisible" :node-id="nodeId" :project-id="projectId"></ProjectLog>
-    </a-modal>
+    </CustomModal>
     <!-- 编辑区 -->
     <ScriptEdit
       v-if="editScriptVisible"
@@ -131,7 +141,6 @@
     ></ScriptEdit>
   </div>
 </template>
-
 <script>
 import { getProjectData, getProjectLogSize } from '@/api/node-project'
 import { getWebSocketUrl } from '@/api/config'
@@ -237,14 +246,14 @@ export default {
       this.socket.onerror = (err) => {
         console.error(err)
         $notification.error({
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
         clearInterval(this.heart)
       }
       this.socket.onclose = (err) => {
         //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
         console.error(err)
-        $message.warning('会话已经关闭[project-console]')
+        $message.warning(this.$t('i18n_d6cdafe552'))
         clearInterval(this.heart)
       }
       this.socket.onmessage = (msg) => {
@@ -285,8 +294,8 @@ export default {
                   this.$refs.logView.appendLine(element)
                 })
               }
-              res.data.ports && this.$refs.logView.appendLine('端口：' + res.data.ports)
-              res.data.pids && this.$refs.logView.appendLine('进程号：' + res.data.pids.join(','))
+              res.data.ports && this.$refs.logView.appendLine(this.$t('i18n_b6c9619081') + res.data.ports)
+              res.data.pids && this.$refs.logView.appendLine(this.$t('i18n_2b04210d33') + res.data.pids.join(','))
             }
             this.$refs.logView.appendLine(res.op + ' ' + res.msg)
             return
@@ -341,11 +350,11 @@ export default {
     // 重启
     restart() {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要重启项目么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_989f1f2b61'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.sendMsg('restart')
         }
@@ -354,11 +363,11 @@ export default {
     // 停止
     stop() {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要停止项目么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_010865ca50'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           this.sendMsg('stop')
         }

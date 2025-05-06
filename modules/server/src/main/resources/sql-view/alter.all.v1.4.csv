@@ -15,3 +15,13 @@ ALTER,STATIC_FILE_STORAGE,absolutePath,String,300,,文件路径,false
 ALTER,STATIC_FILE_STORAGE,name,String,100,,文件名,false
 ADD,TRIGGER_TOKEN_LOG,triggerCount,Integer,,,触发次数
 ADD,USER_INFO,source,String,100,,账号来源
+ADD,MACHINE_NODE_INFO,extendInfo,TEXT,,,扩展信息
+ADD,BUILD_INFO,createUser,String,50,,创建人,false
+ADD,SCRIPT_LIBRARY,createUser,String,50,,创建人,false
+ALTER,MONITORNOTIFYLOG,title,String,500,,异常描述,false
+ADD,MONITOR_INFO,useLanguage,String,20,,使用语言,false
+ADD,MONITOR_INFO,silenceTime,Integer,,,沉默时间,false
+ADD,MONITOR_INFO,silenceUnit,String,20,,沉默单位,false
+ADD,MACHINE_DOCKER_INFO,sshUseSudo,tinyint,0,,是否使用 sudo 执行命令,false
+ADD,BUILDHISTORYLOG,repositoryLastCommitId,String,255,,"仓库代码最后一次变动信息（ID，git 为 commit hash, svn 最后的版本号）",false
+ADD,BUILDHISTORYLOG,repositoryLastCommitMsg,String,255,,"仓库代码最后一次变动信息",false

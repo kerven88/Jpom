@@ -13,17 +13,21 @@
       <a-space>
         <a-input
           v-model:value="listQuery['name']"
-          placeholder="名称"
+          :placeholder="$t('i18n_d7ec2d3fea')"
           class="search-input-item"
           @press-enter="loadData"
         />
 
         <div>
-          悬空
-          <a-switch v-model:checked="listQuery['dangling']" checked-children="是" un-checked-children="否" />
+          {{ $t('i18n_a09375d96c') }}
+          <a-switch
+            v-model:checked="listQuery['dangling']"
+            :checked-children="$t('i18n_0a60ac8f02')"
+            :un-checked-children="$t('i18n_c9744f45e7')"
+          />
         </div>
 
-        <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+        <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
       </a-space>
     </template>
     <template #bodyCell="{ column, text, record }">
@@ -34,7 +38,7 @@
       </template>
 
       <template v-else-if="column.dataIndex === 'name'">
-        <a-popover v-if="record.labels" title="卷标签">
+        <a-popover v-if="record.labels" :title="$t('i18n_3a3ff2c936')">
           <template #content>
             <p v-for="(value, key) in record.labels" :key="key">{{ key }}<ArrowRightOutlined />{{ value }}</p>
           </template>
@@ -59,7 +63,7 @@
       </template>
       <template v-else-if="column.dataIndex === 'operation'">
         <a-space>
-          <a-tooltip title="删除">
+          <a-tooltip :title="$t('i18n_2f4aaddde3')">
             <a-button size="small" type="link" @click="doAction(record, 'remove')"><DeleteOutlined /></a-button>
           </a-tooltip>
         </a-space>
@@ -67,7 +71,6 @@
     </template>
   </a-table>
 </template>
-
 <script>
 import { renderSize, parseTime } from '@/utils/const'
 import { dockerVolumesList, dockerVolumesRemove } from '@/api/docker-api'
@@ -96,32 +99,32 @@ export default {
       renderSize,
       columns: [
         {
-          title: '序号',
+          title: this.$t('i18n_faaadc447b'),
           width: 80,
           ellipsis: true,
           align: 'center',
           customRender: ({ index }) => `${index + 1}`
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true
         },
         {
-          title: '挂载点',
+          title: this.$t('i18n_1c61dfb86f'),
           dataIndex: 'mountpoint',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '类型',
+          title: this.$t('i18n_226b091218'),
           dataIndex: 'driver',
           ellipsis: true,
           width: 80,
           tooltip: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'CreatedAt',
           ellipsis: true,
           width: 180,
@@ -130,15 +133,16 @@ export default {
           defaultSortOrder: 'descend'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
           width: '80px'
         }
       ],
+
       action: {
         remove: {
-          msg: '您确定要删除当前卷吗？',
+          msg: this.$t('i18n_022b6ea624'),
           api: dockerVolumesRemove
         }
       }
@@ -172,11 +176,11 @@ export default {
         return
       }
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         content: action.msg,
         zIndex: 1009,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return action
             .api(this.urlPrefix, {

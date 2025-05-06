@@ -15,7 +15,12 @@
     >
       <template #title>
         <a-space wrap class="search-box">
-          <a-input v-model:value="listQuery['%name%']" placeholder="名称" allow-clear class="search-input-item" />
+          <a-input
+            v-model:value="listQuery['%name%']"
+            :placeholder="$t('i18n_d7ec2d3fea')"
+            allow-clear
+            class="search-input-item"
+          />
           <a-select
             v-model:value="listQuery.triggerExecType"
             show-search
@@ -30,7 +35,7 @@
               }
             "
             allow-clear
-            placeholder="触发类型"
+            :placeholder="$t('i18n_ff9814bf6b')"
             class="search-input-item"
           >
             <a-select-option v-for="(val, key) in triggerExecTypeMap" :key="key">{{ val }}</a-select-option>
@@ -39,7 +44,7 @@
             allow-clear
             input-read-only
             :show-time="{ format: 'HH:mm:ss' }"
-            :placeholder="['执行时间开始', '执行时间结束']"
+            :placeholder="[$t('i18n_7fbc0f9aae'), $t('i18n_cbc44b5663')]"
             format="YYYY-MM-DD HH:mm:ss"
             value-format="YYYY-MM-DD HH:mm:ss"
             @change="
@@ -52,17 +57,15 @@
               }
             "
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
           <a-tooltip>
             <template #title>
-              <div>
-                脚本模版是存储在节点(插件端),执行也都将在节点里面执行,服务端会定时去拉取执行日志,拉取频率为 100 条/分钟
-              </div>
+              <div>{{ $t('i18n_52b6b488e2') }}</div>
               <div>
                 <ul>
-                  <li>数据可能出现一定时间延迟</li>
+                  <li>{{ $t('i18n_47bb635a5c') }}</li>
                 </ul>
               </div>
             </template>
@@ -83,11 +86,11 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'triggerExecType'">
-          <span>{{ triggerExecTypeMap[text] || '未知' }}</span>
+          <span>{{ triggerExecTypeMap[text] || $t('i18n_1622dc9b6b') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'workspaceId'">
-          <a-tag v-if="text === 'GLOBAL'">全局</a-tag>
-          <a-tag v-else>工作空间</a-tag>
+          <a-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</a-tag>
+          <a-tag v-else>{{ $t('i18n_98d69f8b62') }}</a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'createTimeMillis'">
           <a-tooltip :title="`${parseTime(record.createTimeMillis)}`">
@@ -96,9 +99,11 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="viewLog(record)">查看日志</a-button>
+            <a-button size="small" type="primary" @click="viewLog(record)">{{ $t('i18n_0ea78e4279') }}</a-button>
 
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
@@ -117,7 +122,6 @@
     />
   </div>
 </template>
-
 <script>
 import { getScriptLogList, scriptDel, triggerExecTypeMap } from '@/api/node-other'
 // import {triggerExecTypeMap} from "@/api/node-script";
@@ -153,38 +157,38 @@ export default {
       logVisible: 0,
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'scriptName',
           ellipsis: true,
           width: 100
         },
         {
-          title: '执行时间',
+          title: this.$t('i18n_70b3635aa3'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           width: '160px'
         },
         {
-          title: '触发类型',
+          title: this.$t('i18n_ff9814bf6b'),
           dataIndex: 'triggerExecType',
           width: 100,
           ellipsis: true
         },
         {
-          title: '执行域',
+          title: this.$t('i18n_2a0bea27c4'),
           dataIndex: 'workspaceId',
           ellipsis: true,
 
           width: '90px'
         },
         {
-          title: '执行人',
+          title: this.$t('i18n_a497562c8e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           width: 100
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
 
@@ -225,11 +229,11 @@ export default {
     },
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除执行记录么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_7b8e7d4abc'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return scriptDel({
             nodeId: this.nodeId,

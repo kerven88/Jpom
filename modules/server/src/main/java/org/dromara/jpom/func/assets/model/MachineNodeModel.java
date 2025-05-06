@@ -30,7 +30,8 @@ import java.util.List;
  * @since 2023/2/18
  */
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "MACHINE_NODE_INFO", name = "机器节点信息")
+@TableName(value = "MACHINE_NODE_INFO",
+    nameKey = "i18n.machine_node_info.6a75")
 @Data
 public class MachineNodeModel extends BaseGroupNameModel implements INodeInfo {
     /**
@@ -194,7 +195,10 @@ public class MachineNodeModel extends BaseGroupNameModel implements INodeInfo {
      * 安装 id
      */
     private String installId;
-
+    /**
+     * 扩展信息
+     */
+    private String extendInfo;
     /**
      * 传输加密方式 0 不加密 1 BASE64 2 AES
      */

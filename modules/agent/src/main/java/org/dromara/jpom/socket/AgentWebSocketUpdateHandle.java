@@ -18,10 +18,11 @@ import org.apache.tomcat.websocket.Constants;
 import org.dromara.jpom.JpomApplication;
 import org.dromara.jpom.common.Const;
 import org.dromara.jpom.common.JpomManifest;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
+import org.dromara.jpom.configuration.AgentConfig;
 import org.dromara.jpom.model.AgentFileModel;
 import org.dromara.jpom.model.UploadFileModel;
 import org.dromara.jpom.model.WebSocketMessageModel;
-import org.dromara.jpom.configuration.AgentConfig;
 import org.dromara.jpom.util.SocketSessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
@@ -59,54 +60,64 @@ public class AgentWebSocketUpdateHandle extends BaseAgentWebSocketHandle {
 
     @OnOpen
     public void onOpen(Session session) {
-        if (super.checkAuthorize(session)) {
-            return;
-        }
-        DataSize maxRequestSize = multipartProperties.getMaxRequestSize();
-        int max = Optional.ofNullable(maxRequestSize)
-            .map(dataSize -> {
-                // 最大 10MB
-                long value = Math.min(dataSize.toBytes(), DataSize.ofMegabytes(10).toBytes());
-                // 最后转换，不然可能出现 0
-                int valueInt = (int) value;
-                return valueInt > 0 ? valueInt : null;
-            })
-            .orElseGet(() -> (int) DataSize.ofMegabytes(10).toBytes());
+        try {
+            setLanguage(session);
+            if (super.checkAuthorize(session)) {
+                return;
+            }
+            DataSize maxRequestSize = multipartProperties.getMaxRequestSize();
+            int max = Optional.ofNullable(maxRequestSize)
+                .map(dataSize -> {
+                    // 最大 10MB
+                    long value = Math.min(dataSize.toBytes(), DataSize.ofMegabytes(10).toBytes());
+                    // 最后转换，不然可能出现 0
+                    int valueInt = (int) value;
+                    return valueInt > 0 ? valueInt : null;
+                })
+                .orElseGet(() -> (int) DataSize.ofMegabytes(10).toBytes());
 
-        session.setMaxBinaryMessageBufferSize(max);
-        //
+            session.setMaxBinaryMessageBufferSize(max);
+            //
+        } finally {
+            clearLanguage();
+        }
     }
 
 
     @OnMessage
     public void onMessage(String message, Session session) throws Exception {
-        WebSocketMessageModel model = WebSocketMessageModel.getInstance(message);
-        switch (model.getCommand()) {
-            case "getVersion":
-                model.setData(JSONObject.toJSONString(JpomManifest.getInstance()));
-                break;
-            case "upload":
-                AgentFileModel agentFileModel = ((JSONObject) model.getParams()).toJavaObject(AgentFileModel.class);
-                UploadFileModel uploadFileModel = new UploadFileModel();
-                uploadFileModel.setId(model.getNodeId());
-                uploadFileModel.setName(agentFileModel.getName());
-                uploadFileModel.setSize(agentFileModel.getSize());
-                uploadFileModel.setVersion(agentFileModel.getVersion());
-                uploadFileModel.setSavePath(agentConfig.getTempPath().getAbsolutePath());
-                uploadFileModel.remove();
-                UPLOAD_FILE_INFO.put(session.getId(), uploadFileModel);
-                break;
-            case "restart":
-                model.setData(restart(session));
-                break;
-            case "heart":
-                break;
-            default:
-                log.warn("忽略的操作：{}", message);
-                break;
+        try {
+            setLanguage(session);
+            WebSocketMessageModel model = WebSocketMessageModel.getInstance(message);
+            switch (model.getCommand()) {
+                case "getVersion":
+                    model.setData(JSONObject.toJSONString(JpomManifest.getInstance()));
+                    break;
+                case "upload":
+                    AgentFileModel agentFileModel = ((JSONObject) model.getParams()).toJavaObject(AgentFileModel.class);
+                    UploadFileModel uploadFileModel = new UploadFileModel();
+                    uploadFileModel.setId(model.getNodeId());
+                    uploadFileModel.setName(agentFileModel.getName());
+                    uploadFileModel.setSize(agentFileModel.getSize());
+                    uploadFileModel.setVersion(agentFileModel.getVersion());
+                    uploadFileModel.setSavePath(agentConfig.getTempPath().getAbsolutePath());
+                    uploadFileModel.remove();
+                    UPLOAD_FILE_INFO.put(session.getId(), uploadFileModel);
+                    break;
+                case "restart":
+                    model.setData(restart(session));
+                    break;
+                case "heart":
+                    break;
+                default:
+                    log.warn(I18nMessageUtil.get("i18n.ignored_operation.edee"), message);
+                    break;
+            }
+            SocketSessionUtil.send(session, model.toString());
+            //session.sendMessage(new TextMessage(model.toString()));
+        } finally {
+            clearLanguage();
         }
-        SocketSessionUtil.send(session, model.toString());
-        //session.sendMessage(new TextMessage(model.toString()));
     }
 
     /**
@@ -117,13 +128,18 @@ public class AgentWebSocketUpdateHandle extends BaseAgentWebSocketHandle {
      */
     @OnMessage(maxMessageSize = 5 * 1024 * 1024)
     public void onMessage(byte[] message, Session session) throws Exception {
-        UploadFileModel uploadFileModel = UPLOAD_FILE_INFO.get(session.getId());
-        uploadFileModel.save(message);
-        // 更新进度
-        WebSocketMessageModel model = new WebSocketMessageModel("updateNode", uploadFileModel.getId());
-        model.setData(uploadFileModel);
-        SocketSessionUtil.send(session, model.toString());
-//		session.sendMessage(new TextMessage(model.toString()));
+        try {
+            setLanguage(session);
+            UploadFileModel uploadFileModel = UPLOAD_FILE_INFO.get(session.getId());
+            uploadFileModel.save(message);
+            // 更新进度
+            WebSocketMessageModel model = new WebSocketMessageModel("updateNode", uploadFileModel.getId());
+            model.setData(uploadFileModel);
+            SocketSessionUtil.send(session, model.toString());
+            //		session.sendMessage(new TextMessage(model.toString()));
+        } finally {
+            clearLanguage();
+        }
     }
 
     /**
@@ -133,7 +149,7 @@ public class AgentWebSocketUpdateHandle extends BaseAgentWebSocketHandle {
      * @return 结果
      */
     public String restart(Session session) {
-        String result = Const.UPGRADE_MSG;
+        String result = Const.UPGRADE_MSG.get();
         try {
             UploadFileModel uploadFile = UPLOAD_FILE_INFO.get(session.getId());
             String filePath = uploadFile.getFilePath();
@@ -144,8 +160,8 @@ public class AgentWebSocketUpdateHandle extends BaseAgentWebSocketHandle {
             JpomManifest.releaseJar(filePath, uploadFile.getVersion());
             JpomApplication.restart();
         } catch (Exception e) {
-            result = "重启失败" + e.getMessage();
-            log.error("重启失败", e);
+            result = I18nMessageUtil.get("i18n.restart_failed.f92a") + e.getMessage();
+            log.error(I18nMessageUtil.get("i18n.restart_failed.f92a"), e);
         }
         return result;
     }

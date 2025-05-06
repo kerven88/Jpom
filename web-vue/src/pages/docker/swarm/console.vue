@@ -1,5 +1,5 @@
 <template>
-  <a-drawer
+  <CustomDrawer
     destroy-on-close
     placement="right"
     :width="`${getCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 200px)'}`"
@@ -16,13 +16,13 @@
       <!-- 集群控制台 -->
       <a-menu v-model:selectedKeys="menuKeyArray" mode="horizontal" class="docker-menu" @click="menuClick">
         <a-menu-item key="node">
-          <span class="nav-text">集群节点</span>
+          <span class="nav-text">{{ $t('i18n_957c1b1c50') }}</span>
         </a-menu-item>
         <a-menu-item key="server">
-          <span class="nav-text">集群服务</span>
+          <span class="nav-text">{{ $t('i18n_b5ce5efa6e') }}</span>
         </a-menu-item>
         <a-menu-item key="task">
-          <span class="nav-text">集群任务</span>
+          <span class="nav-text">{{ $t('i18n_8de2137776') }}</span>
         </a-menu-item>
       </a-menu>
     </template>
@@ -34,9 +34,8 @@
       <swarm-service v-show="menuKey === 'server'" :id="id" :visible="visible" :url-prefix="urlPrefix" />
       <swarm-task v-show="menuKey === 'task'" :id="id" :visible="visible" :url-prefix="urlPrefix" />
     </div>
-  </a-drawer>
+  </CustomDrawer>
 </template>
-
 <script>
 import SwarmNode from './node'
 import SwarmService from './service'
@@ -91,7 +90,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .docker-menu {
   border-bottom: 0;

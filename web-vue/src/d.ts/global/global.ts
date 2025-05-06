@@ -13,19 +13,61 @@ import { message, notification, Modal } from 'ant-design-vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useGuideStore } from '@/stores/guide'
+import { ModalFuncProps } from 'ant-design-vue/es/modal/Modal'
+import { increaseZIndex } from '@/utils/utils'
+import { NotificationArgsProps } from 'ant-design-vue/es/notification'
 
 export const jpomWindow = () => {
   return window as unknown as GlobalWindow
 }
 // 注册全局的组件
 export const $message = message
-export const $notification = notification
+
+const updateNotificationZIndex = () => {
+  //document.documentElement.style.setProperty('--increase-z-index', String(increaseZIndex()))
+}
+export const $notification = {
+  ...notification,
+  success: (config: NotificationArgsProps) => {
+    updateNotificationZIndex()
+    return notification.success(config)
+  },
+  error: (config: NotificationArgsProps) => {
+    updateNotificationZIndex()
+    return notification.error(config)
+  },
+  info: (config: NotificationArgsProps) => {
+    updateNotificationZIndex()
+    return notification.info(config)
+  },
+  warning: (config: NotificationArgsProps) => {
+    updateNotificationZIndex()
+    return notification.warning(config)
+  },
+  open: (config: NotificationArgsProps) => {
+    updateNotificationZIndex()
+    return notification.open(config)
+  }
+}
+
+// --increase-z-index
+
 //
-export const $confirm = Modal.confirm
-export const $info = Modal.info
-export const $error = Modal.error
-export const $warning = Modal.warning
-export const $success = Modal.success
+export const $confirm = (props: ModalFuncProps) => {
+  return Modal.confirm({ ...props, zIndex: increaseZIndex() })
+}
+export const $info = (props: ModalFuncProps) => {
+  return Modal.info({ ...props, zIndex: increaseZIndex() })
+}
+export const $error = (props: ModalFuncProps) => {
+  return Modal.error({ ...props, zIndex: increaseZIndex() })
+}
+export const $warning = (props: ModalFuncProps) => {
+  return Modal.warning({ ...props, zIndex: increaseZIndex() })
+}
+export const $success = (props: ModalFuncProps) => {
+  return Modal.success({ ...props, zIndex: increaseZIndex() })
+}
 // export const $route = useRoute()
 // export const $router = useRouter()
 

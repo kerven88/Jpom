@@ -52,14 +52,14 @@
           <!-- // tx_bytes 网卡输出流量 -->
           <a-descriptions-item label="NET I/O rx">
             <div v-for="(item, index) in Object.keys(statsData.networks || {})" :key="index">
-              <a-tooltip :title="`${item} 接收流量`">
+              <a-tooltip :title="`${item} ${$t('i18n_3e54c81ca2')}`">
                 {{ renderSize(statsData.networks[item] && statsData.networks[item].rxBytes) || 0 }}
               </a-tooltip>
             </div>
           </a-descriptions-item>
           <a-descriptions-item label="NET I/O tx">
             <div v-for="(item, index) in Object.keys(statsData.networks || {})" :key="index">
-              <a-tooltip :title="`${item} 输出流量`">
+              <a-tooltip :title="`${item} ${$t('i18n_97ecc1bbe9')}`">
                 {{ renderSize(statsData.networks[item] && statsData.networks[item].txBytes) || 0 }}
               </a-tooltip>
             </div>
@@ -114,131 +114,106 @@
         <a-form ref="editForm" :model="temp" :label-col="{ span: 7 }" :wrapper-col="{ span: 17 }">
           <a-form-item name="blkioWeight">
             <template #label>
-              Block IO 权重
+              Block IO {{ $t('i18n_4aac559105') }}
               <a-tooltip>
-                <template #title> Block IO 权重（相对权重）。 </template>
+                <template #title> Block IO {{ $t('i18n_eaf987eea0') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
             <a-input-number
               v-model:value="temp.blkioWeight"
               style="width: 100%"
-              placeholder="Block IO 权重"
+              :placeholder="$t('i18n_41d0ecbabd')"
               :min="0"
               :max="1000"
             />
           </a-form-item>
           <a-form-item name="cpuShares">
             <template #label>
-              CPU 权重
+              CPU {{ $t('i18n_4aac559105') }}
               <a-tooltip>
-                <template #title> 一个整数值，表示此容器相对于其他容器的相对 CPU 权重。 </template>
+                <template #title> {{ $t('i18n_9ac4765895') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input-number
-              v-model:value="temp.cpuShares"
-              style="width: 100%"
-              placeholder="一个整数值，表示此容器相对于其他容器的相对 CPU 权重。"
-            />
+            <a-input-number v-model:value="temp.cpuShares" style="width: 100%" :placeholder="$t('i18n_9ac4765895')" />
           </a-form-item>
           <a-form-item name="cpusetCpus">
             <template #label>
-              执行的 CPU
+              {{ $t('i18n_2ef1c35be8') }}
               <a-tooltip>
-                <template #title> 允许执行的 CPU（例如，0-3、0,1）。 </template>
+                <template #title> {{ $t('i18n_0b76afbf5d') }},1）。 </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input
-              v-model:value="temp.cpusetCpus"
-              style="width: 100%"
-              placeholder="允许执行的 CPU（例如，0-3、0,1）。"
-            />
+            <a-input v-model:value="temp.cpusetCpus" style="width: 100%" :placeholder="$t('i18n_9c55e8e0f3')" />
           </a-form-item>
           <a-form-item name="cpusetMems">
             <template #label>
               CpusetMems
               <a-tooltip>
-                <template #title> 允许执行的内存节点 (MEM) (0-3, 0,1)。 仅在 NUMA 系统上有效。 </template>
+                <template #title> {{ $t('i18n_470e9baf32') }}{{ $t('i18n_b28c17d2a6') }}</template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input
-              v-model:value="temp.cpusetMems"
-              style="width: 100%"
-              placeholder="允许执行的内存节点 (MEM) (0-3, 0,1)。 仅在 NUMA 系统上有效。"
-            />
+            <a-input v-model:value="temp.cpusetMems" style="width: 100%" :placeholder="$t('i18n_8c7d19b32a')" />
           </a-form-item>
           <a-form-item name="cpuPeriod">
             <template #label>
-              CPU 周期
+              CPU {{ $t('i18n_2d842318fb') }}
               <a-tooltip>
-                <template #title> CPU 周期的长度，以微秒为单位。 </template>
+                <template #title> CPU {{ $t('i18n_6e02ee7aad') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input-number
-              v-model:value="temp.cpuPeriod"
-              style="width: 100%"
-              placeholder=" CPU 周期的长度，以微秒为单位。"
-            />
+            <a-input-number v-model:value="temp.cpuPeriod" style="width: 100%" :placeholder="$t('i18n_c325ddecb1')" />
           </a-form-item>
           <a-form-item name="cpuQuota">
             <template #label>
-              CPU 时间
+              CPU {{ $t('i18n_19fcb9eb25') }}
               <a-tooltip>
-                <template #title> 容器在一个 CPU 周期内可以获得的 CPU 时间的微秒。 </template>
+                <template #title> {{ $t('i18n_df1da2dc59') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input-number
-              v-model:value="temp.cpuQuota"
-              style="width: 100%"
-              placeholder="容器在一个 CPU 周期内可以获得的 CPU 时间的微秒。"
-            />
+            <a-input-number v-model:value="temp.cpuQuota" style="width: 100%" :placeholder="$t('i18n_df1da2dc59')" />
           </a-form-item>
 
           <a-form-item name="memory">
             <template #label>
-              内存
+              {{ $t('i18n_9932551cd5') }}
               <a-tooltip>
-                <template #title> 设置内存限制。 </template>
+                <template #title> {{ $t('i18n_0b3edfaf28') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input v-model:value="temp.memory" style="width: 100%" placeholder="设置内存限制。" />
+            <a-input v-model:value="temp.memory" style="width: 100%" :placeholder="$t('i18n_0b3edfaf28')" />
           </a-form-item>
           <a-form-item name="memorySwap">
             <template #label>
-              总内存
+              {{ $t('i18n_c983743f56') }}
               <a-tooltip>
-                <template #title> 总内存（内存 + 交换）。 设置为 -1 以禁用交换。 </template>
+                <template #title> {{ $t('i18n_ebc96f0a5d') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input
-              v-model:value="temp.memorySwap"
-              style="width: 100%"
-              placeholder="总内存（内存 + 交换）。 设置为 -1 以禁用交换。"
-            />
+            <a-input v-model:value="temp.memorySwap" style="width: 100%" :placeholder="$t('i18n_ebc96f0a5d')" />
           </a-form-item>
           <a-form-item name="memoryReservation">
             <template #label>
-              软内存
+              {{ $t('i18n_c0d38f475f') }}
               <a-tooltip>
-                <template #title> 软内存限制。 </template>
+                <template #title> {{ $t('i18n_0a63bf5b41') }} </template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </template>
-            <a-input v-model:value="temp.memoryReservation" style="width: 100%" placeholder="软内存限制。" />
+            <a-input v-model:value="temp.memoryReservation" style="width: 100%" :placeholder="$t('i18n_0a63bf5b41')" />
           </a-form-item>
         </a-form>
       </a-col>
     </a-row>
   </div>
 </template>
-
 <script>
 import { dockerContainerStats, dockerInspectContainer, dockerUpdateContainer } from '@/api/docker-api'
 import { renderSize } from '@/utils/const'

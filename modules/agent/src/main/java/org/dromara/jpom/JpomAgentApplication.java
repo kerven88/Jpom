@@ -10,7 +10,6 @@
 package org.dromara.jpom;
 
 import cn.hutool.core.date.BetweenFormatter;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.SystemClock;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,7 +18,9 @@ import cn.keepbx.jpom.JpomAppType;
 import cn.keepbx.jpom.Type;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.common.ServerOpenApi;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.system.AgentStartInit;
+import org.dromara.jpom.util.StringUtil;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -50,7 +51,7 @@ public class JpomAgentApplication {
         springApplicationBuilder.run(args);
         // 自动向服务端推送
         autoPushToServer(args);
-        log.info("Time-consuming to start this time：{}", DateUtil.formatBetween(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND));
+        log.info(I18nMessageUtil.get("i18n.startup_duration.54fe"), StringUtil.formatBetween(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND));
     }
 
     /**
@@ -65,14 +66,14 @@ public class JpomAgentApplication {
         }
         String arg = ArrayUtil.get(args, i + 1);
         if (StrUtil.isEmpty(arg)) {
-            log.error("not found auto-push-to-server url");
+            log.error(I18nMessageUtil.get("i18n.auto_push_url_not_found.88a7"));
             return;
         }
         try {
             AgentStartInit autoRegSeverNode = SpringUtil.getBean(AgentStartInit.class);
             autoRegSeverNode.autoPushToServer(arg);
         } catch (Exception e) {
-            log.error("向服务端推送注册失败 {}", arg, e);
+            log.error(I18nMessageUtil.get("i18n.push_registration_to_server_failed.5949"), arg, e);
         }
     }
 

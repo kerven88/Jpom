@@ -1,7 +1,7 @@
 <template>
   <log-view
     :ref="`logView`"
-    :title-name="$tl('p.buildLog')"
+    :title-name="$t('i18n_7c0ee78130')"
     :visible="visible"
     @close="
       () => {
@@ -12,29 +12,72 @@
     <template #before>
       <a-space>
         <span v-if="status">
-          {{ $tl('c.currentStatus') }}
+          {{ $t('i18n_e703c7367c') }}
           <a-tooltip
-            :title="`${$tl('c.currentStatus')} ${statusMap[status]} ${statusMsg ? $tl('p.statusMsg') + statusMsg : ''}`"
+            :title="`${$t('i18n_e703c7367c')} ${statusMap[status]} ${
+              statusMsg ? $t('i18n_8d13037eb7') + statusMsg : ''
+            }`"
           >
             <a-tag :color="statusColor[status]" style="margin-right: 0">
-              {{ statusMap[status] || $tl('p.unknownStatus') }}
+              {{ statusMap[status] || $t('i18n_903b25f64e') }}
             </a-tag>
           </a-tooltip>
         </span>
         <span>
-          {{ $tl('p.buildId') }}
+          {{ $t('i18n_31aaaaa6ec') }}
           <a-tag>{{ temp && temp.buildId }}</a-tag>
         </span>
-        <a-button type="primary" :disabled="!logId" size="small" @click="handleDownload"
-          ><DownloadOutlined />
-          {{ $tl('p.download') }}
+        <a-button type="primary" :disabled="!logId" size="small" @click="handleDownload">
+          <DownloadOutlined />
+          {{ $t('i18n_f26ef91424') }}
+        </a-button>
+        <a-button type="primary" :disabled="!logId" size="small" @click="() => (environmentVisible = true)">
+          <UnorderedListOutlined />{{ $t('i18n_3867e350eb') }}
         </a-button>
         |
       </a-space>
     </template>
   </log-view>
-</template>
 
+  <CustomModal
+    v-if="environmentVisible"
+    v-model:open="environmentVisible"
+    destroy-on-close
+    :title="$t('i18n_aacd9caa4a')"
+    :footer="null"
+    :mask-closable="false"
+    width="50%"
+  >
+    <a-list size="small" bordered :data-source="Object.keys(environment)">
+      <template #renderItem="{ item }">
+        <a-list-item style="display: block">
+          <a-row :wrap="true">
+            <a-col :span="12" :flex="12" class="text-overflow-hidden">
+              <a-tooltip placement="topLeft" :title="item">
+                {{ item }}
+              </a-tooltip>
+            </a-col>
+
+            <a-col :span="12" :flex="12" class="text-overflow-hidden">
+              <a-tooltip
+                placement="topLeft"
+                :title="environment[item].privacy ? $t('i18n_b12d003367') : environment[item].value"
+              >
+                <EyeInvisibleOutlined v-if="environment[item].privacy" />{{ environment[item].value }}
+              </a-tooltip>
+            </a-col>
+          </a-row>
+        </a-list-item>
+      </template>
+      <template #header>
+        <b>{{ $t('i18n_c0ad27a701') }}</b>
+      </template>
+      <!-- <template #footer>
+        <div>Footer</div>
+      </template> -->
+    </a-list>
+  </CustomModal>
+</template>
 <script>
 import LogView from '@/components/logView'
 
@@ -69,7 +112,9 @@ export default {
       line: 1,
       logId: '',
       status: null,
-      statusMsg: ''
+      statusMsg: '',
+      environmentVisible: false,
+      environment: {}
     }
   },
   beforeUnmount() {
@@ -80,9 +125,6 @@ export default {
     this.pullLog()
   },
   methods: {
-    $tl(key, ...args) {
-      return this.$t(`pages.build.log.${key}`, ...args)
-    },
     nextPull() {
       if (this.logTimer) {
         clearTimeout(this.logTimer)
@@ -112,6 +154,7 @@ export default {
           this.logId = res.data.logId
           this.status = res.data.status
           this.statusMsg = res.data.statusMsg
+          this.environment = res.data.environment || {}
         } else if (res.code !== 201) {
           // 201 是当前构建且没有日志
           $notification.warn({

@@ -8,6 +8,7 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
 import SparkMD5 from 'spark-md5'
 import { concurrentExecution } from '@/utils/const'
 import { generateShardingId } from '@/api/common'
@@ -31,6 +32,11 @@ interface PiecesPar {
   error: Function
   resolveFileProcess: Function
   resolveFileEnd: Function
+  uploadChunkError?: Function
+  /**
+   * 文件切片并发数量控制
+   */
+  concurrentNum?: number
 }
 
 /**
@@ -50,14 +56,16 @@ export const uploadPieces = ({
   process,
   error,
   resolveFileProcess,
-  resolveFileEnd
+  resolveFileEnd,
+  uploadChunkError,
+  concurrentNum = uploadFileConcurrent
 }: PiecesPar) => {
   // 如果文件传入为空直接 return 返回
   if (!file || file.length < 1) {
-    return error('文件不能为空')
+    return error(t('i18n_6e69656ffb'))
   }
   if (!window.FileReader) {
-    return error('您的浏览器版本太低，不支持该功能')
+    return error(t('i18n_a050cbc36d'))
   }
   let fileMd5: string = '' //
   let sliceId: string = ''
@@ -66,7 +74,8 @@ export const uploadPieces = ({
   const chunkList: number[] = [] // 分片列表
   const uploaded: number[] = [] // 已经上传的
   let total: number = 0
-  const blobSlice = (<any>File.prototype).slice || (<any>File.prototype).mozSlice || (<any>File.prototype).webkitSlice
+  const blobSlice =
+    (File.prototype as any).slice || (File.prototype as any).mozSlice || (File.prototype as any).webkitSlice
 
   /***
    * 获取md5
@@ -85,7 +94,7 @@ export const uploadPieces = ({
     const batch = 1024 * 1024 * 2
     const asyncUpdate = function () {
       if (start < total) {
-        resolveFileProcess && resolveFileProcess('解析文件,准备上传中 ' + ((start / total) * 100).toFixed(2) + '%')
+        resolveFileProcess && resolveFileProcess(t('i18n_6a8402afcb') + ((start / total) * 100).toFixed(2) + '%')
         const end = Math.min(start + batch, total)
         reader.readAsArrayBuffer(blobSlice.call(file, start, end))
         start = end
@@ -116,7 +125,7 @@ export const uploadPieces = ({
           sliceId = res.data
           concurrentUpload()
         } else {
-          error('文件上传id生成失败：' + res.msg)
+          error(t('i18n_695344279b') + res.msg)
         }
       })
     }
@@ -126,7 +135,7 @@ export const uploadPieces = ({
         asyncUpdate()
       } catch (e) {
         // Vue.prototype.$setLoading('closeAll')
-        error('解析文件失败：' + e)
+        error(t('i18n_fb5bc565f3') + e)
       }
     }
     asyncUpdate()
@@ -147,11 +156,11 @@ export const uploadPieces = ({
   /***
    * 获取每一个分片的详情
    **/
-  const getChunkInfo = (file: File, currentChunk: number, chunkSize: number) => {
+  const getChunkInfo = (file: File, currentChunk: number, chunkSize: number): IChunkInfo => {
     const start: number = currentChunk * chunkSize
     const end: number = Math.min(file.size, start + chunkSize)
     const chunk: Blob = blobSlice.call(file, start, end)
-    return <IChunkInfo>{
+    return {
       start,
       end,
       chunk
@@ -165,7 +174,7 @@ export const uploadPieces = ({
     const startTime: number = new Date().getTime()
     // 设置初始化进度（避免第一份分片卡顿）
     process(0.01, 1, total, new Date().getTime() - startTime)
-    concurrentExecution(chunkList, uploadFileConcurrent, (curItem) => {
+    concurrentExecution(chunkList, concurrentNum, (curItem) => {
       return new Promise((resolve, reject) => {
         const { chunk } = getChunkInfo(file, curItem, chunkSize)
         const chunkInfo: IChunkInfo2 = {
@@ -197,6 +206,7 @@ export const uploadPieces = ({
           })
           .catch(() => {
             reject()
+            uploadChunkError && uploadChunkError()
           })
       })
     }).then((uploadData) => {

@@ -20,12 +20,14 @@ import cn.hutool.db.sql.Order;
 import cn.hutool.extra.servlet.ServletUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.common.ServerOpenApi;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.NotLogin;
 import org.dromara.jpom.func.files.model.FileStorageModel;
 import org.dromara.jpom.func.files.service.FileStorageService;
 import org.dromara.jpom.model.user.UserModel;
 import org.dromara.jpom.service.user.TriggerTokenLogServer;
 import org.dromara.jpom.system.ServerConfig;
+import org.dromara.jpom.util.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,7 +80,7 @@ public class FileStorageApiController extends BaseDownloadApiController {
             FileStorageModel data = new FileStorageModel();
             data.setAliasCode(id);
             data.setTriggerToken(token);
-            Assert.state(fileStorageService.exists(data), "别名或者token错误,或者已经失效");
+            Assert.state(fileStorageService.exists(data), I18nMessageUtil.get("i18n.alias_or_token_error.d5c6"));
         }
         List<Order> orders = Opt.ofBlankAble(sort)
             .map(s -> StrUtil.splitTrim(s, StrUtil.COMMA))
@@ -118,19 +120,19 @@ public class FileStorageApiController extends BaseDownloadApiController {
         if (storageModel == null) {
             // 根据别名查询
             storageModel = this.queryByAliasCode(id, token, sort, request);
-            Assert.notNull(storageModel, "没有对应数据");
+            Assert.notNull(storageModel, I18nMessageUtil.get("i18n.no_data_found.4ffb"));
         } else {
-            Assert.state(StrUtil.equals(token, storageModel.getTriggerToken()), "token错误,或者已经失效");
+            Assert.state(StrUtil.equals(token, storageModel.getTriggerToken()), I18nMessageUtil.get("i18n.invalid_or_expired_token.bc43"));
         }
         //
         UserModel userModel = triggerTokenLogServer.getUserByToken(token, fileStorageService.typeName());
         //
-        Assert.notNull(userModel, "token错误,或者已经失效:-1");
+        Assert.notNull(userModel, I18nMessageUtil.get("i18n.token_invalid_or_expired.cb96"));
         //
         File storageSavePath = serverConfig.fileStorageSavePath();
         File fileStorageFile = FileUtil.file(storageSavePath, storageModel.getPath());
         // 需要考虑文件名中存在非法字符
-        String name = this.convertName(storageModel.getName(), storageModel.getExtName(), fileStorageFile.getName());
+        String name = FileUtils.safeFileName(storageModel.getName(), storageModel.getExtName(), fileStorageFile.getName());
         //    解析断点续传相关信息
         long fileSize = FileUtil.size(fileStorageFile);
         long[] resolveRange = this.resolveRange(request, fileSize, storageModel.getId(), storageModel.getName(), response);

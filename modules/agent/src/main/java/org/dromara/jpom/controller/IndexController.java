@@ -22,7 +22,10 @@ import org.dromara.jpom.common.JpomManifest;
 import org.dromara.jpom.common.RemoteVersion;
 import org.dromara.jpom.common.commander.ProjectCommander;
 import org.dromara.jpom.common.commander.SystemCommander;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.NotAuthorize;
+import org.dromara.jpom.configuration.AgentConfig;
+import org.dromara.jpom.configuration.MonitorConfig;
 import org.dromara.jpom.model.data.NodeProjectInfoModel;
 import org.dromara.jpom.model.data.NodeScriptModel;
 import org.dromara.jpom.plugin.PluginFactory;
@@ -39,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,15 +59,18 @@ public class IndexController extends BaseAgentController {
     private final NodeScriptServer nodeScriptServer;
     private final SystemCommander systemCommander;
     private final ProjectCommander projectCommander;
+    private final AgentConfig agentConfig;
 
     public IndexController(ProjectInfoService projectInfoService,
                            NodeScriptServer nodeScriptServer,
                            SystemCommander systemCommander,
-                           ProjectCommander projectCommander) {
+                           ProjectCommander projectCommander,
+                           AgentConfig agentConfig) {
         this.projectInfoService = projectInfoService;
         this.nodeScriptServer = nodeScriptServer;
         this.systemCommander = systemCommander;
         this.projectCommander = projectCommander;
+        this.agentConfig = agentConfig;
     }
 
     @RequestMapping(value = {"index", "", "index.html", "/"}, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -83,6 +90,7 @@ public class IndexController extends BaseAgentController {
         jsonObject.put("remoteVersion", remoteVersion);
         jsonObject.put("pluginSize", PluginFactory.size());
         jsonObject.put("joinBetaRelease", RemoteVersion.betaRelease());
+        jsonObject.put("monitor", agentConfig.getMonitor());
         return JsonMessage.success("", jsonObject);
     }
 
@@ -95,7 +103,9 @@ public class IndexController extends BaseAgentController {
     public IJsonMessage<JSONObject> getDirectTop() {
         JSONObject jsonObject = new JSONObject();
         try {
-            JSONObject topInfo = org.dromara.jpom.util.OshiUtils.getSimpleInfo();
+            Optional<MonitorConfig> monitorConfig = Optional.ofNullable(agentConfig).map(AgentConfig::getMonitor);
+
+            JSONObject topInfo = org.dromara.jpom.util.OshiUtils.getSimpleInfo(monitorConfig.orElse(null));
             jsonObject.put("simpleStatus", topInfo);
             // 系统固定休眠时间
             jsonObject.put("systemSleep", org.dromara.jpom.util.OshiUtils.NET_STAT_SLEEP + org.dromara.jpom.util.OshiUtils.CPU_STAT_SLEEP);
@@ -104,7 +114,7 @@ public class IndexController extends BaseAgentController {
             jsonObject.put("systemInfo", systemInfo);
             //jsonObject.put("oshiError", "测试异常");
         } catch (Throwable e) {
-            log.error("oshi 系统监控异常", e);
+            log.error(I18nMessageUtil.get("i18n.oshi_system_monitoring_exception.5c1c"), e);
             jsonObject.put("oshiError", e.getMessage());
         }
 
@@ -171,8 +181,8 @@ public class IndexController extends BaseAgentController {
                 .collect(Collectors.toList());
             return JsonMessage.success("", processes);
         } catch (Throwable e) {
-            log.error("oshi 系统进程监控异常", e);
-            throw new IllegalStateException("系统进程监控异常：" + e.getMessage());
+            log.error(I18nMessageUtil.get("i18n.oshi_system_process_monitoring_exception.a4da"), e);
+            throw new IllegalStateException(I18nMessageUtil.get("i18n.system_process_monitoring_error.fe1d") + e.getMessage());
         }
     }
 
@@ -180,10 +190,10 @@ public class IndexController extends BaseAgentController {
     @PostMapping(value = "kill.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public IJsonMessage<String> kill(int pid) {
         long jpomAgentId = JpomManifest.getInstance().getPid();
-        Assert.state(!StrUtil.equals(StrUtil.toString(jpomAgentId), StrUtil.toString(pid)), "不支持在线关闭 Agent 进程");
+        Assert.state(!StrUtil.equals(StrUtil.toString(jpomAgentId), StrUtil.toString(pid)), I18nMessageUtil.get("i18n.online_agent_close_not_supported.d81d"));
         String result = systemCommander.kill(null, pid);
         if (StrUtil.isEmpty(result)) {
-            result = "成功kill";
+            result = I18nMessageUtil.get("i18n.process_killed_successfully.a4c3");
         }
         return JsonMessage.success(result);
     }
@@ -194,8 +204,8 @@ public class IndexController extends BaseAgentController {
             List<JSONObject> list = org.dromara.jpom.util.OshiUtils.fileStores();
             return JsonMessage.success("", list);
         } catch (Throwable e) {
-            log.error("oshi 文件系统资源监控异常", e);
-            throw new IllegalStateException("文件系统监控异常：" + e.getMessage());
+            log.error(I18nMessageUtil.get("i18n.oshi_file_system_monitoring_exception.dc24"), e);
+            throw new IllegalStateException(I18nMessageUtil.get("i18n.file_system_monitoring_exception.d4c0") + e.getMessage());
         }
     }
 
@@ -205,8 +215,8 @@ public class IndexController extends BaseAgentController {
             List<JSONObject> list = org.dromara.jpom.util.OshiUtils.diskStores();
             return JsonMessage.success("", list);
         } catch (Throwable e) {
-            log.error("oshi 硬盘资源监控异常", e);
-            throw new IllegalStateException("硬盘资源监控异常：" + e.getMessage());
+            log.error(I18nMessageUtil.get("i18n.oshi_hard_disk_monitoring_exception.c642"), e);
+            throw new IllegalStateException(I18nMessageUtil.get("i18n.hard_drive_monitoring_error.43e7") + e.getMessage());
         }
     }
 
@@ -216,8 +226,8 @@ public class IndexController extends BaseAgentController {
             List<JSONObject> list = org.dromara.jpom.util.OshiUtils.networkInterfaces();
             return JsonMessage.success("", list);
         } catch (Throwable e) {
-            log.error("oshi 网卡资源监控异常", e);
-            throw new IllegalStateException("网卡资源监控异常：" + e.getMessage());
+            log.error(I18nMessageUtil.get("i18n.oshi_network_card_monitoring_exception.6d41"), e);
+            throw new IllegalStateException(I18nMessageUtil.get("i18n.network_resource_monitoring_error.4ede") + e.getMessage());
         }
     }
 }

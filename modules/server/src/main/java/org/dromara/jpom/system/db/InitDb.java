@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.JpomApplication;
 import org.dromara.jpom.common.ILoadEvent;
 import org.dromara.jpom.common.JpomApplicationEvent;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.db.*;
 import org.dromara.jpom.dialect.DialectUtil;
 import org.dromara.jpom.model.data.BackupInfoModel;
@@ -87,14 +88,13 @@ public class InitDb implements DisposableBean, ILoadEvent {
         AFTER_CALLBACK.put(name, supplier);
     }
 
-    @SuppressWarnings("rawtypes")
     public void afterPropertiesSet(ApplicationContext applicationContext) {
         this.prepareCallback(applicationContext.getEnvironment());
         //
-        log.debug("需要执行 {} 个前置事件", BEFORE_CALLBACK.size());
+        log.debug(I18nMessageUtil.get("i18n.need_execute_pre_events.b848"), BEFORE_CALLBACK.size());
         BEFORE_CALLBACK.forEach(Runnable::run);
         IStorageService storageService = StorageServiceFactory.get();
-        log.info("start load {} db", dbExtConfig.getMode());
+        log.info(I18nMessageUtil.get("i18n.start_loading_database.b040"), dbExtConfig.getMode());
         DSFactory dsFactory = storageService.init(dbExtConfig);
         final String[] sqlFileNow = {StrUtil.EMPTY};
         try {
@@ -143,15 +143,15 @@ public class InitDb implements DisposableBean, ILoadEvent {
             //
             StorageServiceFactory.saveExecuteSqlLog(executeSqlLog);
             // 执行回调方法
-            log.debug("需要执行 {} 个回调", AFTER_CALLBACK.size());
+            log.debug(I18nMessageUtil.get("i18n.need_execute_callbacks.b708"), AFTER_CALLBACK.size());
             long count = AFTER_CALLBACK.entrySet()
                 .stream()
                 .mapToInt(value -> {
-                    log.info("开始执行数据库事件：{}", value.getKey());
+                    log.info(I18nMessageUtil.get("i18n.start_executing_database_event.fc57"), value.getKey());
                     Supplier<Boolean> supplier = value.getValue();
                     boolean arg2 = supplier.get();
                     int code = arg2 ? 1 : 0;
-                    log.info("数据库 {} 事件执行结束,：{}", value.getKey(), code);
+                    log.info(I18nMessageUtil.get("i18n.database_event_execution_ended.690b"), value.getKey(), code);
                     return code;
                 }).sum();
             if (count > 0) {
@@ -161,11 +161,12 @@ public class InitDb implements DisposableBean, ILoadEvent {
             }
             //
         } catch (Exception e) {
-            log.error("初始化数据库失败 {}", sqlFileNow[0], e);
+            log.error(I18nMessageUtil.get("i18n.initialize_database_failure.2ef9"), sqlFileNow[0], e);
             JpomApplicationEvent.asyncExit(2);
             throw Lombok.sneakyThrow(e);
         }
-        log.info("{} db Successfully loaded, url is 【{}】", storageService.mode(), storageService.dbUrl());
+        String s = "数据库加载成功，URL为";
+        log.info("{} {}：[{}]", storageService.mode(), s, storageService.dbUrl());
     }
 
 
@@ -224,12 +225,14 @@ public class InitDb implements DisposableBean, ILoadEvent {
                         try {
                             return parameter.execute(value);
                         } catch (SQLException e) {
-                            log.warn("错误 sql:{}", value);
+                            log.warn(I18nMessageUtil.get("i18n.error_sql.15ff"), value);
                             throw Lombok.sneakyThrow(e);
                         }
                     })
                     .sum();
-                log.info("exec init SQL file: {} complete, and affected rows is: {}", name, rows);
+                String s = "执行初始化SQL文件";
+                String s1 = "影响行数";
+                log.info("{}：{}，{}：{}", s, name, s1, rows);
             });
         } catch (SQLException e) {
             throw Lombok.sneakyThrow(e);
@@ -262,12 +265,13 @@ public class InitDb implements DisposableBean, ILoadEvent {
         });
         Opt.ofNullable(environment.getProperty("backup-h2")).ifPresent(s -> {
             // 备份数据库
-            this.addCallback("备份数据库", () -> {
-                log.info("Start backing up the database");
+            this.addCallback(I18nMessageUtil.get("i18n.backup_database.9524"), () -> {
+                log.info("开始备份数据库");
                 Future<BackupInfoModel> backupInfoModelFuture = backupInfoService.autoBackup();
                 try {
                     BackupInfoModel backupInfoModel = backupInfoModelFuture.get();
-                    log.info("Complete the backup database, save the path as {}", backupInfoModel.getFilePath());
+                    String s1 = "数据库备份完成，保存路径为";
+                    log.info("{}：{}", s1, backupInfoModel.getFilePath());
                 } catch (Exception e) {
                     throw new JpomRuntimeException(StrUtil.format("Backup database failed：{}", e.getMessage()), e);
                 }
@@ -282,7 +286,8 @@ public class InitDb implements DisposableBean, ILoadEvent {
                 try {
                     String dbFiles = StorageServiceFactory.get().deleteDbFiles();
                     if (dbFiles != null) {
-                        log.info("Automatically backup data files to {} path", dbFiles);
+                        String s1 = "自动备份数据文件到路径";
+                        log.info("{}：{}", s1, dbFiles);
                     }
                 } catch (Exception e) {
                     log.error("Failed to import according to sql,{}", s, e);
@@ -296,7 +301,7 @@ public class InitDb implements DisposableBean, ILoadEvent {
         Consumer<DbExtConfig.Mode> migrateOpr = targetMode -> {
             DbExtConfig.Mode mode = dbExtConfig.getMode();
             if (mode != targetMode) {
-                throw new JpomRuntimeException(StrUtil.format("当前模式不正确，不能直接迁移到 {}", targetMode));
+                throw new JpomRuntimeException(StrUtil.format(I18nMessageUtil.get("i18n.incorrect_mode_for_migration.caef"), targetMode));
             }
             // 都提前清理
             StorageServiceFactory.clearExecuteSqlLog();
@@ -304,12 +309,12 @@ public class InitDb implements DisposableBean, ILoadEvent {
             String user = environment.getProperty("h2-user");
             String url = environment.getProperty("h2-url");
             String pass = environment.getProperty("h2-pass");
-            this.addCallback("迁移数据", () -> {
+            this.addCallback(I18nMessageUtil.get("i18n.migrate_data.f556"), () -> {
                 //
                 StorageServiceFactory.migrateH2ToNow(dbExtConfig, url, user, pass, targetMode);
                 return false;
             });
-            log.info("开始等待数据迁移");
+            log.info(I18nMessageUtil.get("i18n.start_waiting_for_data_migration.e76f"));
         };
         Opt.ofNullable(environment.getProperty("h2-migrate-mysql")).ifPresent(s -> {
             migrateOpr.accept(DbExtConfig.Mode.MYSQL);
@@ -323,7 +328,7 @@ public class InitDb implements DisposableBean, ILoadEvent {
     }
 
     private void importH2Sql(Environment environment, String importH2Sql) {
-        this.addCallback("导入数据", () -> {
+        this.addCallback(I18nMessageUtil.get("i18n.import_data.8ef8"), () -> {
             File file = FileUtil.file(importH2Sql);
             String sqlPath = FileUtil.getAbsolutePath(file);
             if (!FileUtil.isFile(file)) {
@@ -332,12 +337,12 @@ public class InitDb implements DisposableBean, ILoadEvent {
             //
             Opt.ofNullable(environment.getProperty("transform-sql")).ifPresent(s -> StorageServiceFactory.get().transformSql(file));
             //
-            log.info("Start importing data:{}", sqlPath);
+            log.info("开始导入数据：{}", sqlPath);
             boolean flag = backupInfoService.restoreWithSql(sqlPath);
             if (!flag) {
                 throw new JpomRuntimeException(StrUtil.format("Failed to import according to sql,{}", sqlPath));
             }
-            log.info("Import successfully according to sql,{}", sqlPath);
+            log.info("导入成功：{}", sqlPath);
             return true;
         });
     }

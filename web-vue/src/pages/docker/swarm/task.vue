@@ -15,25 +15,25 @@
           <a-input
             v-if="!serviceId"
             v-model:value="listQuery['serviceId']"
-            placeholder="服务id"
+            :placeholder="$t('i18n_dbb166cf29')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['taskName']"
-            placeholder="任务名称"
+            :placeholder="$t('i18n_78caf7115c')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['taskId']"
-            placeholder="任务id"
+            :placeholder="$t('i18n_ac0158db83')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['taskNode']"
-            placeholder="节点id"
+            :placeholder="$t('i18n_c90a1f37ce')"
             class="search-input-item"
             @press-enter="loadData"
           />
@@ -53,15 +53,19 @@
                 }
               "
               allow-clear
-              placeholder="状态"
+              :placeholder="$t('i18n_3fea7ca76c')"
               class="search-input-item"
             >
               <a-select-option v-for="(item, key) in TASK_STATE" :key="key">{{ item }}- {{ key }}</a-select-option>
-              <a-select-option value="">状态</a-select-option>
+              <a-select-option value="">{{ $t('i18n_3fea7ca76c') }}</a-select-option>
             </a-select>
           </a-tooltip>
-          <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
-          <a-statistic-countdown format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="loadData" />
+          <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
+          <a-statistic-countdown format="s" :title="$t('i18n_0f8403d07e')" :value="countdownTime" @finish="loadData">
+            <template #suffix>
+              <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
+            </template>
+          </a-statistic-countdown>
         </a-space>
       </template>
 
@@ -80,21 +84,21 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'desiredState'">
-          <a-popover :title="`状态信息：${TASK_STATE[text]}`" placement="topLeft">
+          <a-popover :title="`${$t('i18n_ec989813ed')}${TASK_STATE[text]}`" placement="topLeft">
             <template #content>
               <p>
-                当前状态：<a-tag>{{ text }}-{{ TASK_STATE[text] }}</a-tag>
+                {{ $t('i18n_e703c7367c') }}<a-tag>{{ text }}-{{ TASK_STATE[text] }}</a-tag>
               </p>
-              <p v-if="record.status && record.status.err">错误信息：{{ record.status.err }}</p>
+              <p v-if="record.status && record.status.err">{{ $t('i18n_f66335b5bf') }}{{ record.status.err }}</p>
               <p v-if="record.status && record.status.state">
-                状态：<a-tag>{{ record.status.state }}</a-tag>
+                {{ $t('i18n_bec98b4d6a') }}<a-tag>{{ record.status.state }}</a-tag>
               </p>
 
               <p v-if="record.status && record.status.message">
-                信息：<a-tag>{{ record.status.message }} </a-tag>
+                {{ $t('i18n_a90cf0796b') }}<a-tag>{{ record.status.message }} </a-tag>
               </p>
               <p v-if="record.status && record.status.timestamp">
-                更新时间：<a-tag>{{ parseTime(record.status.timestamp) }} </a-tag>
+                {{ $t('i18n_780fb9f3d0') }}<a-tag>{{ parseTime(record.status.timestamp) }} </a-tag>
               </p>
             </template>
 
@@ -116,7 +120,10 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'updatedAt'">
-          <a-tooltip placement="topLeft" :title="`修改时间：${text} 创建时间：${record.createdAt}`">
+          <a-tooltip
+            placement="topLeft"
+            :title="`${$t('i18n_bf94b97d1a')}${text} ${$t('i18n_312f45014a')}${record.createdAt}`"
+          >
             <span>
               {{ parseTime(text) }}
             </span>
@@ -125,7 +132,7 @@
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleLog(record)">日志</a-button>
+            <a-button size="small" type="primary" @click="handleLog(record)">{{ $t('i18n_456d29ef8b') }}</a-button>
           </a-space>
         </template>
       </template>
@@ -148,7 +155,6 @@
     />
   </div>
 </template>
-
 <script>
 import { dockerSwarmServicesTaskList, TASK_STATE } from '@/api/docker-swarm'
 import { parseTime } from '@/utils/const'
@@ -187,37 +193,37 @@ export default {
       autoUpdateTime: null,
       logVisible: 0,
       rules: {
-        role: [{ required: true, message: '请选择节点角色', trigger: 'blur' }],
-        availability: [{ required: true, message: '请选择节点状态', trigger: 'blur' }]
+        role: [{ required: true, message: this.$t('i18n_9d7d471b77'), trigger: 'blur' }],
+        availability: [{ required: true, message: this.$t('i18n_4c7c58b208'), trigger: 'blur' }]
       },
       columns: [
         {
-          title: '序号',
+          title: this.$t('i18n_faaadc447b'),
           width: '80px',
           ellipsis: true,
           align: 'center',
           customRender: ({ index }) => `${index + 1}`
         },
         {
-          title: '任务Id',
+          title: this.$t('i18n_6da242ea50'),
           dataIndex: 'id',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '节点Id',
+          title: this.$t('i18n_a472019766'),
           dataIndex: 'nodeId',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '服务ID',
+          title: this.$t('i18n_b7ec1d09c4'),
           dataIndex: 'serviceId',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '镜像',
+          title: this.$t('i18n_3477228591'),
           dataIndex: ['spec', 'containerSpec', 'image'],
           ellipsis: true,
           width: 120,
@@ -227,13 +233,13 @@ export default {
         // { title: "端点", dataIndex: "spec.endpointSpec.mode", ellipsis: true, width: 100, },
         // { title: "节点地址", width: 150, dataIndex: "status.address", ellipsis: true,  },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           width: 140,
           dataIndex: 'desiredState',
           ellipsis: true
         },
         {
-          title: '错误信息',
+          title: this.$t('i18n_4604d50234'),
           width: 150,
           dataIndex: ['status', 'err'],
           ellipsis: true,
@@ -257,7 +263,7 @@ export default {
         //   width: 170,
         // },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'updatedAt',
           ellipsis: true,
 
@@ -267,13 +273,14 @@ export default {
           width: '180px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
           align: 'center',
           width: '80px'
         }
       ],
+
       countdownTime: Date.now()
     }
   },
@@ -311,7 +318,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 :deep(.ant-statistic div) {
   display: inline-block;

@@ -1,5 +1,178 @@
 # 🚀 版本日志
 
+## 2.11.12-release (2025-05-06)
+
+### 🐣 新增功能
+
+1. 【server】新增 远程安装时的授权码支持（感谢@奇奇）
+2. 【server】修复 SSH控制台输入Control + R后无法记录日志的问题
+3. 【server】优化 容器构建镜像新增 [毫秒镜像](https://1ms.run/) 临时仓库
+4. 【all】优化 修改 tomcat版本到9.0.99安全版本 （感谢@[龙猫](https://gitee.com/woyeshimao) [Gitee pr 292](https://gitee.com/dromara/Jpom/pulls/292)）
+5. 【server】新增 服务端在线升级页面支持配置下载授权码，方便国内用户使用全速 CDN
+6. 【server】新增 支持使用 TOPIAM 企业数字身份管控平台登录（oauth2）
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】优化 构建页面保存按钮使用 loading （感谢[@hhh](https://gitee.com/who9264) [Gitee issues IBD8WF](https://gitee.com/dromara/Jpom/issues/IBD8WF) ）
+2. 【server】优化 SSH 文件列表支持跟随目录排序
+3. 【server】优化 用户操作日志记录表中用户 id 长度不够照成登录失败问题（感谢[@Halo](https://gitee.com/halo-lmf) [Gitee issues IBFNKE](https://gitee.com/dromara/Jpom/issues/IBFNKE) ）
+4. 【agent】优化 DSL 项目备份支持配置开启或者关闭差异备份（默认使用差异备份：仅备份变动过的文件）（感谢[@ercats](https://gitee.com/ercats) [Gitee issues IBF73J](https://gitee.com/dromara/Jpom/issues/IBF73J) ）
+5. 【server】优化 构建 webhook 新增 git 的提交id和提交信息参数（感谢[@皮儿卡啦没有丘](https://gitee.com/Aimeia) [Gitee issues IBDEU0](https://gitee.com/dromara/Jpom/issues/IBDEU0) ）
+6. 【server】优化 文件中心发布文件支持保存为模板方便后续使用（感谢[@lin_yeqi](https://gitee.com/lin_yeqi) [Gitee issues IB2FRF](https://gitee.com/dromara/Jpom/issues/IB2FRF) ）
+7. 【all】升级 hutool 版本
+8. 【server】修复 ssh文件管理显示错位（感谢[@lin_yeqi](https://gitee.com/lin_yeqi) [Gitee issues IB98AU](https://gitee.com/dromara/Jpom/issues/IB98AU) ）
+
+------
+
+## 2.11.11-release (2024-12-02)
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】升级 docker-java 版本到 3.4.0
+2. 【server】优化 数据库备份支持外部调用触发器来实现自定义备份周期（感谢@刘志远）
+3. 【server】优化 SSH、项目 文件管理树加载 loading 避免网络卡顿影响树渲染错误（感谢@Bo）
+4. 【server】优化 SSH、项目 文件管理树支持横向滚动条
+5. 【server】优化 构建记录存储最后 commitId commitMsg 信息（感谢@program）
+6. 【server】优化 引用脚本库时出现 ${xxxx} 出现引用失败：No group with name {xxxx} （感谢[@foot_print](https://gitee.com/zhangyf35) [Gitee issues IAW413](https://gitee.com/dromara/Jpom/issues/IAW413) ）
+7. 【server】优化 构建环境变量自动识别系统变量密文相关关键词：pwd、pass、password、token 为隐私变量（感谢[@lin_yeqi](https://gitee.com/lin_yeqi) [Gitee issues IB34L9](https://gitee.com/dromara/Jpom/issues/IB34L9) ）
+8. 【agent】优化 项目状态触发器 result 参数返回 json 类型，DSL 项目重启成功返回 pid（感谢@新）
+9. 【server】优化 日志查看器中行号增加无法选中样式（感谢[@ning](https://gitee.com/mrning001) [Gitee pr 284](https://gitee.com/dromara/Jpom/pulls/284) ）
+10. 【server】修复 容器构建自定义插件，环境变量不匹配问题（感谢[@杨晓龙](https://gitee.com/pubresyang) [Gitee pr 285](https://gitee.com/dromara/Jpom/pulls/285) ）
+11. 【agent】优化 项目日志文件编码格式支持独立配置（感谢[@不渡](https://gitee.com/zhangjxing) [Gitee issues IB3DCP](https://gitee.com/dromara/Jpom/issues/IB3DCP) ）
+12. 【all】优化 使用默认语言时增加判断所在时区来识别中文环境
+13. 【all】升级 fastjson 依赖版本
+
+------
+
+## 2.11.10-release (2024-09-19)
+
+### 🐣 新增功能
+
+1. 【server】新增 项目监控新增沉默时间配置，避免报警后不再触发报警
+
+### 🐞 解决BUG、优化功能
+
+1. 【all】修复 多会话使用文件跟踪器可能出现多个线程未关闭问题（感谢[@沐剑屏](https://gitee.com/MuJianPing) [Gitee issues IAI0I1](https://gitee.com/dromara/Jpom/issues/IAI0I1) ）
+2. 【all】修复 windows 管理脚本在 JDK 1.8 无法正常启动（感谢@流浪的墨染青衫、@LL）
+3. 【server】修复 多个工作空间分组后子工作空间层级异常造成不能正常使用
+4. 【server】修复 监控日志标题字段长度太短在英语模式下字段异常（感谢@Deer）
+5. 【server】优化 监控新增使用语言来实现通知消息国际化
+6. 【server】修复 git仓库账号/密码包含特殊符号导致系统Git工具无法成功认证的问题（感谢@🇩）
+7. 【server】修复 SSH 分片上传极大概率上传失败问题（感谢@勤思·、@张飞鸿）
+8. 【all】升级 hutool、logback、tomcat 版本
+9. 【server】优化 时长格式化工具支持 i18n 国际化
+10. 【server】修复 终端日志处理字节'7'导致的日志补全记录不全 （感谢@[adao](https://github.com/YazaiHu) [Github issues 91](https://github.com/dromara/Jpom/issues/91) ）
+11. 【server】升级 spring 包到 5.3.39 修复漏洞 CVE-2024-38808，CVE-2024-38809（感谢@[龙猫](https://gitee.com/woyeshimao)）[Gitee Pr 281](https://gitee.com/dromara/Jpom/pulls/281)
+12. 【server】优化 构建 webhook 携带工作空间和集群id参数（workspaceId、clusterInfoId、workspaceName）（感谢@🦁子）
+13. 【server】修复 构建命令引用脚本时相关脚本引用脚本库未生效问题（感谢@木迷榖）
+14. 【server】优化 构建命令、本地发布命令支持直接引起脚本库（`G@("xx")` xx 为脚本标记）
+15. 【server】修复 构建时日志记录器异常关闭未提示并且构建状态未修改（感谢@陈晨🍊）
+16. 【server】优化 构建日志弹窗支持查看可用环境变量
+17. 【server】优化 构建支持查看可用环境变量（感谢[@慌i](https://gitee.com/L_FaN) [Gitee issues IALAUW](https://gitee.com/dromara/Jpom/issues/IALAUW) ）
+18. 【server】升级 mysql 驱动版本到 8.2.0
+19. 【server】优化 ssh docker 独立配置是否需要 sudo 执行
+20. 【server】修复 ssh docker 选型固定只有最新 10 条调整为搜索下拉（@山上雪）
+
+------
+
+## 2.11.9-release (2024-08-02)
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】修复 静态文件扫描到空时更新数据库异常（感谢[@blackcat](https://gitee.com/kylin_lawliet) [Gitee issues IA6UO0](https://gitee.com/dromara/Jpom/issues/IA6UO0) ）
+2. 【server】修复 SSH命令行操作日志支持更全展示（感谢[@beens](https://gitee.com/beens) [Gitee issues IA6P3J](https://gitee.com/dromara/Jpom/issues/IA6P3J) ）
+3. 【all】优化 升级 hutool、oshi、mwiede-jsch、fastjson2 版本
+4. 【server】修复 非管理员用户无法使用脚本库数据（感谢[@丁炳坤](https://gitee.com/dbk12138) [Gitee issues IA8ZKP](https://gitee.com/dromara/Jpom/issues/IA8ZKP) ）
+5. 【server】修复 构建编辑页面未输入构建命令提示错误（感谢[@yt](https://gitee.com/a1127583020) [Gitee issues IAAI8D](https://gitee.com/dromara/Jpom/issues/IAAI8D) ）
+6. 【server】优化 构建容器镜像支持推送到远程仓库后自动删除本地镜像（感谢 [@爱琳琳真是太好了](https://gitee.com/qiqi513_admin) [Gitee issues IA6UBO](https://gitee.com/dromara/Jpom/issues/IA6UBO) ）
+7. 【server】修复 淘汰 javax.security.cert.X509Certificate（感谢[@Jie](https://github.com/index-jie) [Github issues 84](https://github.com/dromara/Jpom/issues/86) ）
+8. 【all】优化 启动控制台日志完善 i18n
+9. 【server】修复 证书删除后弹窗未正常关闭
+10. 【server】优化 登录验证码去除易混淆字母（oO0、lL1、q9Q、pP）
+11. 【server】修复 批量构建引起环境变量丢失问题（感谢@[xieliangza](https://github.com/xieliangza) [Github issues 88](https://github.com/dromara/Jpom/issues/88) ）
+12. 【all】优化 解析 HTTP `Accept-Language` 请求头支持多语言最高优先级
+13. 【server】修复 页面未刷新情况下打开弹窗次数过多不能提示窗口层级太低（感谢[@lin_yeqi](https://gitee.com/lin_yeqi) [Gitee issues IAEBUZ](https://gitee.com/dromara/Jpom/issues/IAEBUZ) ）
+14. 【server】优化 分发日志显示关联数据信息（感谢[@pumpkinor](https://gitee.com/pumpkinor) [Gitee issues IAF7IV](https://gitee.com/dromara/Jpom/issues/IAF7IV) ）
+15. 【server】优化 分发文件使用文件中心或者静态文件上传至节点使用实际文件名（感谢[@pumpkinor](https://gitee.com/pumpkinor) [Gitee issues IAF7GD](https://gitee.com/dromara/Jpom/issues/IAF7GD) ）
+16. 【server】优化 SSH 文件管理支持浏览器分片上传（感谢[@超人那个超i](https://gitee.com/chao_a) [Gitee issues IAD9W4](https://gitee.com/dromara/Jpom/issues/IAD9W4) ）
+17. 【all】优化 管理脚本判断 JDK9+ 自动添加解除限制反射参数：--add-opens=xxxx
+18. 【server】优化 更多组件的页面层级问题，避免层级错乱无法正常使用页面相关功能
+19. 【server】修复 容器构建 DSL 配置示例错乱
+
+------
+
+## 2.11.8-release (2024-06-20)
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】修复 操作确认交互弹窗层级过低无法正常显示使用（感谢@ccx2480）
+
+------
+
+## 2.11.7-release (2024-06-19)
+
+### 🐣 新增功能
+
+1. 【agent】新增 项目文件支持快捷复制到当前文件夹
+2. 【agent】新增 项目文件夹支持快捷压缩（感谢[@yiziyu](https://gitee.com/yiziyu) [Gitee issues I9737L](https://gitee.com/dromara/Jpom/issues/I9737L) ）
+3. 【agent】新增 全局脚本库（DSL 项目可引用）
+4. 【all】新增 支持 i18n 语言国际化：简体中文、英语、繁體中文（中國香港）、繁體中文（中國臺灣）
+5. 【server】新增 服务端脚本、SSH 脚本支持引用全局脚本库（`G@("xx")` xx 为脚本标记）
+6. 【agent】新增 节点脚本支持引用全局脚本库（`G@("xx")` xx 为脚本标记）
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】优化 部分参数、环境变量配置交互优化取消文本输入框采用标签模式（感谢@湘江夜色）
+2. 【server】修复 部分页面中文描述未正常显示
+3. 【server】优化 文件发布支持选择脚本模板（感谢[@linCodeTest](https://gitee.com/linWorld) [Gitee issues I9P0EU](https://gitee.com/dromara/Jpom/issues/I9P0EU) ）
+4. 【server】优化 升级 postgresql 版本（感谢@ʟᴊx💎💎）
+5. 【server】修复 机器相关授权配置文件后缀输入框未正常显示（@感谢@ccx2480）
+6. 【server】修复 没有端口的容器重建页面异常（感谢@冰淇淋还是冰激凌）
+7. 【server】优化 ssh 管理独立 tab 页面使用默认的字符串排序
+8. 【server】修复 服务端脚本无法执行、参数值描述不对应（感谢@冰淇淋还是冰激凌）
+9. 【server】修复 gogs 仓库令牌导入异常（感谢@张飞鸿）
+10. 【server】修复 自定义仓库令牌导入后页面异常（感谢@张飞鸿）
+11. 【agent】修复 不同工作空间下同一个机器节点相同的项目ID的项目数据被覆盖（感谢@小朱）
+12. 【agent】优化 DSL 项目支持引用脚本库中的脚本（G@xxxx）xxxx 为脚本标记
+13. 【all】优化 新增系统语言配置 `jpom.system.lang`
+14. 【server】优化 前端紧凑模式在浅色模式下也生效
+
+### ⚠️ 注意
+
+- 前端国际化翻译程度：98%
+- 后端已翻译语言可以度：95%（部分异步执行日志等目前未支持）
+
+后端日志国际化需要新增或者修改 `jpom.system.lang` 配置项
+
+### 🤝致谢
+
+感谢 [@a20070322](https://gitee.com/a20070322) / Controllers 大佬贡献 Jpom 前端 i18n 工具。
+
+------
+
+## 2.11.6-release (2024-05-30)
+
+### 🐣 新增功能
+
+1. 【all】新增 自由脚本方便调试机器节点
+2. 【agent】新增 项目支持配置禁止扫描目录避免大目录页面超时（感谢@我）
+
+### 🐞 解决BUG、优化功能
+
+1. 【server】修复 资产管理 SSH 配置禁用命令无法回显（感谢@zhangw）
+2. 【server】修复 资产管理 SSH 未配置授权目录时 NPE （感谢[@Anley](https://gitee.com/MrAnley) [Gitee issues I9J17G](https://gitee.com/dromara/Jpom/issues/I9J17G) ）
+3. 【agent】优化 监控机器网络流程支持配置排除网卡或者仅统计对应的网卡
+4. 【server】修复 退出登录时页面会提示需要登录相关信息
+5. 【server】优化 页面检测新版本判断是否加入 beta
+6. 【agent】优化 添加数据记录修改人（感谢[@陈旭](https://gitee.com/chenxu8989) [Gitee issues I9JSY7](https://gitee.com/dromara/Jpom/issues/I9JSY7) ）
+7. 【server】优化 插件端注册到服务端，网络测试支持 ping + telnet （感谢@泊凉青川）
+8. 【server】优化 自动续签采用无感模式（感谢@湘江夜色）
+9. 【server】优化 容器构建执行配置自定义 host 参数（感谢@冰淇淋还是冰激凌）
+10. 【all】升级 tomcat、yaml 版本（感谢@佳驰）
+11. 【all】升级 bcprov-jdk18on 版本
+
+------
+
 ## 2.11.5-release (2024-04-23)
 
 ### 🐣 新增功能

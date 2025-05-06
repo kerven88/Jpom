@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 编辑区 -->
-    <a-drawer
+    <CustomDrawer
       destroy-on-close
       :open="true"
       :body-style="{
@@ -22,22 +22,16 @@
       <template #title>
         <template v-if="id">
           <a-menu v-model:selectedKeys="menuKey" mode="horizontal" class="menu" @click="menuClick">
-            <a-menu-item key="info">
-              <span><InfoOutlined /> {{ $tl('p.buildInfo') }}</span>
-            </a-menu-item>
-            <a-menu-item key="edit">
-              <span> <EditOutlined /> {{ $tl('p.editBuild') }}</span>
-            </a-menu-item>
-            <a-menu-item key="trigger">
-              <span><ApiOutlined /> {{ $tl('p.trigger') }}</span>
-            </a-menu-item>
+            <a-menu-item key="info"> <InfoOutlined /> {{ $t('i18n_224aef211c') }} </a-menu-item>
+            <a-menu-item key="edit"> <EditOutlined /> {{ $t('i18n_e54c5ecb54') }} </a-menu-item>
+            <a-menu-item key="trigger"> <ApiOutlined /> {{ $t('i18n_4696724ed3') }} </a-menu-item>
+            <a-menu-item key="environment"><UnorderedListOutlined />{{ $t('i18n_3867e350eb') }}</a-menu-item>
           </a-menu>
         </template>
         <template v-else>
           <a-menu v-model:selectedKeys="menuKey" mode="horizontal" class="menu" @click="menuClick">
-            <a-menu-item key="edit">
-              <span> <EditOutlined /> {{ $tl('p.addBuild') }}</span>
-            </a-menu-item>
+            <a-menu-item key="edit"> <EditOutlined /> {{ $t('i18n_44a6891817') }} </a-menu-item>
+            <a-menu-item key="environment"><UnorderedListOutlined />{{ $t('i18n_3867e350eb') }}</a-menu-item>
           </a-menu>
         </template>
       </template>
@@ -60,8 +54,62 @@
               stepsCurrent = current
             }
           "
+          @change-build-mode="
+            (buildMode1) => {
+              buildMode = buildMode1
+              getEnvironmentList()
+            }
+          "
+          @save-change="
+            (loading) => {
+              saveLoading = loading
+            }
+          "
         ></editBuildPage>
         <triggerPage v-if="id" v-show="menuKey.includes('trigger')" :id="id" />
+
+        <div v-show="menuKey.includes('environment')">
+          <a-list size="small" bordered :data-source="Object.keys(environment)">
+            <template #renderItem="{ item }">
+              <a-list-item style="display: block">
+                <a-row :wrap="true">
+                  <a-col :span="12" :flex="12" class="text-overflow-hidden">
+                    <a-tooltip placement="topLeft" :title="item">
+                      {{ item }}
+                    </a-tooltip>
+                  </a-col>
+
+                  <a-col :span="12" :flex="12" class="text-overflow-hidden">
+                    <a-tooltip
+                      placement="topLeft"
+                      :title="environment[item].privacy ? $t('i18n_b12d003367') : environment[item].value"
+                    >
+                      <EyeInvisibleOutlined v-if="environment[item].privacy" />
+                      <CodeOutlined v-if="environment[item].system" />
+                      {{ environment[item].value }}
+                    </a-tooltip>
+                  </a-col>
+                </a-row>
+              </a-list-item>
+            </template>
+            <template #header>
+              <b>{{ $t('i18n_c0ad27a701') }}</b>
+              <a-alert type="warning">
+                <template #message>
+                  <div>{{ $t('i18n_f11569cfa9') }}</div>
+                  <div>
+                    {{ $t('i18n_a2741f6eb3')
+                    }}<a-tag v-for="(item, index) in privacyVariableKeywords" :key="index">{{ item }}</a-tag
+                    >{{ $t('i18n_a17b905126') }}
+                  </div>
+                </template>
+              </a-alert>
+            </template>
+            <!-- <template #footer>
+        <div>Footer</div>
+      </template> -->
+          </a-list>
+        </div>
       </div>
       <!-- <template> </template> -->
 
@@ -74,10 +122,10 @@
               }
             "
           >
-            {{ $tl('p.cancel') }}
+            {{ $t('i18n_625fb26b4b') }}
           </a-button>
-          <a-tooltip v-if="id" :title="$tl('p.refreshWarning')">
-            <a-button @click="$refs.editBuild.refresh()"> {{ $tl('p.refresh') }}</a-button>
+          <a-tooltip v-if="id" :title="$t('i18n_18c7e2556e')">
+            <a-button :loading="saveLoading" @click="$refs.editBuild.refresh()"> {{ $t('i18n_694fc5efa9') }}</a-button>
           </a-tooltip>
           <a-divider type="vertical" />
           <a-button
@@ -88,7 +136,7 @@
                 stepsCurrent = stepsCurrent - 1
               }
             "
-            >{{ $tl('p.previousStep') }}</a-button
+            >{{ $t('i18n_eeb6908870') }}</a-button
           >
           <a-button
             type="primary"
@@ -98,23 +146,26 @@
                 stepsCurrent = stepsCurrent + 1
               }
             "
-            >{{ $tl('p.nextStep') }}</a-button
+            >{{ $t('i18n_38ce27d846') }}</a-button
           >
           <a-divider type="vertical" />
 
-          <a-button type="primary" @click="$refs.editBuild.handleEditBuildOk(false)"> {{ $tl('p.save') }} </a-button>
-          <a-button type="primary" @click="$refs.editBuild.handleEditBuildOk(true)">
-            {{ $tl('p.saveAndBuild') }}
+          <a-button type="primary" :loading="saveLoading" @click="$refs.editBuild.handleEditBuildOk(false)">
+            {{ $t('i18n_be5fbbe34c') }}
+          </a-button>
+          <a-button type="primary" :loading="saveLoading" @click="$refs.editBuild.handleEditBuildOk(true)">
+            {{ $t('i18n_a577822cdd') }}
           </a-button>
         </a-space>
       </template>
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
 <script>
 import detailsPage from './details.vue'
 import editBuildPage from './edit.vue'
 import triggerPage from './trigger.vue'
+import { getBuildEnvironment } from '@/api/build-info'
 export default {
   components: {
     detailsPage,
@@ -143,7 +194,11 @@ export default {
   data() {
     return {
       menuKey: ['info'],
-      stepsCurrent: this.editSteps
+      stepsCurrent: this.editSteps,
+      environment: {},
+      privacyVariableKeywords: [],
+      buildMode: null,
+      saveLoading: false
     }
   },
   created() {
@@ -153,16 +208,27 @@ export default {
     } else {
       this.menuKey = [array[1]]
     }
+    this.getEnvironmentList()
   },
   methods: {
-    $tl(key, ...args) {
-      return this.$t(`pages.build.item.${key}`, ...args)
-    },
     menuClick(item) {
       this.menuKey = item.key
     },
     onClose() {
       this.$emit('close')
+    },
+    // 获取可用环境变量
+    getEnvironmentList() {
+      // 构建基础信息
+      getBuildEnvironment({
+        id: this.id,
+        buildMode: this.buildMode
+      }).then((res) => {
+        if (res.data) {
+          this.environment = res.data?.data || {}
+          this.privacyVariableKeywords = res.data?.privacyVariableKeywords || []
+        }
+      })
     }
   }
 }

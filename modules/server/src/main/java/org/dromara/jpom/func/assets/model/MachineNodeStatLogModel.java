@@ -21,13 +21,18 @@ import org.dromara.jpom.model.data.NodeModel;
  * @since 2023/02/18
  */
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "MACHINE_NODE_STAT_LOG", name = "资产机器节点统计")
+@TableName(value = "MACHINE_NODE_STAT_LOG",
+    nameKey = "i18n.asset_machine_node_statistics.4a03")
 @Data
 public class MachineNodeStatLogModel extends BaseDbModel {
     /**
      * 机器id
      */
     private String machineId;
+    /**
+     * cpu ticks
+     */
+    private String cpuTicks;
     /**
      * 占用cpu
      */

@@ -10,8 +10,12 @@
 package org.dromara.jpom.service.manage;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import org.dromara.jpom.common.AgentConst;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
+import org.dromara.jpom.configuration.AgentConfig;
+import org.dromara.jpom.configuration.ProjectLogConfig;
 import org.dromara.jpom.model.EnvironmentMapBuilder;
 import org.dromara.jpom.model.RunMode;
 import org.dromara.jpom.model.data.NodeProjectInfoModel;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -33,10 +38,12 @@ import java.util.Map;
 public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoModel> {
 
     private final AgentWorkspaceEnvVarService agentWorkspaceEnvVarService;
+    private final ProjectLogConfig projectLogConfig;
 
-    public ProjectInfoService(AgentWorkspaceEnvVarService agentWorkspaceEnvVarService) {
+    public ProjectInfoService(AgentWorkspaceEnvVarService agentWorkspaceEnvVarService, AgentConfig agentConfig) {
         super(AgentConst.PROJECT);
         this.agentWorkspaceEnvVarService = agentWorkspaceEnvVarService;
+        this.projectLogConfig = agentConfig.getProject().getLog();
     }
 
     @Override
@@ -56,7 +63,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
             return nodeProjectInfoModel;
         }
         NodeProjectInfoModel item = this.getItem(nodeProjectInfoModel.getLinkId());
-        Assert.notNull(item, "被软链的项目已经不存在啦，" + nodeProjectInfoModel.getLinkId());
+        Assert.notNull(item, I18nMessageUtil.get("i18n.soft_link_project_does_not_exist.8ad2") + nodeProjectInfoModel.getLinkId());
         return item;
     }
 
@@ -70,7 +77,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
         RunMode runMode = nodeProjectInfoModel.getRunMode();
         if (runMode == RunMode.Link) {
             NodeProjectInfoModel item = this.getItem(nodeProjectInfoModel.getLinkId());
-            Assert.notNull(item, "软链项目已经不存在啦");
+            Assert.notNull(item, I18nMessageUtil.get("i18n.soft_link_project_does_not_exist.4e4f"));
             return item.allLib();
         }
         return nodeProjectInfoModel.allLib();
@@ -91,6 +98,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
      * 解析项目的日志路径
      *
      * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
      * @return path
      */
     private File resolveLogFile(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {
@@ -103,11 +111,12 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
      * 解析项目的日志路径
      *
      * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
      * @return path
      */
     private File resolveLogPath(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {
         String id = nodeProjectInfoModel.getId();
-        Assert.hasText(id, "没有项目id");
+        Assert.hasText(id, I18nMessageUtil.get("i18n.project_id_not_found.b87e"));
         String loggedPath = originalModel.logPath();
         if (StrUtil.isNotEmpty(loggedPath)) {
             return FileUtil.file(loggedPath, id);
@@ -120,6 +129,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
      * 解析项目的日志路径
      *
      * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
      * @return path
      */
     public String resolveAbsoluteLog(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {
@@ -142,6 +152,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
      * 解析项目的日志路径
      *
      * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
      * @return path
      */
     public File resolveAbsoluteLogFile(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {
@@ -149,6 +160,19 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
         // auto create dir
         FileUtil.touch(file);
         return file;
+    }
+
+    /**
+     * 解析项目的日志编码格式
+     *
+     * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
+     * @return path
+     */
+    public Charset resolveLogCharset(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {
+        Charset defaultCharset = projectLogConfig.getFileCharset();
+        String logCharset = originalModel.getLogCharset();
+        return CharsetUtil.parse(logCharset, defaultCharset);
     }
 
     /**
@@ -166,6 +190,7 @@ public class ProjectInfoService extends BaseWorkspaceOptService<NodeProjectInfoM
      * 解析日志备份路径
      *
      * @param nodeProjectInfoModel 项目
+     * @param originalModel        原始项目
      * @return file
      */
     public File resolveLogBack(NodeProjectInfoModel nodeProjectInfoModel, NodeProjectInfoModel originalModel) {

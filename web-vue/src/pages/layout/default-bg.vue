@@ -37,18 +37,87 @@
     </div>
 
     <div v-show="showFooter" class="footer">
-      <a-button type="text">
-        <a href="https://jpom.top" target="_blank">
-          Jpom ©2019-{{ new Date().getFullYear() }} Of Him Code Technology Studio
-        </a>
-      </a-button>
+      <a-space>
+        <template #split>
+          <a-divider type="vertical" />
+        </template>
+        <a-button type="text">
+          <a href="https://jpom.top" target="_blank">
+            Jpom ©2019-{{ new Date().getFullYear() }} Of Him Code Technology Studio
+          </a>
+        </a-button>
+        <a-dropdown>
+          <a-button type="text">
+            {{
+              supportLang.find((item) => {
+                return item.value === nowLang
+              })?.label
+            }}
+            <DownOutlined />
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item
+                v-for="item in supportLang"
+                :key="item.value"
+                :disabled="nowLang === item.value"
+                @click="useGuideStore.changeLocale(item.value)"
+              >
+                <span>
+                  <a-tooltip :title="`${item.label}(${item.value})`">
+                    {{ item.label }}
+                  </a-tooltip>
+                </span>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+        <a-dropdown>
+          <a-button type="text">
+            {{
+              useGuideStore.getSupportThemes.find((item) => {
+                return item.value === themeValue
+              })?.label
+            }}
+            <DownOutlined />
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item
+                v-for="item in useGuideStore.getSupportThemes"
+                :key="item.value"
+                :disabled="themeValue === item.value"
+                @click="useGuideStore.toggleThemeView(item.value)"
+              >
+                <span>
+                  <a-tooltip :title="`${item.label}(${item.value})`">
+                    {{ item.label }}
+                  </a-tooltip>
+                </span>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </a-space>
     </div>
   </div>
 </template>
-<script setup lang="ts">
-const guideStore1 = guideStore()
-const theme = computed(() => {
-  return guideStore1.getThemeView()
+<script lang="ts" setup>
+import { supportLang } from '@/i18n'
+
+const useGuideStore = guideStore()
+
+const themeValue = computed(() => {
+  return useGuideStore.getCatchThemeView()
+})
+
+const nowLang = computed({
+  get() {
+    return useGuideStore.getLocale()
+  },
+  set(newValue) {
+    useGuideStore.changeLocale(newValue)
+  }
 })
 
 defineProps({
@@ -60,7 +129,9 @@ defineProps({
 
 const backgroundImage = computed(() => {
   const color =
-    theme.value === 'light' ? 'linear-gradient(#1890ff, #66a9c9)' : 'linear-gradient(rgb(38 46 55), rgb(27 33 36))'
+    useGuideStore.getThemeView() === 'light'
+      ? 'linear-gradient(#1890ff, #66a9c9)'
+      : 'linear-gradient(rgb(38 46 55), rgb(27 33 36))'
 
   // background: linear-gradient(#1890ff, #66a9c9);
   return {

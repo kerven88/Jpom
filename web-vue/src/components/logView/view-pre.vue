@@ -21,7 +21,6 @@
     </RecycleScroller>
   </div>
 </template>
-
 <script>
 import ansiparse from '@/utils/parse-ansi'
 // import codeEditor from "@/components/codeEditor";
@@ -236,7 +235,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .log-view-wrapper {
   background: #292a2b;
@@ -248,14 +246,7 @@ export default {
 .scroller {
   height: 100%;
   width: 100%;
-  font-family:
-    Operator Mono,
-    Source Code Pro,
-    Menlo,
-    Monaco,
-    Consolas,
-    Courier New,
-    monospace;
+  font-family: Operator Mono, Source Code Pro, Menlo, Monaco, Consolas, Courier New, monospace;
   position: relative;
   overflow-y: scroll;
 }
@@ -263,11 +254,13 @@ export default {
   white-space: nowrap;
   position: unset;
 }
-.item {
-}
 .linenumber {
   color: #e6e6e6;
   padding-right: 4px;
   opacity: 0.6;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer/Edge */
+  user-select: none;
 }
 </style>

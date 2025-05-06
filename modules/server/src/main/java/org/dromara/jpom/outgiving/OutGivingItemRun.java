@@ -14,11 +14,13 @@ import cn.hutool.core.date.SystemClock;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.keepbx.jpom.model.JsonMessage;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.model.AfterOpt;
 import org.dromara.jpom.model.data.NodeModel;
 import org.dromara.jpom.model.log.OutGivingLog;
@@ -26,6 +28,7 @@ import org.dromara.jpom.model.outgiving.OutGivingModel;
 import org.dromara.jpom.model.outgiving.OutGivingNodeProject;
 import org.dromara.jpom.service.node.NodeService;
 import org.dromara.jpom.service.outgiving.DbOutGivingLogService;
+import org.dromara.jpom.util.StringUtil;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -49,6 +52,7 @@ public class OutGivingItemRun implements Callable<OutGivingNodeProject.Status> {
     private final String secondaryDirectory;
     private final Boolean closeFirst;
     private int stripComponents;
+    private String fileName;
 
     public OutGivingItemRun(OutGivingModel item,
                             OutGivingNodeProject outGivingNodeProject,
@@ -75,15 +79,16 @@ public class OutGivingItemRun implements Callable<OutGivingNodeProject.Status> {
         OutGivingNodeProject.Status result;
         long time = SystemClock.now();
         String fileSize = FileUtil.readableFileSize(file);
+        this.fileName = StrUtil.emptyToDefault(this.fileName, this.file.getName());
         try {
             if (this.outGivingNodeProject.getDisabled() != null && this.outGivingNodeProject.getDisabled()) {
                 // 禁用
-                this.updateStatus(this.outGivingId, OutGivingNodeProject.Status.Cancel, "当前项目被禁用");
+                this.updateStatus(this.outGivingId, OutGivingNodeProject.Status.Cancel, I18nMessageUtil.get("i18n.project_disabled.f8b3"));
                 return OutGivingNodeProject.Status.Cancel;
             }
-            this.updateStatus(this.outGivingId, OutGivingNodeProject.Status.Ing, "开始分发");
+            this.updateStatus(this.outGivingId, OutGivingNodeProject.Status.Ing, I18nMessageUtil.get("i18n.start_distribution.bce5"));
             //
-            JsonMessage<String> jsonMessage = OutGivingRun.fileUpload(file, this.secondaryDirectory,
+            JsonMessage<String> jsonMessage = OutGivingRun.fileUpload(file, this.fileName, this.secondaryDirectory,
                 this.outGivingNodeProject.getProjectId(),
                 unzip,
                 afterOpt,
@@ -103,14 +108,14 @@ public class OutGivingItemRun implements Callable<OutGivingNodeProject.Status> {
             result = jsonMessage.success() ? OutGivingNodeProject.Status.Ok : OutGivingNodeProject.Status.Fail;
 
             JSONObject jsonObject = jsonMessage.toJson();
-            jsonObject.put("upload_duration", new BetweenFormatter(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND, 2).format());
+            jsonObject.put("upload_duration", StringUtil.formatBetween(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND, 2));
             jsonObject.put("upload_file_size", fileSize);
             this.updateStatus(this.outGivingId, result, jsonObject.toString());
         } catch (Exception e) {
-            log.error("{} {} 分发异常保存", this.outGivingNodeProject.getNodeId(), this.outGivingNodeProject.getProjectId(), e);
+            log.error(I18nMessageUtil.get("i18n.distribution_exception_saving.8285"), this.outGivingNodeProject.getNodeId(), this.outGivingNodeProject.getProjectId(), e);
             result = OutGivingNodeProject.Status.Fail;
             JSONObject jsonObject = JsonMessage.toJson(500, e.getMessage());
-            jsonObject.put("upload_duration", new BetweenFormatter(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND, 2).format());
+            jsonObject.put("upload_duration", StringUtil.formatBetween(SystemClock.now() - time, BetweenFormatter.Level.MILLISECOND, 2));
             jsonObject.put("upload_file_size", fileSize);
             this.updateStatus(this.outGivingId, result, jsonObject.toString());
         }

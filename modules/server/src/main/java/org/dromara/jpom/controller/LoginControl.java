@@ -13,9 +13,10 @@ import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.LFUCache;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.captcha.CircleCaptcha;
+import cn.hutool.captcha.generator.CodeGenerator;
+import cn.hutool.captcha.generator.RandomGenerator;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.BetweenFormatter;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -37,6 +38,7 @@ import org.dromara.jpom.common.BaseServerController;
 import org.dromara.jpom.common.Const;
 import org.dromara.jpom.common.ServerConst;
 import org.dromara.jpom.common.ServerOpenApi;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.LoginInterceptor;
 import org.dromara.jpom.common.interceptor.NotLogin;
 import org.dromara.jpom.common.validator.ValidatorItem;
@@ -87,6 +89,8 @@ public class LoginControl extends BaseServerController implements InitializingBe
     private static final TimedCache<String, String> MFA_TOKEN = CacheUtil.newTimedCache(TimeUnit.MINUTES.toMillis(10));
 
     private static final String LOGIN_CODE = "login_code";
+    // 去重容易混淆的字符串，oO0、lL1、q9Q、pP，区分大小写
+    private static final CodeGenerator codeGenerator = new RandomGenerator("abcdefghjkmnrstuvwxyzABCDEFGHIJKMNRSTUVWXYZ2345678", 4);
 
     private final UserService userService;
     private final UserConfig userConfig;
@@ -109,7 +113,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
     @NotLogin
     public IJsonMessage<String> randCode(String theme) {
         if (webConfig.isDisabledCaptcha()) {
-            return new JsonMessage<>(400, "验证码已禁用");
+            return new JsonMessage<>(400, I18nMessageUtil.get("i18n.verification_code_disabled.349b"));
         }
         CircleCaptcha captcha = this.createCaptcha(theme);
         setSessionAttribute(LOGIN_CODE, captcha.getCode());
@@ -119,7 +123,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
 
     private CircleCaptcha createCaptcha(String theme) {
         int height = 50;
-        CircleCaptcha circleCaptcha = new CircleCaptcha(100, height, 4, 8);
+        CircleCaptcha circleCaptcha = new CircleCaptcha(100, height, codeGenerator, 8);
         if (StrUtil.equalsIgnoreCase(theme, "dark")) {
             circleCaptcha.setBackground(Color.darkGray);
         } else {
@@ -174,38 +178,38 @@ public class LoginControl extends BaseServerController implements InitializingBe
     @PostMapping(value = "userLogin", produces = MediaType.APPLICATION_JSON_VALUE)
     @NotLogin
     @Feature(cls = ClassFeature.USER, method = MethodFeature.EXECUTE, logResponse = false)
-    public IJsonMessage<Object> userLogin(@ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "请输入登录信息") String loginName,
-                                          @ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "请输入登录信息") String userPwd,
+    public IJsonMessage<Object> userLogin(@ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "i18n.login_info_required.973b") String loginName,
+                                          @ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "i18n.login_info_required.973b") String userPwd,
                                           String code,
                                           HttpServletRequest request) {
         if (this.ipLock()) {
-            return new JsonMessage<>(400, "尝试次数太多，请稍后再来");
+            return new JsonMessage<>(400, I18nMessageUtil.get("i18n.too_many_attempts.d88d"));
         }
         synchronized (loginName.intern()) {
             UserModel userModel = userService.getByKey(loginName);
             if (userModel == null) {
                 this.ipError();
-                return new JsonMessage<>(400, "登录失败，请输入正确的密码和账号,多次失败将锁定账号");
+                return new JsonMessage<>(400, I18nMessageUtil.get("i18n.login_failed_please_enter_correct_password_and_account.03b2"));
             }
             if (userModel.getStatus() != null && userModel.getStatus() == 0) {
                 userLoginLogServer.fail(userModel, 4, false, request);
-                return new JsonMessage<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP);
+                return new JsonMessage<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP.get());
             }
             if (!webConfig.isDisabledCaptcha()) {
                 // 获取验证码
                 String sCode = getSessionAttribute(LOGIN_CODE);
-                Assert.state(StrUtil.equalsIgnoreCase(code, sCode), "请输入正确的验证码");
+                Assert.state(StrUtil.equalsIgnoreCase(code, sCode), I18nMessageUtil.get("i18n.correct_verification_code_required.ff0d"));
                 removeSessionAttribute(LOGIN_CODE);
             }
             UserModel updateModel = null;
             try {
                 long lockTime = userModel.overLockTime(userConfig.getAlwaysLoginError());
                 if (lockTime > 0) {
-                    String msg = DateUtil.formatBetween(lockTime * 1000, BetweenFormatter.Level.SECOND);
+                    String msg = StringUtil.formatBetween(lockTime * 1000, BetweenFormatter.Level.SECOND);
                     updateModel = userModel.errorLock(userConfig.getAlwaysLoginError());
                     this.ipError();
                     userLoginLogServer.fail(userModel, 2, false, request);
-                    return new JsonMessage<>(400, "该账户登录失败次数过多，已被锁定" + msg + ",请不要再次尝试");
+                    return new JsonMessage<>(400, StrUtil.format(I18nMessageUtil.get("i18n.account_login_failed_too_many_times_locked.23b2"), msg));
                 }
                 // 验证
                 if (userService.simpleLogin(loginName, userPwd) != null) {
@@ -220,16 +224,16 @@ public class LoginControl extends BaseServerController implements InitializingBe
                         MFA_TOKEN.put(uuid, loginName);
                         jsonObject.put("tempToken", uuid);
                         userLoginLogServer.success(userModel, 5, true, request);
-                        return new JsonMessage<>(201, "请输入两步验证码", jsonObject);
+                        return new JsonMessage<>(201, I18nMessageUtil.get("i18n.two_step_verification_code_required.7e86"), jsonObject);
                     }
                     UserLoginDto userLoginDto = this.createToken(userModel);
                     userLoginLogServer.success(userModel, 0, false, request);
-                    return new JsonMessage<>(200, "登录成功", userLoginDto);
+                    return new JsonMessage<>(200, I18nMessageUtil.get("i18n.login_success.71fa"), userLoginDto);
                 } else {
                     updateModel = userModel.errorLock(userConfig.getAlwaysLoginError());
                     this.ipError();
                     userLoginLogServer.fail(userModel, 1, false, request);
-                    return new JsonMessage<>(501, "登录失败，请输入正确的密码和账号,多次失败将锁定账号");
+                    return new JsonMessage<>(501, I18nMessageUtil.get("i18n.login_failed_please_enter_correct_password_and_account.03b2"));
                 }
             } finally {
                 if (updateModel != null) {
@@ -267,7 +271,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
             AuthRequest authRequest = Oauth2Factory.get(provide);
             response.sendRedirect(authRequest.authorize(null));
         } catch (Exception e) {
-            log.warn("跳转 oauth2 失败，{} {}", provide, e.getMessage());
+            log.warn(I18nMessageUtil.get("i18n.oauth2_redirect_failed.6dcd"), provide, e.getMessage());
             ServletUtil.write(response, JsonMessage.getString(500, e.getMessage()), ContentType.JSON.toString());
         }
     }
@@ -302,12 +306,12 @@ public class LoginControl extends BaseServerController implements InitializingBe
                 if (oauth2Config.autoCreteUser()) {
                     userModel = this.createUser(username, authUser, provide, oauth2Config.getPermissionGroup());
                 } else {
-                    return new JsonMessage<>(400, username + " 用户不存在请联系管理创建");
+                    return new JsonMessage<>(400, username + I18nMessageUtil.get("i18n.user_does_not_exist.8363"));
                 }
             }
             if (userModel.getStatus() != null && userModel.getStatus() == 0) {
                 userLoginLogServer.fail(userModel, 4, false, request);
-                return new JsonMessage<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP);
+                return new JsonMessage<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP.get());
             }
             //
             UserModel updateModel = UserModel.unLock(userModel.getId());
@@ -315,9 +319,9 @@ public class LoginControl extends BaseServerController implements InitializingBe
             //
             UserLoginDto userLoginDto = this.createToken(userModel);
             userLoginLogServer.success(userModel, 6, false, request);
-            return JsonMessage.success("登录成功", userLoginDto);
+            return JsonMessage.success(I18nMessageUtil.get("i18n.login_success.71fa"), userLoginDto);
         }
-        return new JsonMessage<>(400, "OAuth 2 登录失败,请联系管理员！" + authResponse.getMsg());
+        return new JsonMessage<>(400, I18nMessageUtil.get("i18n.login_failure_O_auth2_message.3e91") + authResponse.getMsg());
     }
 
     /**
@@ -339,7 +343,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
         if (Validator.isGeneral(uuid, UserModel.USER_NAME_MIN_LEN, Const.ID_MAX_LEN)) {
             return uuid;
         }
-        throw new IllegalStateException("OAuth 2 登录失败,平台账号不符合本系统要求");
+        throw new IllegalStateException(I18nMessageUtil.get("i18n.oauth2_login_failure.3841"));
     }
 
     /**
@@ -357,7 +361,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
         where.setSystemUser(1);
         List<UserModel> userModels = userService.listByBean(where);
         UserModel first = CollUtil.getFirst(userModels);
-        Assert.notNull(first, "没有找到系统管理员");
+        Assert.notNull(first, I18nMessageUtil.get("i18n.system_admin_not_found.6f6c"));
         UserModel userModel = new UserModel();
         userModel.setName(StrUtil.emptyToDefault(authUser.getNickname(), authUser.getUsername()));
         userModel.setId(username);
@@ -382,7 +386,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
     private UserLoginDto createToken(UserModel userModel) {
         // 判断工作空间
         List<UserWorkspaceModel> bindWorkspaceModels = userService.myWorkspace(userModel);
-        Assert.notEmpty(bindWorkspaceModels, "当前账号没有绑定任何工作空间，请联系管理员处理");
+        Assert.notEmpty(bindWorkspaceModels, I18nMessageUtil.get("i18n.account_not_bound_to_any_workspace.fd61"));
         UserLoginDto userLoginDto = userService.getUserJwtId(userModel);
         // UserLoginDto userLoginDto = new UserLoginDto(JwtUtil.builder(userModel, jwtId), jwtId);
         userLoginDto.setBindWorkspaceModels(bindWorkspaceModels);
@@ -396,16 +400,16 @@ public class LoginControl extends BaseServerController implements InitializingBe
     public IJsonMessage<UserLoginDto> mfaVerify(String token, String code, HttpServletRequest request) {
         String userId = MFA_TOKEN.get(token);
         if (StrUtil.isEmpty(userId)) {
-            return new JsonMessage<>(201, "登录信息已经过期请重新登录");
+            return new JsonMessage<>(201, I18nMessageUtil.get("i18n.login_info_expired_please_re_login.fbbc"));
         }
         boolean mfaCode = userService.verifyMfaCode(userId, code);
-        Assert.state(mfaCode, "验证码不正确,请重新输入");
+        Assert.state(mfaCode, I18nMessageUtil.get("i18n.verification_code_incorrect_retry.d88d"));
         UserModel userModel = userService.getByKey(userId);
         //
         UserLoginDto userLoginDto = this.createToken(userModel);
         MFA_TOKEN.remove(token);
         userLoginLogServer.success(userModel, 0, true, request);
-        return JsonMessage.success("登录成功", userLoginDto);
+        return JsonMessage.success(I18nMessageUtil.get("i18n.login_success.71fa"), userLoginDto);
     }
 
     /**
@@ -417,7 +421,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
     @NotLogin
     public IJsonMessage<Object> logout(HttpSession session) {
         session.invalidate();
-        return JsonMessage.success("退出成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.exit_successful.8150"));
     }
 
     /**
@@ -430,18 +434,18 @@ public class LoginControl extends BaseServerController implements InitializingBe
     public IJsonMessage<UserLoginDto> renewalToken(HttpServletRequest request) {
         String token = request.getHeader(ServerOpenApi.HTTP_HEAD_AUTHORIZATION);
         if (StrUtil.isEmpty(token)) {
-            return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "刷新token失败");
+            return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, I18nMessageUtil.get("i18n.refresh_token_failure.de7f"));
         }
         JWT jwt = JwtUtil.readBody(token);
         if (JwtUtil.expired(jwt, 0)) {
             int renewal = userConfig.getTokenRenewal();
             if (jwt == null || renewal <= 0 || JwtUtil.expired(jwt, TimeUnit.MINUTES.toSeconds(renewal))) {
-                return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "刷新token超时");
+                return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, I18nMessageUtil.get("i18n.refresh_token_timeout.3291"));
             }
         }
         UserModel userModel = userService.checkUser(JwtUtil.getId(jwt));
         if (userModel == null) {
-            return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "没有对应的用户");
+            return new JsonMessage<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, I18nMessageUtil.get("i18n.no_user.3b69"));
         }
         UserLoginDto userLoginDto = userService.getUserJwtId(userModel);
         userLoginLogServer.success(userModel, 3, false, request);
@@ -474,9 +478,9 @@ public class LoginControl extends BaseServerController implements InitializingBe
     public void afterPropertiesSet() throws Exception {
         try {
             this.createCaptcha(null);
-            log.debug("当前服务器验证码可用");
+            log.debug(I18nMessageUtil.get("i18n.server_captcha_available.5570"));
         } catch (Throwable e) {
-            log.warn("当前服务器生成验证码异常,自动禁用验证码", e);
+            log.warn(I18nMessageUtil.get("i18n.server_captcha_generation_exception.54d0"), e);
             webConfig.setDisabledCaptcha(true);
         }
     }

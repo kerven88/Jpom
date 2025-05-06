@@ -3,10 +3,15 @@
     <a-tabs tab-position="left" @change="changeTabs">
       <template #leftExtra>
         <a-space>
-          <a-statistic-countdown format=" s 秒后刷新" title="" :value="countdownTime" @finish="pullNodeData" />
+          <a-statistic-countdown format="s" title="" :value="countdownTime" @finish="pullNodeData">
+            <template #suffix>
+              <div style="font-size: 12px">{{ $t('i18n_ff80d2671c') }}</div>
+            </template>
+          </a-statistic-countdown>
+          <!-- <a-statistic-countdown title="" :value="countdownTime" @finish="pullNodeData" /> -->
         </a-space>
       </template>
-      <a-tab-pane key="info" tab="基础信息">
+      <a-tab-pane key="info" :tab="$t('i18n_6ea1fe6baa')">
         <a-card size="small">
           <template #title>
             {{ machineInfo && machineInfo.name }}
@@ -17,13 +22,13 @@
               :color="machineInfo && machineInfo.status === 1 ? 'green' : 'pink'"
               style="margin-right: 0"
             >
-              {{ statusMap[machineInfo && machineInfo.status] || '未知' }}
+              {{ statusMap[machineInfo && machineInfo.status] || $t('i18n_1622dc9b6b') }}
             </a-tag>
           </template>
           <a-space direction="vertical" style="display: block">
             <a-alert
               v-if="machineInfo && machineInfo.status !== 1"
-              message="状态描述"
+              :message="$t('i18n_920f05031b')"
               :description="(machineInfo && machineInfo.statusMsg) || ''"
               type="warning"
               show-icon
@@ -31,25 +36,25 @@
             <a-descriptions :column="4" :bordered="true">
               <template #title> </template>
 
-              <a-descriptions-item label="系统名" :span="2">{{
+              <a-descriptions-item :label="$t('i18n_cdc478d90c')" :span="2">{{
                 machineInfo && machineInfo.osName
               }}</a-descriptions-item>
-              <a-descriptions-item label="系统版本" :span="2">{{
+              <a-descriptions-item :label="$t('i18n_1857e7024c')" :span="2">{{
                 machineInfo && machineInfo.osVersion
               }}</a-descriptions-item>
-              <a-descriptions-item label="硬件信息" :span="2">
+              <a-descriptions-item :label="$t('i18n_375f853ad6')" :span="2">
                 {{ machineInfo && machineInfo.osHardwareVersion }}
               </a-descriptions-item>
-              <a-descriptions-item label="CPU型号" :span="2">
+              <a-descriptions-item :label="$t('i18n_899dbd7b9a')" :span="2">
                 {{ machineInfo && machineInfo.osCpuIdentifierName }}
               </a-descriptions-item>
-              <a-descriptions-item label="主机名" :span="2">
+              <a-descriptions-item :label="$t('i18n_6707667676')" :span="2">
                 {{ machineInfo && machineInfo.hostName }}
               </a-descriptions-item>
               <a-descriptions-item label="IPV4" :span="2">
                 <template v-if="machineInfo && machineInfo.ipv4List && machineInfo.ipv4List.length">
                   {{ machineInfo && machineInfo.ipv4List[0] }}
-                  <a-popover title="所有的IPV4列表">
+                  <a-popover :title="$t('i18n_b5c5078a5d')">
                     <template #content>
                       <p v-for="item in machineInfo && machineInfo.ipv4List" :key="item">
                         {{ item }}
@@ -63,50 +68,58 @@
                   </a-popover>
                 </template>
               </a-descriptions-item>
-              <a-descriptions-item label="CPU数">{{ machineInfo && machineInfo.osCpuCores }} </a-descriptions-item>
-              <a-descriptions-item label="内存"
+              <a-descriptions-item :label="$t('i18n_067638bede')"
+                >{{ machineInfo && machineInfo.osCpuCores }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_9932551cd5')"
                 >{{ renderSize(machineInfo && machineInfo.osMoneyTotal) }}
               </a-descriptions-item>
-              <a-descriptions-item label="虚拟内存"
+              <a-descriptions-item :label="$t('i18n_844296754e')"
                 >{{ renderSize(machineInfo && machineInfo.osVirtualMax) }}
               </a-descriptions-item>
-              <a-descriptions-item label="交换内存"
+              <a-descriptions-item :label="$t('i18n_5a879a657b')"
                 >{{ renderSize(machineInfo && machineInfo.osSwapTotal) }}
               </a-descriptions-item>
-              <a-descriptions-item label="硬盘"
+              <a-descriptions-item :label="$t('i18n_1d650a60a5')"
                 >{{ renderSize(machineInfo && machineInfo.osFileStoreTotal) }}
               </a-descriptions-item>
 
-              <a-descriptions-item label="负载">{{ machineInfo && machineInfo.osLoadAverage }} </a-descriptions-item>
-              <a-descriptions-item label="系统运行时间"
+              <a-descriptions-item :label="$t('i18n_4956eb6aaa')"
+                >{{ machineInfo && machineInfo.osLoadAverage }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_efb88b3927')"
                 >{{ formatDuration(((machineInfo && machineInfo.osSystemUptime) || 0) * 1000, '', 3) }}
               </a-descriptions-item>
-              <a-descriptions-item label="插件版本">{{ machineInfo && machineInfo.jpomVersion }} </a-descriptions-item>
-              <a-descriptions-item label="插件运行时间"
+              <a-descriptions-item :label="$t('i18n_a912a83e6f')"
+                >{{ machineInfo && machineInfo.jpomVersion }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_04a8742dd7')"
                 >{{ formatDuration(machineInfo && machineInfo.jpomUptime, '', 3) }}
               </a-descriptions-item>
-              <a-descriptions-item label="插件构建时间"
+              <a-descriptions-item :label="$t('i18n_efd32e870d')"
                 >{{ machineInfo && machineInfo.jpomBuildTime }}
               </a-descriptions-item>
-              <a-descriptions-item label="JDK版本">{{ machineInfo && machineInfo.javaVersion }} </a-descriptions-item>
-              <a-descriptions-item label="JVM总内存"
+              <a-descriptions-item :label="$t('i18n_6106de3d87')"
+                >{{ machineInfo && machineInfo.javaVersion }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_1818e9c264')"
                 >{{ renderSize(machineInfo && machineInfo.jvmTotalMemory) }}
               </a-descriptions-item>
-              <a-descriptions-item label="JVM剩余内存"
+              <a-descriptions-item :label="$t('i18n_5bb162ecbb')"
                 >{{ renderSize(machineInfo && machineInfo.jvmFreeMemory) }}
               </a-descriptions-item>
 
-              <a-descriptions-item label="项目数"
+              <a-descriptions-item :label="$t('i18n_607558dbd4')"
                 >{{ machineInfo && machineInfo.jpomProjectCount }}
               </a-descriptions-item>
-              <a-descriptions-item label="脚本数"
+              <a-descriptions-item :label="$t('i18n_e39f4a69f4')"
                 >{{ machineInfo && machineInfo.jpomScriptCount }}
               </a-descriptions-item>
-              <a-descriptions-item label="网络延迟"
+              <a-descriptions-item :label="$t('i18n_204222d167')"
                 >{{ formatDuration(machineInfo && machineInfo.networkDelay) }}
               </a-descriptions-item>
 
-              <a-descriptions-item label="硬盘占用" :span="4">
+              <a-descriptions-item :label="$t('i18n_ed145eba38')" :span="4">
                 <a-progress
                   :stroke-color="{
                     '0%': '#87d068',
@@ -115,7 +128,7 @@
                   :percent="formatPercent2Number((machineInfo && machineInfo.osOccupyDisk) || 0)"
                 />
               </a-descriptions-item>
-              <a-descriptions-item label="实际内存占用" :span="4">
+              <a-descriptions-item :label="$t('i18n_883848dd37')" :span="4">
                 <a-progress
                   :stroke-color="{
                     '0%': '#87d068',
@@ -124,7 +137,7 @@
                   :percent="formatPercent2Number((machineInfo && machineInfo.osOccupyMemory) || 0)"
                 />
               </a-descriptions-item>
-              <a-descriptions-item label="CPU占用" :span="4">
+              <a-descriptions-item :label="$t('i18n_80669da961')" :span="4">
                 <a-progress
                   :stroke-color="{
                     '0%': '#87d068',
@@ -137,30 +150,68 @@
           </a-space>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane key="stat" tab="统计趋势">
+      <a-tab-pane key="stat" :tab="$t('i18n_aa9236568f')">
         <a-space v-if="nodeMonitorLoadStatus === 1" direction="vertical" style="width: 100%">
-          <a-card size="small" title="基础信息">
+          <a-card size="small" :title="$t('i18n_6ea1fe6baa')">
             <template #extra>
               <a-button v-if="historyChart" size="small" type="primary" @click="handleHistory('')">
-                <AreaChartOutlined />历史监控图表
+                <AreaChartOutlined />{{ $t('i18n_5068552b18') }}
               </a-button>
             </template>
             <!-- top 图表 -->
             <div id="top-chart" class="chart">loading...</div>
           </a-card>
-          <a-card size="small" title="网络流量信息">
+          <a-card size="small">
+            <template #title>
+              <a-space :size="4">
+                <template #split>
+                  <a-divider type="vertical" />
+                </template>
+                {{ $t('i18n_102e8ec6d5') }}
+                <template v-if="monitorConfig?.network?.statExcludeNames">
+                  <span>
+                    {{ $t('i18n_503660aa89') }}
+                    <a-tag v-for="item in monitorConfig?.network?.statExcludeNames?.split(',')">
+                      {{ item }}
+                    </a-tag>
+                  </span>
+                </template>
+                <template v-if="monitorConfig?.network?.statContainsOnlyNames">
+                  <span>
+                    {{ $t('i18n_bb7eeae618') }}
+                    <a-tag v-for="item in monitorConfig?.network?.statContainsOnlyNames?.split(',')">
+                      {{ item }}
+                    </a-tag>
+                  </span>
+                </template>
+                <a-popover>
+                  <template #title>{{ $t('i18n_fb8fb9cc46') }} </template>
+                  <template #content>
+                    <b>{{ $t('i18n_13f7bb78ef') }}</b>
+                    <div>
+                      {{ $t('i18n_475cd76aec') }}
+                      <a-tag v-for="item in JSON.parse(machineInfo?.extendInfo || '{}')?.monitorIfsNames?.split(',')">
+                        {{ item }}
+                      </a-tag>
+                    </div>
+                  </template>
+                  <QuestionCircleOutlined />
+                </a-popover>
+              </a-space>
+            </template>
             <template #extra>
               <a-button v-if="netHistoryChart" size="small" type="primary" @click="handleHistory('network-stat')">
-                <AreaChartOutlined />历史监控图表
+                <AreaChartOutlined />
+                {{ $t('i18n_5068552b18') }}
               </a-button>
             </template>
             <!-- 网络流量图表 -->
             <div id="net-chart" class="chart">loading...</div>
           </a-card>
-          <a-card size="small" title="机器延迟">
+          <a-card size="small" :title="$t('i18n_bbbaeb32fc')">
             <template #extra>
               <a-button v-if="networkDelayChart" size="small" type="primary" @click="handleHistory('networkDelay')">
-                <AreaChartOutlined />历史监控图表
+                <AreaChartOutlined />{{ $t('i18n_5068552b18') }}
               </a-button>
             </template>
             <!-- 机器延迟 图表 -->
@@ -170,12 +221,12 @@
         <a-empty
           v-else-if="nodeMonitorLoadStatus === -1"
           :image="Empty.PRESENTED_IMAGE_SIMPLE"
-          description="当前机器还未监控到任何数据"
+          :description="$t('i18n_536206b587')"
         >
         </a-empty>
         <a-skeleton v-else />
       </a-tab-pane>
-      <a-tab-pane key="process" tab="系统进程">
+      <a-tab-pane key="process" :tab="$t('i18n_d6a5b67779')">
         <a-card size="small">
           <template #title>
             <a-row>
@@ -187,17 +238,17 @@
                     sel-style="width: 200px !important"
                     :data="processNames"
                     :popup-container-parent="false"
-                    input-placeholder="自定义进程类型"
-                    select-placeholder="选择进程名"
+                    :input-placeholder="$t('i18n_2493ff1a29')"
+                    :select-placeholder="$t('i18n_bab17dc6b1')"
                     @change="loadNodeProcess"
                     @add-option="addNodeProcess"
                   >
                     <template #suffixIcon> <DownOutlined /></template>
                   </custom-select>
-                  <a-tooltip title="查看的进程数量">
+                  <a-tooltip :title="$t('i18n_5dc7b04caa')">
                     <a-input-number v-model:value="processSearch.processCount" :min="1" @change="loadNodeProcess" />
                   </a-tooltip>
-                  <a-tooltip title="重置自定义的进程名信息">
+                  <a-tooltip :title="$t('i18n_8400529cfb')">
                     <RestOutlined @click="restProcessNames" />
                   </a-tooltip>
                 </a-space>
@@ -251,7 +302,7 @@
           </a-table>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane key="disk" tab="文件系统">
+      <a-tab-pane key="disk" :tab="$t('i18n_8dc8bbbc20')">
         <a-table
           size="middle"
           :loading="diskLoading"
@@ -287,23 +338,31 @@
           </template>
         </a-table>
       </a-tab-pane>
-      <a-tab-pane key="hw-disk" tab="硬件硬盘">
+      <a-tab-pane key="hw-disk" :tab="$t('i18n_dacc2e0e62')">
         <a-collapse>
           <a-collapse-panel v-for="item in hwDiskList" :key="item.uuid">
             <template #header>
               <a-page-header :title="item.name" :back-icon="false">
                 <template #subTitle> {{ item.model }} </template>
                 <a-descriptions size="small" :column="4">
-                  <a-descriptions-item label="序号">{{ item.serial }}</a-descriptions-item>
-                  <a-descriptions-item label="大小">{{ renderSize(item.size) }}</a-descriptions-item>
-                  <a-descriptions-item label="运行时间">{{ formatDuration(item.transferTime) }}</a-descriptions-item>
-                  <a-descriptions-item label="队列数"> {{ item.currentQueueLength }} </a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_faaadc447b')">{{ item.serial }}</a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_58f9666705')">{{ renderSize(item.size) }}</a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_9f70e40e04')">{{
+                    formatDuration(item.transferTime)
+                  }}</a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_e63fb95deb')">
+                    {{ item.currentQueueLength }}
+                  </a-descriptions-item>
                 </a-descriptions>
                 <a-descriptions size="small" :column="4">
-                  <a-descriptions-item label="写入大小"> {{ renderSize(item.writeBytes) }} </a-descriptions-item>
-                  <a-descriptions-item label="写入次数">{{ item.writes }}</a-descriptions-item>
-                  <a-descriptions-item label="读取大小"> {{ renderSize(item.readBytes) }} </a-descriptions-item>
-                  <a-descriptions-item label="读取次数">{{ item.reads }}</a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_8900539e06')">
+                    {{ renderSize(item.writeBytes) }}
+                  </a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_8fda053c83')">{{ item.writes }}</a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_86f3ec932c')">
+                    {{ renderSize(item.readBytes) }}
+                  </a-descriptions-item>
+                  <a-descriptions-item :label="$t('i18n_3b14c524f6')">{{ item.reads }}</a-descriptions-item>
                 </a-descriptions>
               </a-page-header>
             </template>
@@ -330,7 +389,7 @@
           </a-collapse-panel>
         </a-collapse>
       </a-tab-pane>
-      <a-tab-pane key="networkInterfaces" tab="网卡信息">
+      <a-tab-pane key="networkInterfaces" :tab="$t('i18n_0ac4999a4c')">
         <a-collapse v-if="networkInterfaces && networkInterfaces.length">
           <a-collapse-panel v-for="(item, index) in networkInterfaces" :key="index">
             <template #header>
@@ -396,8 +455,10 @@
               <a-descriptions-item label="MTU">
                 {{ item.mtu }}
               </a-descriptions-item>
-              <a-descriptions-item label="速度">{{ renderBpsSize(item.speed) }} </a-descriptions-item>
-              <a-descriptions-item label="虚拟MAC">{{ item.knownVmMacAddr ? '是' : '否' }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_03f38597a6')">{{ renderBpsSize(item.speed) }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_2a3b06a91a')"
+                >{{ item.knownVmMacAddr ? $t('i18n_0a60ac8f02') : $t('i18n_c9744f45e7') }}
+              </a-descriptions-item>
 
               <a-descriptions-item label="IPV4" :span="4">
                 <a-tag v-for="ipItem in item.ipv4addr || []" :key="ipItem">{{ ipItem }}</a-tag>
@@ -405,27 +466,32 @@
               <a-descriptions-item label="IPV6" :span="4">
                 <a-tag v-for="ipItem in item.ipv6addr || []" :key="ipItem">{{ ipItem }}</a-tag>
               </a-descriptions-item>
-              <a-descriptions-item label="接收包">{{ item.packetsRecv }} </a-descriptions-item>
-              <a-descriptions-item label="接收大小">{{ renderSize(item.bytesRecv) }} </a-descriptions-item>
-              <a-descriptions-item label="接收错误">{{ item.inErrors }} </a-descriptions-item>
-              <a-descriptions-item label="丢弃包">{{ item.tnDrops }} </a-descriptions-item>
-              <a-descriptions-item label="发送包">{{ item.packetsSent }} </a-descriptions-item>
-              <a-descriptions-item label="发送大小">{{ renderSize(item.bytesSent) }} </a-descriptions-item>
-              <a-descriptions-item label="发送错误">{{ item.outErrors }} </a-descriptions-item>
-              <a-descriptions-item label="冲突数">{{ item.collisions }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_7bcbf81120')">{{ item.packetsRecv }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_c6a3ebf3c4')"
+                >{{ renderSize(item.bytesRecv) }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_05cfc9af9d')">{{ item.inErrors }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_5ef040a79d')">{{ item.tnDrops }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_00b04e1bf0')">{{ item.packetsSent }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_020d17aac6')"
+                >{{ renderSize(item.bytesSent) }}
+              </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_235f0b52a1')">{{ item.outErrors }} </a-descriptions-item>
+              <a-descriptions-item :label="$t('i18n_3f719b3e32')">{{ item.collisions }} </a-descriptions-item>
             </a-descriptions>
           </a-collapse-panel>
         </a-collapse>
-        <a-empty v-else description="没有任何网络接口信息" />
+        <a-empty v-else :description="$t('i18n_aa53a4b93a')" />
       </a-tab-pane>
     </a-tabs>
 
     <!-- 历史监控 -->
-    <a-modal
+    <CustomModal
+      v-if="monitorVisible.visible"
       v-model:open="monitorVisible.visible"
       destroy-on-close
       width="75%"
-      title="历史监控图表"
+      :title="$t('i18n_5068552b18')"
       :footer="null"
       :mask-closable="false"
     >
@@ -435,10 +501,9 @@
         :machine-id="machineId"
         :type="monitorVisible.type"
       ></node-top>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { nodeMonitorData, getProcessList, killPid } from '@/api/node'
 import {
@@ -462,7 +527,7 @@ import {
   machineNetworkInterfaces
 } from '@/api/node-stat'
 import { Empty } from 'ant-design-vue'
-import { statusMap } from '@/api/system/assets-machine'
+import { statusMap, machineMonitorConfig } from '@/api/system/assets-machine'
 import { useGuideStore } from '@/stores/guide'
 import { mapState } from 'pinia'
 export default {
@@ -510,21 +575,21 @@ export default {
           tooltip: true
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           width: '80px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '端口',
+          title: this.$t('i18n_c76cfefe72'),
           dataIndex: 'port',
           width: '100px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '所有者',
+          title: this.$t('i18n_b05345caad'),
           dataIndex: 'user',
           width: '100px',
           ellipsis: true,
@@ -532,14 +597,14 @@ export default {
         },
 
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'state',
           width: '80px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '虚拟内存',
+          title: this.$t('i18n_844296754e'),
           dataIndex: 'virtualSize',
           width: '100px',
           ellipsis: true,
@@ -553,56 +618,56 @@ export default {
           percentTooltip: true
         },
         {
-          title: '驻留集',
+          title: this.$t('i18n_4b5e6872ea'),
           dataIndex: 'residentSetSize',
           width: '100px',
           ellipsis: true,
           sizeTooltip: true
         },
         {
-          title: '优先级',
+          title: this.$t('i18n_ee8ecb9ee0'),
           dataIndex: 'priority',
           width: '80px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '启动时间',
+          title: this.$t('i18n_86cd8dcead'),
           dataIndex: 'startTime',
           width: '180px',
           ellipsis: true,
           timeTooltip: true
         },
         {
-          title: '运行时间',
+          title: this.$t('i18n_9f70e40e04'),
           dataIndex: 'upTime',
           width: '100px',
           ellipsis: true,
           durationTooltip: true
         },
         {
-          title: '用户时间',
+          title: this.$t('i18n_a1e24fe1f6'),
           dataIndex: 'userTime',
           width: '100px',
           ellipsis: true,
           durationTooltip: true
         },
         {
-          title: '路径',
+          title: this.$t('i18n_4f35e80da6'),
           dataIndex: 'path',
           width: '180px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '启动命令',
+          title: this.$t('i18n_c99a2f7ed8'),
           dataIndex: 'commandLine',
           width: '180px',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
 
           align: 'center',
@@ -610,6 +675,7 @@ export default {
           fixed: 'right'
         }
       ],
+
       diskColumns: [
         {
           title: 'uuid',
@@ -618,61 +684,61 @@ export default {
           tooltip: true
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '卷',
+          title: this.$t('i18n_7088e18ac9'),
           dataIndex: 'mount',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '文件系统类型',
+          title: this.$t('i18n_73a87230e0'),
           dataIndex: 'type',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '描述',
+          title: this.$t('i18n_3bdd08adab'),
           dataIndex: 'description',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '剩余空间(未分配)',
+          title: this.$t('i18n_48735a5187'),
           dataIndex: 'freeSpace',
           ellipsis: true,
           sizeTooltip: true
         },
         {
-          title: '剩余空间',
+          title: this.$t('i18n_d88651584f'),
           dataIndex: 'usableSpace',
           ellipsis: true,
           sizeTooltip: true
         },
         {
-          title: '总空间',
+          title: this.$t('i18n_627c952b5e'),
           dataIndex: 'totalSpace',
           ellipsis: true,
           sizeTooltip: true
         },
         {
-          title: '剩余 inode 数',
+          title: this.$t('i18n_ba52103711'),
           dataIndex: 'freeInodes',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '总 inode 数',
+          title: this.$t('i18n_7293bbb0ff'),
           dataIndex: 'totalInodes',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '选项',
+          title: this.$t('i18n_ea15ae2b7f'),
           dataIndex: 'options',
           ellipsis: true,
           tooltip: true
@@ -681,43 +747,43 @@ export default {
 
       hwDiskPartitionColumns: [
         {
-          title: '分区ID',
+          title: this.$t('i18n_7b36b18865'),
           dataIndex: 'identification',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '挂载分区',
+          title: this.$t('i18n_42f766b273'),
           dataIndex: 'mountPoint',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '类型',
+          title: this.$t('i18n_226b091218'),
           dataIndex: 'type',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '大小',
+          title: this.$t('i18n_58f9666705'),
           dataIndex: 'size',
           ellipsis: true,
           sizeTooltip: true
         },
         {
-          title: '主要ID',
+          title: this.$t('i18n_5d14e91b01'),
           dataIndex: 'major',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '次要ID',
+          title: this.$t('i18n_e9c2cb1326'),
           dataIndex: 'minor',
           ellipsis: true,
           tooltip: true
@@ -729,6 +795,7 @@ export default {
           tooltip: true
         }
       ],
+
       refreshInterval: 5,
       historyChart: null,
       netHistoryChart: null,
@@ -736,7 +803,8 @@ export default {
       countdownTime: Date.now(),
       machineInfo: null,
       networkInterfaces: [],
-      nodeMonitorLoadStatus: 0
+      nodeMonitorLoadStatus: 0,
+      monitorConfig: {}
     }
   },
   computed: {
@@ -814,6 +882,12 @@ export default {
       //this.refreshInterval = this.getCacheNode("refreshInterval", this.refreshInterval);
       //
       this.pullNodeData()
+      // 监控配置
+      machineMonitorConfig({
+        id: this.machineId
+      }).then((res) => {
+        this.monitorConfig = res.data || {}
+      })
     },
     pullNodeData() {
       this.loadNodeTop()
@@ -887,11 +961,11 @@ export default {
     // kill pid
     kill(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要 Kill 这个进程么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_1eb378860a'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return killPid({
             ...this.idInfo,
@@ -972,7 +1046,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .chart {
   height: 35vh;

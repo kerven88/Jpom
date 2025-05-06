@@ -15,7 +15,9 @@
                 <template v-if="sshData.host">({{ sshData.host }})</template>
               </div>
 
-              <a-button size="small" type="primary" :disabled="!sshData.fileDirs" @click="handleFile()">文件</a-button>
+              <a-button size="small" type="primary" :disabled="!sshData.fileDirs" @click="handleFile()">{{
+                $t('i18n_2a0c4740f1')
+              }}</a-button>
             </a-space>
           </template>
           <template v-else>loading</template>
@@ -25,10 +27,10 @@
         </template>
         <terminal1 v-if="sshData" :ssh-id="sshData.id" />
         <template v-else>
-          <a-result status="404" title="不能操作" sub-title="没有对应的SSH">
+          <a-result status="404" :title="$t('i18n_bda44edeb5')" :sub-title="$t('i18n_729eebb5ff')">
             <template #extra>
               <router-link :to="{ path: '/ssh', query: {} }">
-                <a-button type="primary">返回首页</a-button>
+                <a-button type="primary">{{ $t('i18n_5a1367058c') }}</a-button>
               </router-link>
             </template>
           </a-result>
@@ -36,15 +38,21 @@
       </a-card>
     </a-spin>
     <!-- 文件管理 -->
-    <a-drawer v-if="sshData" destroy-on-close placement="right" width="90vw" :open="drawerVisible" @close="onClose">
+    <CustomDrawer
+      v-if="sshData && drawerVisible"
+      destroy-on-close
+      placement="right"
+      width="90vw"
+      :open="drawerVisible"
+      @close="onClose"
+    >
       <template #title>
-        {{ sshData.name }}<template v-if="sshData.host"> ({{ sshData.host }}) </template>文件管理
+        {{ sshData.name }}<template v-if="sshData.host"> ({{ sshData.host }}) </template>{{ $t('i18n_8780e6b3d1') }}
       </template>
       <ssh-file v-if="drawerVisible" :ssh-id="sshData.id" />
-    </a-drawer>
+    </CustomDrawer>
   </div>
 </template>
-
 <script>
 import terminal1 from './terminal'
 import { getItem } from '@/api/ssh'

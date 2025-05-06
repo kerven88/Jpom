@@ -11,10 +11,12 @@ package org.dromara.jpom.model;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.dromara.jpom.common.Const;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.function.Consumer;
  */
 public class EnvironmentMapBuilder {
 
+
     private final Map<String, Item> map;
 
     public EnvironmentMapBuilder(int initialCapacity) {
@@ -42,7 +45,20 @@ public class EnvironmentMapBuilder {
     }
 
     public EnvironmentMapBuilder put(String name, String value) {
-        map.put(name, new Item(value, false));
+        map.put(name, new Item(value, false, false));
+        return this;
+    }
+
+    /**
+     * 系统变量
+     *
+     * @param name  变量名
+     * @param value 值
+     * @return this
+     */
+    public EnvironmentMapBuilder putSystem(String name, String value) {
+        boolean privacy = StrUtil.containsAnyIgnoreCase(name, Const.PRIVACY_VARIABLE_KEYWORDS);
+        map.put(name, new Item(value, privacy, true));
         return this;
     }
 
@@ -113,7 +129,7 @@ public class EnvironmentMapBuilder {
         consumer.accept("##################################################################################");
         for (Map.Entry<String, Item> entry : map.entrySet()) {
             Item entryValue = entry.getValue();
-            String value = entryValue.privacy ? "******" : entryValue.value;
+            String value = entryValue.privacy ? Const.PRIVACY_PLACEHOLDER : entryValue.value;
             consumer.accept(entry.getKey() + "=" + value);
         }
         Optional.ofNullable(appendMap).ifPresent(objectMap -> {
@@ -152,8 +168,38 @@ public class EnvironmentMapBuilder {
         return BooleanUtil.toBoolean(value);
     }
 
+    /**
+     * 将对象转 json
+     *
+     * @return 原始对象
+     */
     public String toDataJsonStr() {
         return JSONObject.toJSONString(map);
+    }
+
+    /**
+     * 将对象转隐私 json
+     *
+     * @return 隐私变量自动隐藏对象
+     */
+    public String toPrivacyDataJsonStr() {
+        Map<String, Item> clone = clonePrivacyData();
+        return JSONObject.toJSONString(clone);
+    }
+
+    /**
+     * 将对象转隐私 json
+     *
+     * @return 隐私变量自动隐藏对象
+     */
+    public Map<String, Item> clonePrivacyData() {
+        Map<String, Item> clone = ObjectUtil.clone(map);
+        clone.forEach((k, v) -> {
+            if (v.privacy) {
+                v.value = Const.PRIVACY_PLACEHOLDER;
+            }
+        });
+        return clone;
     }
 
     public JSONObject toDataJson() {
@@ -171,5 +217,9 @@ public class EnvironmentMapBuilder {
          * 隐私
          */
         private boolean privacy;
+        /**
+         * 是否为系统变量
+         */
+        private boolean system;
     }
 }

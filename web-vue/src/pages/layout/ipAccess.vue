@@ -4,9 +4,9 @@
       <a-card hoverable class="card">
         <a-card-meta>
           <template #description>
-            <a-result status="error" title="您没有权限访问">
+            <a-result status="error" :title="$t('i18n_2245cf01a3')">
               <template #extra>
-                <a-button> 禁止访问 </a-button>
+                <a-button> {{ $t('i18n_bb9ef827bf') }} </a-button>
               </template>
             </a-result>
           </template>
@@ -23,6 +23,7 @@ export default {
   },
   data() {
     return {}
-  }
+  },
+  methods: {}
 }
 </script>

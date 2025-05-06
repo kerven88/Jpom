@@ -12,9 +12,13 @@
         <log-view2 :ref="`logView`" height="calc(100vh - 140px)">
           <template #before>
             <a-space>
-              <a-button type="primary" size="small" @click="loadData">刷新</a-button>
-              <a-button type="primary" danger size="small" :disabled="!temp.path" @click="deleteLog">删除</a-button>
-              <a-button type="primary" size="small" :disabled="!temp.path" @click="downloadLog">下载</a-button>
+              <a-button type="primary" size="small" @click="loadData">{{ $t('i18n_694fc5efa9') }}</a-button>
+              <a-button type="primary" danger size="small" :disabled="!temp.path" @click="deleteLog">{{
+                $t('i18n_2f4aaddde3')
+              }}</a-button>
+              <a-button type="primary" size="small" :disabled="!temp.path" @click="downloadLog">{{
+                $t('i18n_f26ef91424')
+              }}</a-button>
               |
             </a-space>
           </template>
@@ -23,7 +27,6 @@
     </a-layout>
   </div>
 </template>
-
 <script>
 import { getLogList, downloadFile, deleteLog } from '@/api/system'
 import { mapState } from 'pinia'
@@ -130,13 +133,13 @@ export default {
       this.socket.onerror = (err) => {
         console.error(err)
         $notification.error({
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
       }
       this.socket.onclose = (err) => {
         //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
         console.error(err)
-        $message.warning('会话已经关闭[system-log] ' + node.dataRef.path)
+        $message.warning(this.$t('i18n_5bcda1b4d7') + node.dataRef.path)
         // clearInterval(this.heart);
       }
     },
@@ -159,11 +162,11 @@ export default {
     // 删除文件
     deleteLog() {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除日志文件么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_3c9eeee356'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteLog({
             nodeId: null,
@@ -183,7 +186,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .log-layout {
   padding: 0;

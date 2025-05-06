@@ -9,15 +9,21 @@
       >
         <template #addonBefore>
           <a-tooltip>
-            <template #title>
-              引用工作空间环境变量可以方便后面多处使用相同的密码统一修改
-
+            <template #title
+              >{{ $t('i18n_e6551a2295') }}
               <ul v-if="!envList.length">
-                当前没有可以引用的环境变量
+                {{
+                  $t('i18n_7afb02ed93')
+                }}
               </ul>
             </template>
-            <a-select v-model:value="selectData" placeholder="引用环境变量" style="width: 120px" @change="selectChange">
-              <a-select-option value="">不引用环境变量</a-select-option>
+            <a-select
+              v-model:value="selectData"
+              :placeholder="$t('i18n_3a1052ccfc')"
+              style="width: 120px"
+              @change="selectChange"
+            >
+              <a-select-option value="">{{ $t('i18n_e76e6a13dd') }}</a-select-option>
               <a-select-option v-for="item in envList" :key="item.id" :value="item.name"
                 >{{ item.name }}
               </a-select-option>
@@ -30,14 +36,21 @@
       <a-input v-model:value="inputData" :placeholder="placeholder" :disabled="!!selectData" @change="inputChange">
         <template #addonBefore>
           <a-tooltip>
-            <template #title>
-              引用工作空间环境变量可以方便后面多处使用相同的密码统一修改
+            <template #title
+              >{{ $t('i18n_e6551a2295') }}
               <ul v-if="!envList.length">
-                当前没有可以引用的环境变量
+                {{
+                  $t('i18n_7afb02ed93')
+                }}
               </ul>
             </template>
-            <a-select v-model:value="selectData" placeholder="引用环境变量" style="width: 120px" @change="selectChange">
-              <a-select-option value="">引用环境变量</a-select-option>
+            <a-select
+              v-model:value="selectData"
+              :placeholder="$t('i18n_3a1052ccfc')"
+              style="width: 120px"
+              @change="selectChange"
+            >
+              <a-select-option value="">{{ $t('i18n_3a1052ccfc') }}</a-select-option>
               <a-select-option v-for="item in envList" :key="item.id" :value="item.name"
                 >{{ item.name }}
               </a-select-option>
@@ -48,8 +61,8 @@
     </template>
   </div>
 </template>
-
 <script>
+import { t } from '@/i18n/index'
 export default {
   components: {},
   props: {
@@ -63,7 +76,9 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '请输入...'
+      default: function () {
+        return t('i18n_101a86bc84')
+      }
     },
     type: {
       type: String,

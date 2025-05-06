@@ -8,6 +8,7 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
 import axios from '@/api/config'
 
 /**
@@ -145,6 +146,6 @@ export function dockerListWorkspace(params) {
 }
 
 export const statusMap = {
-  0: { desc: '无法连接', color: 'red' },
-  1: { desc: '正常连接', color: 'green' }
+  0: { desc: t('i18n_757a730c9e'), color: 'red' },
+  1: { desc: t('i18n_0f0a5f6107'), color: 'green' }
 }

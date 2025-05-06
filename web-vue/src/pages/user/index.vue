@@ -7,7 +7,7 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="systemUserList"
-      empty-description="没有任何用户"
+      :empty-description="$t('i18n_0f189dbaa4')"
       :loading="loading"
       :data-source="list"
       :columns="columns"
@@ -24,29 +24,29 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery.id"
-            placeholder="用户名ID"
+            :placeholder="$t('i18n_1c9d3cb687')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="用户名"
+            :placeholder="$t('i18n_819767ada1')"
             class="search-input-item"
             @press-enter="loadData"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
-          <a-button type="primary" @click="systemNotificationOpen = true">发布系统公告</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
+          <a-button type="primary" @click="systemNotificationOpen = true">{{ $t('i18n_7c223eb6e9') }}</a-button>
         </a-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
         <template v-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
             <a-dropdown>
-              <a @click="(e) => e.preventDefault()"> 更多 <DownOutlined /> </a>
+              <a @click="(e) => e.preventDefault()"> {{ $t('i18n_0ec9eaf9c3') }} <DownOutlined /> </a>
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
@@ -56,7 +56,7 @@
                       size="small"
                       :disabled="record.parent === 'sys'"
                       @click="handleDelete(record)"
-                      >删除</a-button
+                      >{{ $t('i18n_2f4aaddde3') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -66,7 +66,7 @@
                       size="small"
                       :disabled="record.pwdErrorCount === 0"
                       @click="handleUnlock(record)"
-                      >解锁</a-button
+                      >{{ $t('i18n_fa7ffa2d21') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -76,7 +76,7 @@
                       size="small"
                       :disabled="record.parent === 'sys'"
                       @click="restUserPwdHander(record)"
-                      >重置密码</a-button
+                      >{{ $t('i18n_0719aa2bb0') }}</a-button
                     >
                   </a-menu-item>
                   <a-menu-item>
@@ -86,7 +86,7 @@
                       size="small"
                       :disabled="record.twoFactorAuthKey ? false : true"
                       @click="handleCloseMfa(record)"
-                      >关闭MFA</a-button
+                      >{{ $t('i18n_0703877167') }}</a-button
                     >
                   </a-menu-item>
                 </a-menu>
@@ -97,8 +97,8 @@
         <template v-else-if="column.dataIndex === 'systemUser'">
           <a-switch
             size="small"
-            checked-children="是"
-            un-checked-children="否"
+            :checked-children="$t('i18n_0a60ac8f02')"
+            :un-checked-children="$t('i18n_c9744f45e7')"
             disabled
             :checked="record.systemUser == 1"
           />
@@ -106,8 +106,8 @@
         <template v-else-if="column.dataIndex === 'status'">
           <a-switch
             size="small"
-            checked-children="启用"
-            un-checked-children="禁用"
+            :checked-children="$t('i18n_7854b52a88')"
+            :un-checked-children="$t('i18n_710ad08b11')"
             disabled
             :checked="record.status != 0"
           />
@@ -116,8 +116,8 @@
         <template v-else-if="column.dataIndex === 'twoFactorAuthKey'">
           <a-switch
             size="small"
-            checked-children="开"
-            un-checked-children="关"
+            :checked-children="$t('i18n_8493205602')"
+            :un-checked-children="$t('i18n_d58a55bcee')"
             disabled
             :checked="record.twoFactorAuthKey ? true : false"
           />
@@ -137,54 +137,55 @@
       </template>
     </CustomTable>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editUserVisible"
       v-model:open="editUserVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="60vw"
-      title="编辑用户"
+      :title="$t('i18n_5a0346c4b1')"
       :mask-closable="false"
       @ok="handleEditUserOk"
     >
       <a-alert
         v-if="!permissionGroup || !permissionGroup.length"
-        message="提醒"
+        :message="$t('i18n_4b027f3979')"
         type="warning"
         show-icon
         style="margin-bottom: 10px"
       >
-        <template #description>还没有配置权限组不能创建用户奥</template>
+        <template #description>{{ $t('i18n_d9531a5ac3') }}</template>
       </a-alert>
       <a-form ref="editUserForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="登录名称" name="id">
+        <a-form-item :label="$t('i18n_878aebf9b2')" name="id">
           <a-input
             v-model:value="temp.id"
             :max-length="50"
-            placeholder="登录名称,账号,创建之后不能修改"
+            :placeholder="$t('i18n_f175274df0')"
             :disabled="createOption == false"
             @change="checkTipUserName"
           />
         </a-form-item>
 
-        <a-form-item label="昵称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="昵称" />
+        <a-form-item :label="$t('i18n_23eb0e6024')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_23eb0e6024')" />
         </a-form-item>
         <a-form-item name="systemUser">
           <template #label>
             <a-tooltip>
-              管理员
-              <template #title> 管理员拥有：管理服务端的部分权限 </template>
+              {{ $t('i18n_b1dae9bc5c') }}
+              <template #title> {{ $t('i18n_b328609814') }} </template>
               <QuestionCircleOutlined v-if="createOption" />
             </a-tooltip>
           </template>
           <a-row>
             <a-col :span="4">
-              <a-tooltip title="管理员拥有：管理服务端的部分权限">
+              <a-tooltip :title="$t('i18n_b328609814')">
                 <a-switch
                   :checked="temp.systemUser == 1"
                   :disabled="temp.parent === 'sys'"
-                  checked-children="是"
-                  un-checked-children="否"
+                  :checked-children="$t('i18n_0a60ac8f02')"
+                  :un-checked-children="$t('i18n_c9744f45e7')"
                   default-checked
                   @change="
                     (checked) => {
@@ -196,9 +197,9 @@
             </a-col>
             <a-col :span="4" style="text-align: right">
               <a-tooltip>
-                <template #title> 禁用后该用户不能登录平台 </template>
+                <template #title> {{ $t('i18n_fa624c8420') }} </template>
                 <QuestionCircleOutlined v-if="createOption" />
-                状态：
+                {{ $t('i18n_bec98b4d6a') }}
               </a-tooltip>
             </a-col>
             <a-col :span="4">
@@ -206,8 +207,8 @@
                 <a-switch
                   :checked="temp.status != 0"
                   :disabled="temp.parent === 'sys'"
-                  checked-children="启用"
-                  un-checked-children="禁用"
+                  :checked-children="$t('i18n_7854b52a88')"
+                  :un-checked-children="$t('i18n_710ad08b11')"
                   default-checked
                   @change="
                     (checked) => {
@@ -219,7 +220,7 @@
             </a-col>
           </a-row>
         </a-form-item>
-        <a-form-item label="权限组" name="permissionGroup">
+        <a-form-item :label="$t('i18n_f49dfdace4')" name="permissionGroup">
           <a-select
             v-model:value="temp.permissionGroup"
             show-search
@@ -233,7 +234,7 @@
                 )
               }
             "
-            placeholder="请选择用户的权限组"
+            :placeholder="$t('i18n_72d14a3890')"
             mode="multiple"
           >
             <a-select-option v-for="item in permissionGroup" :key="item.id">
@@ -242,37 +243,44 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
-    <a-modal v-model:open="showUserPwd" destroy-on-close title="用户密码提示" :mask-closable="false" :footer="null">
+    </CustomModal>
+    <CustomModal
+      v-if="showUserPwd"
+      v-model:open="showUserPwd"
+      destroy-on-close
+      :title="$t('i18n_318ce9ea8b')"
+      :mask-closable="false"
+      :footer="null"
+    >
       <a-result status="success" :title="temp.title">
         <template #subTitle>
           <div>
-            账号新密码为：
+            {{ $t('i18n_5684fd7d3d') }}
             <a-typography-paragraph :copyable="{ tooltip: false, text: temp.randomPwd }">
               <b style="color: red; font-size: 20px">
                 {{ temp.randomPwd }}
               </b>
             </a-typography-paragraph>
-            请将此密码复制告知该用户
+            {{ $t('i18n_12d2c0aead') }}
           </div>
-          <div style="color: red">密码只会出现一次，关闭窗口后无法再次查看密码</div>
+          <div style="color: red">{{ $t('i18n_c7e0803a17') }}</div>
         </template>
       </a-result>
-    </a-modal>
+    </CustomModal>
     <!-- 系统公告  -->
-    <a-modal
+    <CustomModal
+      v-if="systemNotificationOpen"
       v-model:open="systemNotificationOpen"
       destroy-on-close
-      title="配置系统公告"
+      :title="$t('i18n_6428be07e9')"
       :mask-closable="false"
       width="50vw"
       :footer="null"
     >
       <notification />
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { closeUserMfa, deleteUser, editUser, getUserList, unlockUser, restUserPwd } from '@/api/user/user'
 import { getUserPermissionListAll } from '@/api/user/user-permission'
@@ -299,23 +307,23 @@ export default {
           ellipsis: true,
           width: 100
         },
-        { title: '昵称', dataIndex: 'name', ellipsis: true, width: 100 },
+        { title: this.$t('i18n_23eb0e6024'), dataIndex: 'name', ellipsis: true, width: 100 },
         {
-          title: '管理员',
+          title: this.$t('i18n_b1dae9bc5c'),
           dataIndex: 'systemUser',
           align: 'center',
           ellipsis: true,
           width: 90
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'status',
           align: 'center',
           ellipsis: true,
           width: 90
         },
         {
-          title: '两步验证',
+          title: this.$t('i18n_dbad1e89f7'),
           dataIndex: 'twoFactorAuthKey',
           align: 'center',
           ellipsis: true,
@@ -323,27 +331,27 @@ export default {
         },
 
         {
-          title: '邮箱',
+          title: this.$t('i18n_3bc5e602b2'),
           dataIndex: 'email',
           ellipsis: true,
           width: 100
         },
         {
-          title: '来源',
+          title: this.$t('i18n_26ca20b161'),
           dataIndex: 'source',
           ellipsis: true,
           width: 90
         },
         {
-          title: '登录失败',
+          title: this.$t('i18n_b6076a055f'),
           dataIndex: 'pwdErrorCount',
           ellipsis: true,
           width: 90
         },
-        { title: '创建人', dataIndex: 'parent', ellipsis: true, width: 150 },
+        { title: this.$t('i18n_95a43eaa59'), dataIndex: 'parent', ellipsis: true, width: 150 },
 
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -353,7 +361,7 @@ export default {
           width: '170px'
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           sorter: true,
           customRender: ({ text, record }) => {
@@ -362,18 +370,19 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           align: 'center',
           dataIndex: 'operation',
           fixed: 'right',
           width: '120px'
         }
       ],
+
       // 表单校验规则
       rules: {
-        id: [{ required: true, message: '请填写用户账号', trigger: 'blur' }],
-        name: [{ required: true, message: '请填写用户昵称', trigger: 'blur' }],
-        permissionGroup: [{ required: true, message: '请选择用户权限组', trigger: 'blur' }]
+        id: [{ required: true, message: this.$t('i18n_693a06987c'), trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_c00fb0217d'), trigger: 'blur' }],
+        permissionGroup: [{ required: true, message: this.$t('i18n_e8073b3843'), trigger: 'blur' }]
       },
       showUserPwd: false,
       confirmLoading: false,
@@ -425,7 +434,7 @@ export default {
         }
         if (!this.permissionGroup || this.permissionGroup.length <= 0)
           $notification.warn({
-            message: '还没有配置权限组,不能创建用户'
+            message: this.$t('i18n_d4744ce461')
           })
       })
     },
@@ -457,7 +466,7 @@ export default {
             if (res.code === 200) {
               if (paramsTemp.type === 'add') {
                 this.temp = {
-                  title: '账号新增成功',
+                  title: this.$t('i18n_2d2238d216'),
                   randomPwd: res.data.randomPwd
                 }
 
@@ -480,11 +489,11 @@ export default {
     // 删除用户
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的要删除用户么？',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_45f8d5a21d'),
         zIndex: 1009,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteUser(record.id).then((res) => {
             if (res.code === 200) {
@@ -500,11 +509,11 @@ export default {
     // 解锁
     handleUnlock(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的要解锁用户么？',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_bc2f1beb44'),
         zIndex: 1009,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return unlockUser(record.id).then((res) => {
             if (res.code === 200) {
@@ -520,11 +529,11 @@ export default {
     //
     handleCloseMfa(record) {
       $confirm({
-        title: '系统提示',
-        content: '真的关闭当前用户的两步验证么？',
+        title: this.$t('i18n_c4535759ee'),
+        content: this.$t('i18n_b8915a4933'),
         zIndex: 1009,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return closeUserMfa(record.id).then((res) => {
             if (res.code === 200) {
@@ -546,12 +555,11 @@ export default {
     checkTipUserName() {
       if (this.temp?.id === 'demo') {
         $confirm({
-          title: '系统提示',
+          title: this.$t('i18n_c4535759ee'),
           zIndex: 1009,
-          content:
-            'demo 账号是系统特定演示使用的账号,系统默认将对 demo 账号限制很多权限。非演示场景不建议使用 demo 账号',
-          okText: '确认',
-          cancelText: '取消',
+          content: `demo ${this.$t('i18n_a8f44c3188')},${this.$t('i18n_c5f9a96133')}`,
+          okText: this.$t('i18n_e83a256e4f'),
+          cancelText: this.$t('i18n_625fb26b4b'),
 
           onCancel: () => {
             this.temp.id = ''
@@ -562,16 +570,16 @@ export default {
     //
     restUserPwdHander(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '确定要重置用户密码吗？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_be2109e5b1'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return restUserPwd(record.id).then((res) => {
             if (res.code === 200) {
               this.temp = {
-                title: '用户密码重置成功',
+                title: this.$t('i18n_2c5b0e86e6'),
                 randomPwd: res.data.randomPwd
               }
               this.showUserPwd = true
@@ -583,7 +591,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 /* .filter {
   margin-bottom: 10px;

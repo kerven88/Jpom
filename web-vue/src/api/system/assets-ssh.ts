@@ -8,6 +8,7 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
 import axios from '@/api/config'
 import { loadRouterBase } from '@/api/config'
 
@@ -15,6 +16,15 @@ import { loadRouterBase } from '@/api/config'
 export function machineSshListData(params) {
   return axios({
     url: '/system/assets/ssh/list-data',
+    method: 'post',
+    data: params
+  })
+}
+
+// 搜索 ssh 列表
+export function machineSshSearchData(params) {
+  return axios({
+    url: '/system/assets/ssh/search',
     method: 'post',
     data: params
   })
@@ -123,7 +133,7 @@ export function importData(formData) {
 }
 
 export const statusMap = {
-  0: { desc: '无法连接', color: 'red' },
-  1: { desc: '正常', color: 'green' },
-  2: { desc: '禁用监控', color: 'orange' }
+  0: { desc: t('i18n_757a730c9e'), color: 'red' },
+  1: { desc: t('i18n_fd6e80f1e0'), color: 'green' },
+  2: { desc: t('i18n_46158d0d6e'), color: 'orange' }
 }

@@ -8,6 +8,7 @@
 /// See the Mulan PSL v2 for more details.
 ///
 
+import { t } from '@/i18n'
 import axios from './config'
 import { parseTime, formatPercent2, renderSize, formatDuration } from '@/utils/const'
 import * as echarts from 'echarts/core'
@@ -104,7 +105,7 @@ const defaultData = {
  */
 export function generateNodeTopChart(data) {
   const cpuItem = {
-    name: 'cpu占用',
+    name: t('i18n_7f5bcd975b'),
     type: 'line',
     data: [],
     showSymbol: false,
@@ -112,28 +113,28 @@ export function generateNodeTopChart(data) {
     smooth: true
   }
   const diskItem = {
-    name: '磁盘占用',
+    name: t('i18n_f5d14ee3f8'),
     type: 'line',
     data: [],
     showSymbol: false,
     smooth: true
   }
   const memoryItem = {
-    name: '实际内存占用',
+    name: t('i18n_883848dd37'),
     type: 'line',
     data: [],
     showSymbol: false,
     smooth: true
   }
   const virtualMemory = {
-    name: '虚拟内存占用',
+    name: t('i18n_07a03567aa'),
     type: 'line',
     data: [],
     showSymbol: false,
     smooth: true
   }
   const swapMemory = {
-    name: '交换内存占用',
+    name: t('i18n_0895c740a6'),
     type: 'line',
     data: [],
     showSymbol: false,
@@ -211,7 +212,7 @@ export function generateNodeTopChart(data) {
  */
 export function generateNodeNetChart(data) {
   const rxItem = {
-    name: '接收',
+    name: t('i18n_15e9238b79'),
     type: 'line',
     data: [],
     showSymbol: false,
@@ -219,7 +220,7 @@ export function generateNodeNetChart(data) {
     smooth: true
   }
   const txItem = {
-    name: '发送',
+    name: t('i18n_1535fcfa4c'),
     type: 'line',
     data: [],
     showSymbol: false,
@@ -280,7 +281,7 @@ export function generateNodeNetChart(data) {
  */
 export function generateNodeNetworkTimeChart(data) {
   const dataArray = {
-    name: '网络延迟',
+    name: t('i18n_204222d167'),
     type: 'line',
     data: [],
     showSymbol: false,

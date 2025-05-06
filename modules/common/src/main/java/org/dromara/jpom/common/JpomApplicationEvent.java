@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Lombok;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.JpomApplication;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.cron.CronUtils;
 import org.dromara.jpom.system.ExtConfigBean;
 import org.dromara.jpom.util.JsonFileUtil;
@@ -108,12 +109,13 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
             FileUtil.mkdir(file);
             file = FileUtil.createTempFile("jpom", ".temp", file, true);
         } catch (Exception e) {
-            log.error(StrUtil.format("Jpom Failed to create data directory, directory location：{}," +
-                "Please check whether the current user has permission to this directory or modify the configuration file：{} jpom.path in is the path where the directory can be created", path, extConfigPath), e);
+            log.error(StrUtil.format(I18nMessageUtil.get("i18n.jpom_create_data_dir_failed.6202"), path, extConfigPath), e);
             asyncExit(-1);
         }
         FileUtil.del(file);
-        log.info("Jpom[{}] Current data path：{} External configuration file path：{}", JpomManifest.getInstance().getVersion(), path, extConfigPath);
+        String tip1 = I18nMessageUtil.get("i18n.current_data_path.5572");
+        String tip2 = I18nMessageUtil.get("i18n.external_config_file_path.06ec");
+        log.info("Jpom[{}] {}：{} {}：{}", JpomManifest.getInstance().getVersion(), tip1, path, tip2, extConfigPath);
     }
 
     private void install() {
@@ -127,16 +129,17 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
                 throw Lombok.sneakyThrow(e);
             }
             installId = jsonObject.getString("installId");
-            Assert.hasText(installId, "数据错误,安装 ID 不存在");
-            log.info("本机安装 ID 为：{}", installId);
+            Assert.hasText(installId, I18nMessageUtil.get("i18n.install_id_does_not_exist.6aee"));
+            log.info(I18nMessageUtil.get("i18n.machine_installation_id.d0b9"), installId);
         } else {
             JSONObject jsonObject = new JSONObject();
             installId = IdUtil.fastSimpleUUID();
             jsonObject.put("installId", installId);
             jsonObject.put("installTime", DateTime.now().toString());
-            jsonObject.put("desc", "请勿删除此文件,删除后关联 id 将失效");
+            String value = I18nMessageUtil.get("i18n.please_do_not_delete_this_file.0a7f");
+            jsonObject.put("desc", value);
             JsonFileUtil.saveJson(file.getAbsolutePath(), jsonObject);
-            log.info("安装成功,本机安装 ID 为：{}", installId);
+            log.info(I18nMessageUtil.get("i18n.installation_success_with_machine_id.1cd6"), installId);
         }
         JpomManifest.getInstance().setInstallId(installId);
     }
@@ -162,12 +165,12 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
                         File oldJars = JpomManifest.getOldJarsPath();
                         FileUtil.mkdir(oldJars);
                         FileUtil.move(beforeJarFile, oldJars, true);
-                        log.info("备份旧程序包：{}", beforeJar);
+                        log.info(I18nMessageUtil.get("i18n.backup_old_package.a7fc"), beforeJar);
                     } else {
-                        log.debug("备份旧程序包失败：{},因为新程序包不存在：{}", beforeJar, newJar);
+                        log.debug(I18nMessageUtil.get("i18n.backup_old_package_failure_due_to_new_package_absence.b90c"), beforeJar, newJar);
                     }
                 } else {
-                    log.debug("备份旧程序包失败：{},因为旧程序包不存在", beforeJar);
+                    log.debug(I18nMessageUtil.get("i18n.backup_old_package_failure_due_to_old_package_absence.53aa"), beforeJar);
                 }
             }
         }
@@ -210,7 +213,7 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
         // 删除文件
         files.forEach(file -> {
             FileUtil.del(file);
-            log.debug("删除旧程序包：{}", file.getAbsolutePath());
+            log.debug(I18nMessageUtil.get("i18n.delete_old_package.ca95"), file.getAbsolutePath());
         });
     }
 
@@ -223,7 +226,7 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
             cronMap.forEach((name, iCron) -> {
                 int startCron = iCron.startCron();
                 if (startCron > 0) {
-                    log.debug("{} scheduling has been started:{}", name, startCron);
+                    log.debug(I18nMessageUtil.get("i18n.auto_start_timed_task_message.9637"), name, startCron);
                 }
             });
             Map<String, IAsyncLoad> asyncLoadMap = SpringUtil.getApplicationContext().getBeansOfType(IAsyncLoad.class);
@@ -242,15 +245,15 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
         String localhostStr = Opt.ofBlankAble(address).orElseGet(NetUtil::getLocalhostStr);
         String url = StrUtil.format("http://{}:{}", localhostStr, port);
         if (type == Type.Server) {
-            log.info("{} Successfully started,Can use happily => {} 【The current address is for reference only】", type, url);
+            log.info(I18nMessageUtil.get("i18n.start_success_short_message.4c97"), type, url);
         } else if (type == Type.Agent) {
-            log.info("{} Successfully started,Please go to the server to configure and use,Current node address => {} 【The current address is for reference only】", type, url);
+            log.info(I18nMessageUtil.get("i18n.start_success_message.d31f"), type, url);
         }
     }
 
 
     private void clearTemp() {
-        log.debug("Automatically clean up temporary directories");
+        log.debug(I18nMessageUtil.get("i18n.auto_clean_temp_dir.11d2"));
         File file = configBean.getTempPath();
         /**
          * @author Hotstrip
@@ -261,20 +264,20 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
             FileUtil.del(file);
         } catch (Exception e) {
             // Try again  jzy 2021-07-31
-            log.warn("Attempt to delete temporary folder failed, try to handle read-only permission：{}", e.getMessage());
+            log.warn(I18nMessageUtil.get("i18n.delete_temp_folder_failed_with_read_only_permission.00ae"), e.getMessage());
             List<File> files = FileUtil.loopFiles(file);
             long count = files.stream().map(file12 -> file12.setWritable(true)).filter(aBoolean -> aBoolean).count();
-            log.warn("Cumulative number of files in temporary folder: {}, number of successful processing：{}", CollUtil.size(files), count);
+            log.warn(I18nMessageUtil.get("i18n.temp_folder_file_count.8e31"), CollUtil.size(files), count);
             try {
                 FileUtil.del(file.toPath());
             } catch (Exception e1) {
                 e1.addSuppressed(e);
                 boolean causedBy = ExceptionUtil.isCausedBy(e1, AccessDeniedException.class);
                 if (causedBy) {
-                    log.error("清除临时文件失败,请手动清理：" + FileUtil.getAbsolutePath(file), e);
+                    log.error("{}{}", I18nMessageUtil.get("i18n.clear_temp_file_failed_manually.0dad"), FileUtil.getAbsolutePath(file), e);
                     return;
                 }
-                log.error("清除临时文件失败,请检查目录：" + FileUtil.getAbsolutePath(file), e);
+                log.error("{}{}", I18nMessageUtil.get("i18n.clear_temp_file_failed_check_directory.7340"), FileUtil.getAbsolutePath(file), e);
             }
         }
     }
@@ -377,7 +380,7 @@ public class JpomApplicationEvent implements ApplicationListener<ApplicationEven
                     this.executeTask();
                     this.refresh();
                 } catch (Exception e) {
-                    log.error("执行系统任务异常", e);
+                    log.error(I18nMessageUtil.get("i18n.system_task_execution_exception.d559"), e);
                 }
             });
         }

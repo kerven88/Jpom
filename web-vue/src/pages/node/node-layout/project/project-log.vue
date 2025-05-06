@@ -1,21 +1,22 @@
 <template>
   <div>
     <a-space direction="vertical" style="width: 100%">
-      <a-tag
-        >控制台日志只是启动项目输出的日志信息,并非项目日志。可以关闭控制台日志备份功能：<b
-          >jpom.project.log.auto-backup-to-file: false</b
-        ></a-tag
-      >
+      <a-tag style="display: inline-grid">
+        {{ $t('i18n_a17bc8d947') }}
+        <b>jpom.project.log.auto-backup-to-file: false</b>
+      </a-tag>
 
       <a-tag v-if="project.logPath" color="orange">
-        控制台日志路径: {{ project.logPath }}
+        {{ $t('i18n_32a19ce88b') }}: {{ project.logPath }}
         <template v-if="project.logSize">
-          当前日志文件大小：{{ project.logSize }}
-          <a-button type="link" size="small" @click="handleDownload"> <DownloadOutlined />导出 </a-button>
+          {{ $t('i18n_3402926291') }}{{ project.logSize }}
+          <a-button type="link" size="small" @click="handleDownload">
+            <DownloadOutlined />{{ $t('i18n_55405ea6ff') }}
+          </a-button>
         </template>
       </a-tag>
 
-      <a-tag v-if="project.logBackPath" color="orange">控制台日志备份路径: {{ project.logBackPath }}</a-tag>
+      <a-tag v-if="project.logBackPath" color="orange">{{ $t('i18n_c34175dbef') }}{{ project.logBackPath }}</a-tag>
 
       <!-- 数据表格 -->
       <a-table
@@ -46,8 +47,8 @@
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a-button type="primary" @click="handleDownloadLogback(record)">下载</a-button>
-              <a-button type="primary" danger @click="handleDelete(record)">删除</a-button>
+              <a-button type="primary" @click="handleDownloadLogback(record)">{{ $t('i18n_f26ef91424') }}</a-button>
+              <a-button type="primary" danger @click="handleDelete(record)">{{ $t('i18n_2f4aaddde3') }}</a-button>
             </a-space>
           </template>
         </template>
@@ -55,7 +56,6 @@
     </a-space>
   </div>
 </template>
-
 <script>
 import {
   getLogBackList,
@@ -83,25 +83,25 @@ export default {
       logBackList: [],
       columns: [
         {
-          title: '文件名称',
+          title: this.$t('i18n_d2e2560089'),
           dataIndex: 'filename',
           width: 150,
           ellipsis: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeLong',
           width: 150,
           ellipsis: true
         },
         {
-          title: '文件大小',
+          title: this.$t('i18n_396b7d3f91'),
           dataIndex: 'fileSizeLong',
           width: 100,
           ellipsis: true
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           fixed: 'right',
@@ -172,11 +172,11 @@ export default {
     // 删除日志备份文件
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除文件么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_3a6bc88ce0'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteProjectLogBackFile({
             nodeId: this.nodeId,

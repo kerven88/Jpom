@@ -6,14 +6,14 @@
       :auto-refresh-time="30"
       :active-page="activePage"
       table-name="system-task-stat"
-      empty-description="没有任何运行中的任务"
+      :empty-description="$t('i18n_4ef719810b')"
       size="middle"
       row-key="taskId"
       :columns="taskColumns"
       bordered
       :data-source="taskList"
-      @refresh="refresh"
       :pagination="false"
+      @refresh="refresh"
     >
       <!-- <template #title>
         <a-button size="small" type="primary" @click="refresh"><ReloadOutlined /></a-button>
@@ -55,7 +55,7 @@ export default {
 
       taskColumns: [
         {
-          title: '任务ID',
+          title: this.$t('i18n_3a3778f20c'),
           dataIndex: 'taskId',
 
           // sorter: (a, b) => (a && b ? a.localeCompare(b, "zh-CN") : 0),
@@ -64,22 +64,23 @@ export default {
           ellipsis: true,
           filters: [
             {
-              text: '构建',
+              text: this.$t('i18n_fcba60e773'),
               value: 'build'
             },
             {
-              text: '节点脚本',
+              text: this.$t('i18n_e0ba3b9145'),
               value: 'script'
             },
             {
-              text: '服务端脚本',
+              text: this.$t('i18n_8c7c7f3cfa'),
               value: 'server_script'
             },
             {
-              text: 'ssh 脚本',
+              text: `ssh ${this.$t('i18n_ba311d8a6a')}`,
               value: 'ssh_command'
             }
           ],
+
           onFilter: (value, record) => record.taskId.indexOf(value) === 0
         },
         {
@@ -95,28 +96,28 @@ export default {
         //   // sortDirections: ["descend", "ascend"],
         // },
         {
-          title: '执行次数',
+          title: this.$t('i18n_d4aea8d7e6'),
           dataIndex: 'executeCount',
           sortDirections: ['descend', 'ascend'],
           width: 140,
           sorter: (a, b) => a.executeCount || 0 - b.executeCount || 0
         },
         {
-          title: '成功次数',
+          title: this.$t('i18n_e7d83a24ba'),
           dataIndex: 'succeedCount',
           sortDirections: ['descend', 'ascend'],
           width: 140,
           sorter: (a, b) => a.succeedCount || 0 - b.succeedCount || 0
         },
         {
-          title: '失败次数',
+          title: this.$t('i18n_d3e480c8c0'),
           dataIndex: 'failedCount',
           sortDirections: ['descend', 'ascend'],
           width: 140,
           sorter: (a, b) => a.failedCount || 0 - b.failedCount || 0
         },
         {
-          title: '最后执行时间',
+          title: this.$t('i18n_17c06f6a8b'),
           dataIndex: 'lastExecuteTime',
           sortDirections: ['descend', 'ascend'],
           defaultSortOrder: 'descend',

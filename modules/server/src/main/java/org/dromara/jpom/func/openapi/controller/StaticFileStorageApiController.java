@@ -13,11 +13,13 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.common.ServerOpenApi;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.interceptor.NotLogin;
 import org.dromara.jpom.func.files.model.StaticFileStorageModel;
 import org.dromara.jpom.func.files.service.StaticFileStorageService;
 import org.dromara.jpom.model.user.UserModel;
 import org.dromara.jpom.service.user.TriggerTokenLogServer;
+import org.dromara.jpom.util.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,16 +56,16 @@ public class StaticFileStorageApiController extends BaseDownloadApiController {
                          HttpServletRequest request,
                          HttpServletResponse response) throws IOException {
         StaticFileStorageModel storageModel = staticFileStorageService.getByKey(id);
-        Assert.notNull(storageModel, "文件不存在");
+        Assert.notNull(storageModel, I18nMessageUtil.get("i18n.file_not_found.d952"));
 
-        Assert.state(StrUtil.equals(token, storageModel.getTriggerToken()), "token错误,或者已经失效");
+        Assert.state(StrUtil.equals(token, storageModel.getTriggerToken()), I18nMessageUtil.get("i18n.invalid_or_expired_token.bc43"));
         //
         UserModel userModel = triggerTokenLogServer.getUserByToken(token, staticFileStorageService.typeName());
         //
-        Assert.notNull(userModel, "token错误,或者已经失效:-1");
+        Assert.notNull(userModel, I18nMessageUtil.get("i18n.token_invalid_or_expired.cb96"));
         File file = FileUtil.file(storageModel.getAbsolutePath());
         // 需要考虑文件名中存在非法字符
-        String name = this.convertName(storageModel.getName(), storageModel.getExtName(), file.getName());
+        String name = FileUtils.safeFileName(storageModel.getName(), storageModel.getExtName(), file.getName());
         //    解析断点续传相关信息
         long fileSize = FileUtil.size(file);
         long[] resolveRange = this.resolveRange(request, fileSize, storageModel.getId(), storageModel.getName(), response);

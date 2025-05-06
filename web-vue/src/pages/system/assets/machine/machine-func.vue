@@ -1,5 +1,5 @@
 <template>
-  <a-drawer
+  <CustomDrawer
     destroy-on-close
     placement="right"
     :width="`${getCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 200px)'}`"
@@ -25,12 +25,13 @@
               margin: '0'
             }"
           >
-            <a-tab-pane key="info" tab="基本信息"></a-tab-pane>
-            <a-tab-pane key="cache" tab="缓存监控"></a-tab-pane>
-            <a-tab-pane key="config" tab="系统配置"></a-tab-pane>
-            <a-tab-pane key="path-config" tab="授权配置"></a-tab-pane>
-            <a-tab-pane key="upgrade" tab="在线升级"></a-tab-pane>
-            <a-tab-pane key="log" tab="系统日志"></a-tab-pane>
+            <a-tab-pane key="info" :tab="$t('i18n_9e5ffa068e')"></a-tab-pane>
+            <a-tab-pane key="cache" :tab="$t('i18n_e976b537f1')"></a-tab-pane>
+            <a-tab-pane key="config" :tab="$t('i18n_787fdcca55')"></a-tab-pane>
+            <a-tab-pane key="freeScript" :tab="$t('i18n_7760785daf')"></a-tab-pane>
+            <a-tab-pane key="path-config" :tab="$t('i18n_3d48c9da09')"></a-tab-pane>
+            <a-tab-pane key="upgrade" :tab="$t('i18n_da8cb77838')"></a-tab-pane>
+            <a-tab-pane key="log" :tab="$t('i18n_84aa0038cf')"></a-tab-pane>
           </a-tabs>
         </div>
       </a-space>
@@ -43,13 +44,14 @@
       <cache v-if="current === 'cache'" :machine-id="machineId" />
       <log v-if="current === 'log'" :machine-id="machineId" />
       <config-file v-if="current === 'config'" :machine-id="machineId" />
+      <freeScript v-if="current === 'freeScript'" :machine-id="machineId" />
     </div>
-  </a-drawer>
+  </CustomDrawer>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import machineInfo from './machine-info'
+import freeScript from './free-script'
 import upgrade from '@/components/upgrade'
 import WhiteList from '@/pages/node/node-layout/system/white-list.vue'
 import Cache from '@/pages/node/node-layout/system/cache'
@@ -63,7 +65,8 @@ export default {
     WhiteList,
     Cache,
     ConfigFile,
-    Log
+    Log,
+    freeScript
   },
   props: {
     machineId: {
@@ -89,11 +92,10 @@ export default {
   computed: {
     ...mapState(useAppStore, ['getCollapsed'])
   },
-
-  mounted() {}
+  mounted() {},
+  methods: {}
 }
 </script>
-
 <style scoped>
 .layout-content {
   padding: 0;

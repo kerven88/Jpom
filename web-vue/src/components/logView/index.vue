@@ -1,5 +1,6 @@
 <template>
-  <a-modal
+  <CustomModal
+    v-if="visibleModel"
     v-model:open="visibleModel"
     destroy-on-close
     :width="style.width"
@@ -19,17 +20,19 @@
 
             <a-col v-if="extendBar" style="padding-left: 10px">
               <a-space>
-                <a-tooltip title="清空当前缓冲区内容">
-                  <a-button type="primary" size="small" @click="clearLogCache"><DeleteOutlined />清空</a-button>
+                <a-tooltip :title="$t('i18n_65f66dfe97')">
+                  <a-button type="primary" size="small" @click="clearLogCache"
+                    ><DeleteOutlined />{{ $t('i18n_288f0c404c') }}</a-button
+                  >
                 </a-tooltip>
                 <!-- <a-tooltip title="内容超过边界自动换行">
                   <a-switch v-model="temp.wordBreak" checked-children="自动换行" un-checked-children="不换行" @change="onChange" />
                 </a-tooltip> -->
-                <a-tooltip title="有新内容后是否自动滚动到底部">
+                <a-tooltip :title="$t('i18n_0693e17fc1')">
                   <a-switch
                     v-model:checked="temp.logScroll"
-                    checked-children="自动滚动"
-                    un-checked-children="不滚动"
+                    :checked-children="$t('i18n_e0ce74fcac')"
+                    :un-checked-children="$t('i18n_18b34cf50d')"
                     @change="onChange"
                   />
                 </a-tooltip>
@@ -41,9 +44,8 @@
     </template>
 
     <viewPre ref="viewPre" :height="`calc(${style.bodyStyle.height} - 40px)`" :config="temp"></viewPre>
-  </a-modal>
+  </CustomModal>
 </template>
-
 <script>
 import viewPre from './view-pre'
 import { mapState } from 'pinia'
@@ -125,7 +127,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .log-filter {
   padding: 0 10px;

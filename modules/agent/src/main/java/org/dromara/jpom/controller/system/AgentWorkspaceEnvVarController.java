@@ -13,6 +13,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.keepbx.jpom.IJsonMessage;
 import cn.keepbx.jpom.model.JsonMessage;
 import org.dromara.jpom.common.BaseAgentController;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.validator.ValidatorItem;
 import org.dromara.jpom.model.system.WorkspaceEnvVarModel;
 import org.dromara.jpom.service.system.AgentWorkspaceEnvVarService;
@@ -44,9 +45,9 @@ public class AgentWorkspaceEnvVarController extends BaseAgentController {
      * @return json
      */
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public IJsonMessage<Object> updateWorkspaceEnvVar(@ValidatorItem String name,
-                                                      @ValidatorItem String value,
-                                                      @ValidatorItem String description,
+    public IJsonMessage<Object> updateWorkspaceEnvVar(@ValidatorItem(msg = "i18n.name_required.856d") String name,
+                                                      @ValidatorItem(msg = "i18n.value.2e81") String value,
+                                                      @ValidatorItem(msg = "i18n.description.615e") String description,
                                                       Integer privacy) {
         String workspaceId = getWorkspaceId();
         synchronized (AgentWorkspaceEnvVarController.class) {
@@ -68,7 +69,7 @@ public class AgentWorkspaceEnvVarController extends BaseAgentController {
                 agentWorkspaceEnvVarService.updateItem(item);
             }
         }
-        return JsonMessage.success("更新成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.update_success.55aa"));
     }
 
 
@@ -89,7 +90,7 @@ public class AgentWorkspaceEnvVarController extends BaseAgentController {
                 agentWorkspaceEnvVarService.updateItem(item);
             }
         }
-        return JsonMessage.success("删除成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.delete_success.0007"));
     }
 
 }

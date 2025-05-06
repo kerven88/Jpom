@@ -21,11 +21,14 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.dromara.jpom.common.BaseServerController;
+import org.dromara.jpom.common.Const;
+import org.dromara.jpom.common.ServerConst;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.model.data.NodeModel;
 import org.dromara.jpom.model.log.UserOperateLogV1;
 import org.dromara.jpom.model.user.UserModel;
@@ -61,9 +64,6 @@ public class OperateLogController implements AopLogInterface {
 
     private final DbUserOperateLogService dbUserOperateLogService;
 
-    private final String[] logFilterPar = new String[]{"pwd", "pass", "password"};
-
-
     public OperateLogController(DbUserOperateLogService dbUserOperateLogService) {
         this.dbUserOperateLogService = dbUserOperateLogService;
     }
@@ -82,20 +82,20 @@ public class OperateLogController implements AopLogInterface {
             return null;
         }
         if (!feature.log()) {
-            log.debug("忽略记录日志 {}", request.getRequestURI());
+            log.debug(I18nMessageUtil.get("i18n.ignore_log_record.48f5"), request.getRequestURI());
             return null;
         }
         Class<?> declaringClass = method.getDeclaringClass();
         MethodFeature methodFeature = feature.method();
         if (methodFeature == MethodFeature.NULL) {
-            log.error("权限分发配置错误：{}  {}", declaringClass, method.getName());
+            log.error(I18nMessageUtil.get("i18n.permission_distribution_config_error.e7fb"), declaringClass, method.getName());
             return null;
         }
         ClassFeature classFeature = feature.cls();
         if (classFeature == ClassFeature.NULL) {
             classFeature = this.findClassFeature(declaringClass, targetClass);
             if (classFeature == null || classFeature == ClassFeature.NULL) {
-                log.error("权限分发配置错误：{}  {} class not find", declaringClass, method.getName());
+                log.error(I18nMessageUtil.get("i18n.permission_distribution_config_error_class_not_found.ca67"), declaringClass, method.getName());
                 return null;
             }
         }
@@ -152,13 +152,16 @@ public class OperateLogController implements AopLogInterface {
         Set<Map.Entry<String, String>> entries = map.entrySet();
         for (Map.Entry<String, String> entry : entries) {
             String key = entry.getKey();
-            if (StrUtil.containsAnyIgnoreCase(key, logFilterPar)) {
-                entry.setValue("***");
+            if (StrUtil.containsAnyIgnoreCase(key, ServerConst.PRIVACY_VARIABLE_KEYWORDS)) {
+                entry.setValue(Const.PRIVACY_PLACEHOLDER);
             }
         }
         //
+        String contentType = request.getContentType();
+        String method = request.getMethod();
+        boolean isMultipartContent = StrUtil.equalsIgnoreCase(cn.hutool.http.Method.POST.name(), method) && StrUtil.startWith(contentType, FileUploadBase.MULTIPART);
         Map<String, Object> allData = new HashMap<>(30);
-        String body = ServletFileUpload.isMultipartContent(request) ? null : ServletUtil.getBody(request);
+        String body = isMultipartContent ? null : ServletUtil.getBody(request);
         if (StrUtil.isNotEmpty(body)) {
             JSONValidator.Type type = StringUtil.validatorJson(body);
             if (type == null || type == JSONValidator.Type.Value) {
@@ -183,7 +186,7 @@ public class OperateLogController implements AopLogInterface {
                 return;
             }
             if (cacheInfo.classFeature == null || cacheInfo.methodFeature == null) {
-                log.warn("权限功能没有配置正确 {}", cacheInfo);
+                log.warn(I18nMessageUtil.get("i18n.permission_function_not_configured_correctly.84dd"), cacheInfo);
                 return;
             }
             UserModel userModel = BaseServerController.getUserByThreadLocal();

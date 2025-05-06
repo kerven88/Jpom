@@ -17,44 +17,47 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="名称"
+            :placeholder="$t('i18n_d7ec2d3fea')"
             class="search-input-item"
             @press-enter="loadData"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
         </a-space>
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button type="primary" danger size="small" @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button type="primary" danger size="small" @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="60vw"
-      title="编辑"
+      :title="$t('i18n_95b351c862')"
       :mask-closable="false"
       @ok="handleEditUserOk"
     >
       <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="名称" />
+        <a-form-item :label="$t('i18n_d7ec2d3fea')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_d7ec2d3fea')" />
         </a-form-item>
         <a-form-item name="workspace">
           <template #label>
             <a-tooltip>
-              工作空间
-              <template #title> 配置工作空间权限,用户限制用户只能对应的工作空间里面操作对应的功能</template>
+              {{ $t('i18n_98d69f8b62') }}
+              <template #title> {{ $t('i18n_9a8eb63daf') }},{{ $t('i18n_85f347f9d0') }}</template>
               <QuestionCircleOutlined v-if="!temp.id" />
             </a-tooltip>
           </template>
@@ -63,8 +66,8 @@
         <a-form-item name="prohibitExecute">
           <template #label>
             <a-tooltip>
-              禁用时段
-              <template #title> 配置后可以控制想要在某个时间段禁止用户操作某些功能，优先判断禁用时段</template>
+              {{ $t('i18n_2ae22500c7') }}
+              <template #title> {{ $t('i18n_b56585aa18') }}</template>
               <QuestionCircleOutlined v-if="!temp.id" />
             </a-tooltip>
           </template>
@@ -97,11 +100,11 @@
                     :show-time="{ format: 'HH:mm:ss' }"
                     format="YYYY-MM-DD HH:mm:ss"
                     value-format="YYYY-MM-DD HH:mm:ss"
-                    :placeholder="['开始时间', '结束时间']"
+                    :placeholder="[$t('i18n_592c595891'), $t('i18n_f782779e8b')]"
                   />
 
                   <div>
-                    <a-input v-model:value="item.reason" placeholder="禁用原因" allow-clear />
+                    <a-input v-model:value="item.reason" :placeholder="$t('i18n_1eba2d93fc')" allow-clear />
                   </div>
                 </a-space>
 
@@ -124,17 +127,15 @@
                   temp.prohibitExecuteArray.push({})
                 }
               "
-              >新增
+              >{{ $t('i18n_66ab5e9f24') }}
             </a-button>
           </a-form-item-rest>
         </a-form-item>
         <a-form-item name="allowExecute">
           <template #label>
             <a-tooltip>
-              允许时段
-              <template #title>
-                优先判断禁用时段,再判断允许时段。配置允许时段后用户只能在对应的时段执行相应功能的操作
-              </template>
+              {{ $t('i18n_ef7e3377a0') }}
+              <template #title> {{ $t('i18n_21e4f10399') }},{{ $t('i18n_4c69102fe1') }} </template>
               <QuestionCircleOutlined v-if="!temp.id" />
             </a-tooltip>
           </template>
@@ -145,7 +146,7 @@
                   <div>
                     <a-select
                       v-model:value="item.week"
-                      placeholder="请选择可以执行的星期"
+                      :placeholder="$t('i18n_d5c2351c0e')"
                       mode="multiple"
                       style="width: 100%"
                     >
@@ -167,8 +168,16 @@
                   </div>
                   <div>
                     <a-space>
-                      <a-time-picker v-model:value="item.startTime" placeholder="开始时间" value-format="HH:mm:ss" />
-                      <a-time-picker v-model:value="item.endTime" placeholder="结束时间" value-format="HH:mm:ss" />
+                      <a-time-picker
+                        v-model:value="item.startTime"
+                        :placeholder="$t('i18n_592c595891')"
+                        value-format="HH:mm:ss"
+                      />
+                      <a-time-picker
+                        v-model:value="item.endTime"
+                        :placeholder="$t('i18n_f782779e8b')"
+                        value-format="HH:mm:ss"
+                      />
                     </a-space>
                   </div>
                 </a-space>
@@ -191,19 +200,23 @@
                   temp.allowExecuteArray.push({})
                 }
               "
-              >新增
+              >{{ $t('i18n_66ab5e9f24') }}
             </a-button>
           </a-form-item-rest>
         </a-form-item>
 
-        <a-form-item label="描述" name="description">
-          <a-textarea v-model:value="temp.description" :max-length="200" :rows="5" placeholder="描述" />
+        <a-form-item :label="$t('i18n_3bdd08adab')" name="description">
+          <a-textarea
+            v-model:value="temp.description"
+            :max-length="200"
+            :rows="5"
+            :placeholder="$t('i18n_3bdd08adab')"
+          />
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { workspaceList } from '@/api/user/user'
 import { getList, editPermissionGroup, deletePermissionGroup } from '@/api/user/user-permission'
@@ -226,29 +239,30 @@ export default {
       methodFeature: [],
       temp: {},
       weeks: [
-        { value: 1, name: '周一' },
-        { value: 2, name: '周二' },
-        { value: 3, name: '周三' },
-        { value: 4, name: '周四' },
-        { value: 5, name: '周五' },
-        { value: 6, name: '周六' },
-        { value: 7, name: '周日' }
+        { value: 1, name: this.$t('i18n_1603b069c2') },
+        { value: 2, name: this.$t('i18n_b5a6a07e48') },
+        { value: 3, name: this.$t('i18n_e60725e762') },
+        { value: 4, name: this.$t('i18n_170fc8e27c') },
+        { value: 5, name: this.$t('i18n_eb79cea638') },
+        { value: 6, name: this.$t('i18n_2457513054') },
+        { value: 7, name: this.$t('i18n_562d7476ab') }
       ],
+
       editVisible: false,
       listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
       columns: [
         { title: 'id', dataIndex: 'id', ellipsis: true },
-        { title: '名称', dataIndex: 'name', ellipsis: true },
-        { title: '描述', dataIndex: 'description', ellipsis: true },
+        { title: this.$t('i18n_d7ec2d3fea'), dataIndex: 'name', ellipsis: true },
+        { title: this.$t('i18n_3bdd08adab'), dataIndex: 'description', ellipsis: true },
 
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser',
           ellipsis: true,
           width: 150
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -258,16 +272,17 @@ export default {
           width: 170
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           align: 'center',
           dataIndex: 'operation',
 
           width: 120
         }
       ],
+
       // 表单校验规则
       rules: {
-        name: [{ required: true, message: '请输入权限组名称', trigger: 'blur' }]
+        name: [{ required: true, message: this.$t('i18n_4482773688'), trigger: 'blur' }]
       },
       confirmLoading: false
     }
@@ -306,13 +321,13 @@ export default {
               const children = this.methodFeature.map((item) => {
                 return {
                   key: element.id + '-' + item.value,
-                  title: item.title + '权限',
+                  title: item.title + this.$t('i18n_ba6e91fa9e'),
                   parentId: element.id
                 }
               })
               children.push({
                 key: element.id + '-sshCommandNotLimited',
-                title: 'SSH 终端命令无限制',
+                title: `SSH ${this.$t('i18n_9dd62c9fa8')}`,
                 parentId: element.id
               })
               this.workspaceList.push({
@@ -401,7 +416,7 @@ export default {
         delete temp.allowExecuteArray
         if (!emitKeys || emitKeys.length <= 0) {
           $notification.error({
-            message: '请选择工作空间'
+            message: this.$t('i18n_b3bda9bf9e')
           })
           return false
         }
@@ -430,11 +445,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除权限组么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_a52aa984cd'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deletePermissionGroup(record.id).then((res) => {
             if (res.code === 200) {
@@ -456,12 +471,11 @@ export default {
     checkTipUserName() {
       if (this.temp?.id === 'demo') {
         $confirm({
-          title: '系统提示',
+          title: this.$t('i18n_c4535759ee'),
           zIndex: 1009,
-          content:
-            'demo 账号是系统特定演示使用的账号,系统默认将对 demo 账号限制很多权限。非演示场景不建议使用 demo 账号',
-          okText: '确认',
-          cancelText: '取消',
+          content: `demo ${this.$t('i18n_a8f44c3188')},${this.$t('i18n_c5f9a96133')}`,
+          okText: this.$t('i18n_e83a256e4f'),
+          cancelText: this.$t('i18n_625fb26b4b'),
 
           onCancel: () => {
             this.temp.id = ''
@@ -472,7 +486,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .item-info {
   /* display: inline-block; */

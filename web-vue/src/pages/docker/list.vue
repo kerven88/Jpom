@@ -1,13 +1,10 @@
 <template>
   <div>
     <template v-if="useSuggestions">
-      <a-result
-        title="当前工作空间还没有 Docker"
-        sub-title="请到【系统管理】-> 【资产管理】-> 【Docker管理】新增Docker，或者将已新增的Docker授权关联、分配到此工作空间"
-      >
+      <a-result :title="$t('i18n_f9cea44f02')" :sub-title="$t('i18n_56469e09f7')">
         <template #extra>
           <router-link to="/system/assets/docker-list">
-            <a-button key="console" type="primary">现在就去</a-button></router-link
+            <a-button key="console" type="primary">{{ $t('i18n_6dcf6175d8') }}</a-button></router-link
           >
         </template>
       </a-result>
@@ -19,7 +16,7 @@
       default-auto-refresh
       :auto-refresh-time="5"
       table-name="docker-list"
-      empty-description="没有docker"
+      :empty-description="$t('i18n_4188f4101c')"
       :active-page="activePage"
       size="middle"
       :data-source="list"
@@ -38,16 +35,19 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="名称"
+            :placeholder="$t('i18n_d7ec2d3fea')"
             class="search-input-item"
             @press-enter="loadData"
           />
 
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" :disabled="!tableSelections || !tableSelections.length" @click="syncToWorkspaceShow"
-            >工作空间同步</a-button
+          <a-button
+            type="primary"
+            :disabled="!tableSelections || !tableSelections.length"
+            @click="syncToWorkspaceShow"
+            >{{ $t('i18n_398ce396cd') }}</a-button
           >
         </a-space>
       </template>
@@ -60,14 +60,14 @@
 
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('status')">
           <template v-if="record.machineDocker">
-            <a-tag v-if="record.machineDocker.status === 1" color="green">正常</a-tag>
+            <a-tag v-if="record.machineDocker.status === 1" color="green">{{ $t('i18n_fd6e80f1e0') }}</a-tag>
             <a-tooltip v-else :title="record.machineDocker.failureMsg">
-              <a-tag color="red">无法连接</a-tag>
+              <a-tag color="red">{{ $t('i18n_757a730c9e') }}</a-tag>
             </a-tooltip>
           </template>
 
-          <a-tooltip v-else title="集群关联的 docker 信息丢失,不能继续使用管理功能">
-            <a-tag color="red">信息丢失</a-tag>
+          <a-tooltip v-else :title="$t('i18n_33675a9bb3')">
+            <a-tag color="red">{{ $t('i18n_5169b9af9d') }}</a-tag>
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'tags'">
@@ -89,29 +89,36 @@
               type="primary"
               :disabled="!record.machineDocker || record.machineDocker.status !== 1"
               @click="handleConsole(record)"
-              >控制台</a-button
+              >{{ $t('i18n_b5c3770699') }}</a-button
             >
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </CustomTable>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="编辑  Docker"
+      :title="$t('i18n_657969aa0f')"
       :mask-closable="false"
       @ok="handleEditOk"
     >
-      <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="容器名称" name="name">
-          <a-input v-model:value="temp.name" placeholder="容器名称" />
+      <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+        <a-form-item :label="$t('i18n_a51cd0898f')" name="name">
+          <a-input v-model:value="temp.name" :placeholder="$t('i18n_a51cd0898f')" />
         </a-form-item>
 
-        <a-form-item label="标签" name="tagInput" help="标签用于容器构建选择容器功能（fromTag）">
+        <a-form-item
+          :label="$t('i18n_14d342362f')"
+          name="tagInput"
+          :help="$t('i18n_05b52ae2db', { slot1: $t('i18n_14d342362f') })"
+        >
           <a-space direction="vertical" style="width: 100%">
             <div>
               <a-tooltip v-for="(tag, index) in temp.tagsArray" :key="index" :title="tag">
@@ -135,23 +142,25 @@
               v-model:value="temp.tagInput"
               type="text"
               size="small"
-              placeholder="请输入标签名 字母数字 长度 1-10"
+              :placeholder="$t('i18n_baef58c283')"
               @blur="handleInputConfirm"
               @keyup.enter="handleInputConfirm"
             />
             <template v-else>
               <a-tag
                 v-if="!temp.tagsArray || temp.tagsArray.length < 10"
-                style="borderstyle: dashed"
+                :style="{
+                  borderStyle: dashed
+                }"
                 @click="showInput"
               >
-                <PlusOutlined /> 新增
+                <PlusOutlined /> {{ $t('i18n_66ab5e9f24') }}
               </a-tag>
             </template>
           </a-space>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
 
     <console
       v-if="consoleVisible"
@@ -162,26 +171,27 @@
     ></console>
     <!-- </a-drawer> -->
     <!-- 同步到其他工作空间 -->
-    <a-modal
+    <CustomModal
+      v-if="syncToWorkspaceVisible"
       v-model:open="syncToWorkspaceVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="同步到其他工作空间"
+      :title="$t('i18n_1a44b9e2f7')"
       :mask-closable="false"
       @ok="handleSyncToWorkspace"
     >
-      <a-alert message="温馨提示" type="warning">
+      <a-alert :message="$t('i18n_947d983961')" type="warning">
         <template #description>
           <ul>
-            <li>同步机制采用容器 host 确定是同一个服务器（docker）</li>
-            <li>当目标工作空间不存在对应的节点时候将自动创建一个新的docker（逻辑docker）</li>
-            <li>当目标工作空间已经存在节点时候将自动同步 docker 仓库配置信息</li>
+            <li>{{ $t('i18n_af7c96d2b9') }}</li>
+            <li>{{ $t('i18n_4c7e4dfd33') }}</li>
+            <li>{{ $t('i18n_b7df1586a9') }}</li>
           </ul>
         </template>
       </a-alert>
       <a-form :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-item> </a-form-item>
-        <a-form-item label="选择工作空间" name="workspaceId">
+        <a-form-item :label="$t('i18n_b4a8c78284')" name="workspaceId">
           <a-select
             v-model:value="temp.workspaceId"
             show-search
@@ -195,7 +205,7 @@
                 )
               }
             "
-            placeholder="请选择工作空间"
+            :placeholder="$t('i18n_b3bda9bf9e')"
           >
             <a-select-option v-for="item in workspaceList" :key="item.id" :disabled="getWorkspaceId() === item.id">{{
               item.name
@@ -203,10 +213,9 @@
           </a-select>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { deleteDcoker, dockerList, editDocker, syncToWorkspace } from '@/api/docker-api'
 import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
@@ -236,7 +245,7 @@ export default {
 
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           width: 100
@@ -249,33 +258,33 @@ export default {
           tooltip: true
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: ['machineDocker', 'status'],
           ellipsis: true,
           align: 'center',
           width: '100px'
         },
         {
-          title: 'docker版本',
+          title: `docker${this.$t('i18n_fe2df04a16')}`,
           dataIndex: ['machineDocker', 'dockerVersion'],
           ellipsis: true,
           width: '120px',
           tooltip: true
         },
         {
-          title: '标签',
+          title: this.$t('i18n_14d342362f'),
           dataIndex: 'tags',
           width: 100,
           ellipsis: true
         },
         {
-          title: '最后修改人',
+          title: this.$t('i18n_3bcc1c7a20'),
           dataIndex: 'modifyUser',
           width: '120px',
           ellipsis: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'createTimeMillis',
           ellipsis: true,
           sorter: true,
@@ -283,7 +292,7 @@ export default {
           width: '170px'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -291,7 +300,7 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
 
           fixed: 'right',
@@ -299,18 +308,19 @@ export default {
           width: '190px'
         }
       ],
+
       rules: {
         // id: [{ required: true, message: "Please input ID", trigger: "blur" }],
-        name: [{ required: true, message: '请填写容器名称', trigger: 'blur' }],
-        host: [{ required: true, message: '请填写容器地址', trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_f63870fdb0'), trigger: 'blur' }],
+        host: [{ required: true, message: this.$t('i18n_3604566503'), trigger: 'blur' }],
         tagInput: [
           // { required: true, message: "Please input ID", trigger: "blur" },
-          { pattern: /^\w{1,10}$/, message: '标签限制为字母数字且长度 1-10' }
+          { pattern: /^\w{1,10}$/, message: this.$t('i18n_89944d6ccb') }
         ],
 
         tag: [
-          { required: true, message: '请填写关联容器标签', trigger: 'blur' },
-          { pattern: /^\w{1,10}$/, message: '标签限制为字母数字且长度 1-10' }
+          { required: true, message: this.$t('i18n_3b9418269c'), trigger: 'blur' },
+          { pattern: /^\w{1,10}$/, message: this.$t('i18n_89944d6ccb') }
         ]
       },
       workspaceList: [],
@@ -452,11 +462,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除该记录么？删除后构建关联的容器标签将无法使用',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_1593dc4920'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteDcoker({
             id: record.id
@@ -530,7 +540,7 @@ export default {
     handleSyncToWorkspace() {
       if (!this.temp.workspaceId) {
         $notification.warn({
-          message: '请选择工作空间'
+          message: this.$t('i18n_b3bda9bf9e')
         })
         return false
       }

@@ -29,7 +29,8 @@ import java.io.File;
  * @since 2023/3/3
  */
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "MACHINE_DOCKER_INFO", name = "机器DOCKER信息")
+@TableName(value = "MACHINE_DOCKER_INFO",
+    nameKey = "i18n.machine_docker_info.9914")
 @Data
 @NoArgsConstructor
 public class MachineDockerModel extends BaseGroupNameModel {
@@ -121,6 +122,10 @@ public class MachineDockerModel extends BaseGroupNameModel {
      * SSH Id
      */
     private String machineSshId;
+    /**
+     * 是否使用 sudo 执行命令
+     */
+    private Boolean sshUseSudo;
 
 
     public void setFailureMsg(String failureMsg) {

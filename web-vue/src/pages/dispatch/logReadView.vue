@@ -7,11 +7,11 @@
         <div class="dir-container">
           <template v-if="temp.projectList && temp.cacheData">
             <a-form layout="inline" autocomplete="off">
-              <a-form-item label="节点">
+              <a-form-item :label="$t('i18n_3bf3c0a8d6')">
                 <a-select
                   :value="`${temp.cacheData.useNodeId},${temp.cacheData.useProjectId}`"
                   style="width: 200px"
-                  placeholder="请选择节点"
+                  :placeholder="$t('i18n_f8a613d247')"
                   @change="nodeChange"
                 >
                   <a-select-option v-for="item in temp.projectList" :key="`${item.nodeId},${item.projectId}`">
@@ -25,6 +25,8 @@
         </div>
 
         <a-directory-tree
+          v-model:expandedKeys="expandedKeys"
+          v-model:selectedKeys="selectedKeys"
           :field-names="treeReplaceFields"
           :load-data="onTreeData"
           :tree-data="treeList"
@@ -40,21 +42,21 @@
             <a-form layout="inline" autocomplete="off">
               <a-space direction="vertical" style="width: 100%">
                 <a-space>
-                  <a-form-item label="搜关键词">
+                  <a-form-item :label="$t('i18n_5349f417e9')">
                     <!-- 关键词： -->
                     <!-- ^.*\d+.*$ -->
                     <!-- .*(0999996|0999995).*   .*(a|b).* -->
-                    <a-tooltip placement="right" title="关键词高亮,支持正则(正则可能影响性能请酌情使用)">
+                    <a-tooltip placement="right" :title="$t('i18n_e5ae5b36db')">
                       <a-input
                         v-model:value="temp.cacheData.keyword"
-                        placeholder="关键词,支持正则"
+                        :placeholder="$t('i18n_2d05c9d012')"
                         :style="`width: 250px`"
                         @press-enter="sendSearchLog"
                       >
                       </a-input>
                     </a-tooltip>
                   </a-form-item>
-                  <a-form-item label="显示前N行">
+                  <a-form-item :label="$t('i18n_a20341341b')">
                     <a-input-number
                       id="inputNumber"
                       v-model:value="temp.cacheData.beforeCount"
@@ -63,7 +65,7 @@
                       @press-enter="sendSearchLog"
                     />
                   </a-form-item>
-                  <a-form-item label="显示后N行">
+                  <a-form-item :label="$t('i18n_10d6dfd112')">
                     <a-input-number
                       id="inputNumber"
                       v-model:value="temp.cacheData.afterCount"
@@ -72,26 +74,28 @@
                       @press-enter="sendSearchLog"
                     />
                   </a-form-item>
-                  <a-popover title="正则语法参考">
+                  <a-popover :title="$t('i18n_108d492247')">
                     <template #content>
                       <ul>
-                        <li><b>^.*\d+.*$</b> - 匹配包含数字的行</li>
-                        <li><b>.*(a|b).*</b> - 匹配包含 a 或者 b 的行</li>
-                        <li><b>.*(异常).*</b> - 匹配包含 异常 的行</li>
+                        <li><b>^.*\d+.*$</b> - {{ $t('i18n_66c15f2815') }}</li>
+                        <li><b>.*(a|b).*</b> - {{ $t('i18n_a1638e78e8') }}</li>
+                        <li>
+                          <b>.*({{ $t('i18n_c195df6308') }}).*</b> -
+                          {{ $t('i18n_346008472d') }}
+                        </li>
                       </ul>
                     </template>
                     <a-button type="link" style="padding: 0"
-                      ><UnorderedListOutlined /><span style="margin-left: 2px">语法参考</span></a-button
+                      ><UnorderedListOutlined /><span style="margin-left: 2px">{{
+                        $t('i18n_be5b6463cf')
+                      }}</span></a-button
                     >
                   </a-popover>
                 </a-space>
                 <a-space>
-                  <a-form-item label="搜索模式">
+                  <a-form-item :label="$t('i18n_ff9dffec4d')">
                     <!--  -->
-                    <a-tooltip
-                      placement="right"
-                      title="搜索模式,默认查看文件最后多少行，从头搜索指从指定行往下搜索，从尾搜索指从文件尾往上搜索多少行"
-                    >
+                    <a-tooltip placement="right" :title="$t('i18n_a9463d0f1a')">
                       <a-select
                         :style="`width: 250px`"
                         :value="temp.cacheData.first"
@@ -103,12 +107,12 @@
                           }
                         "
                       >
-                        <a-select-option value="false">从尾搜索</a-select-option>
-                        <a-select-option value="true">从头搜索 </a-select-option>
+                        <a-select-option value="false">{{ $t('i18n_518df98392') }}</a-select-option>
+                        <a-select-option value="true">{{ $t('i18n_9914219dd1') }} </a-select-option>
                       </a-select>
                     </a-tooltip>
                   </a-form-item>
-                  <a-form-item label="文件前N行">
+                  <a-form-item :label="$t('i18n_d82ab35b27')">
                     <a-input-number
                       id="inputNumber"
                       v-model:value="temp.cacheData.head"
@@ -117,7 +121,7 @@
                       @press-enter="sendSearchLog"
                     />
                   </a-form-item>
-                  <a-form-item label="文件后N行">
+                  <a-form-item :label="$t('i18n_10145884ba')">
                     <a-input-number
                       id="inputNumber"
                       v-model:value="temp.cacheData.tail"
@@ -126,20 +130,43 @@
                       @press-enter="sendSearchLog"
                     />
                   </a-form-item>
-                  <a-popover title="搜索配置参考">
+                  <a-popover :title="$t('i18n_257dc29ef7')">
                     <template #content>
                       <ul>
-                        <li><b>从尾搜索、文件前0行、文件后3行</b> - 在文件最后 3 行中搜索</li>
-                        <li><b>从头搜索、文件前0行、文件后3行</b> - 在文件第 3 - 2147483647 行中搜索</li>
-                        <li><b>从尾搜索、文件前2行、文件后3行</b> - 在文件第 1 - 2 行中搜索</li>
-                        <li><b>从尾搜索、文件前100行、文件后100行</b> - 在文件第 1 - 100 行中搜索</li>
-                        <li><b>从头搜索、文件前2行、文件后3行</b> - 在文件第 2 - 2 行中搜索</li>
-                        <li><b>从尾搜索、文件前20行、文件后3行</b> - 在文件第 17 - 20 行中搜索</li>
-                        <li><b>从头搜索、文件前20行、文件后3行</b> - 在文件第 3 - 20 行中搜索</li>
+                        <li>
+                          <b>{{ $t('i18n_625aa478e2') }}</b> -
+                          {{ $t('i18n_cb25f04b46') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_704f33fc74') }}</b> -
+                          {{ $t('i18n_7d3f2fd640') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_5d414afd86') }}</b> -
+                          {{ $t('i18n_4effdeb1ff') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_8ea4c3f537') }}</b> -
+                          {{ $t('i18n_9b0bc05511') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_758edf4666') }}</b> -
+                          {{ $t('i18n_3f2d5bd6cc') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_6e2d78a20e') }}</b> -
+                          {{ $t('i18n_59d20801e9') }}
+                        </li>
+                        <li>
+                          <b>{{ $t('i18n_abba4043d8') }}</b> -
+                          {{ $t('i18n_4bbc09fc55') }}
+                        </li>
                       </ul>
                     </template>
                     <a-button type="link" style="padding: 0"
-                      ><UnorderedListOutlined /><span style="margin-left: 2px">搜索参考</span></a-button
+                      ><UnorderedListOutlined /><span style="margin-left: 2px">{{
+                        $t('i18n_62170d5b0a')
+                      }}</span></a-button
                     >
                   </a-popover>
                 </a-space></a-space
@@ -176,7 +203,6 @@
     </a-layout>
   </div>
 </template>
-
 <script>
 import { getNodeListAll, getProjectListAll } from '@/api/node'
 import { getFileList } from '@/api/node-project'
@@ -205,7 +231,8 @@ export default {
     return {
       treeReplaceFields: {
         title: 'filename',
-        isLeaf: 'isDirectory'
+        isLeaf: 'isDirectory',
+        key: 'key'
       },
       tempNode: {},
       tempFileNode: {},
@@ -216,7 +243,9 @@ export default {
       nodeList: [],
       nodeName: {},
       temp: {},
-      socketCache: {}
+      socketCache: {},
+      expandedKeys: [],
+      selectedKeys: []
     }
   },
   computed: {
@@ -315,7 +344,7 @@ export default {
         console.error(err)
         $notification.error({
           key: 'log-read-error',
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
         clearInterval(this.socketCache[id].heart)
       }
@@ -324,7 +353,9 @@ export default {
         console.error(err)
         $notification.info({
           key: 'log-read-close',
-          message: ((this.nodeName[item.nodeId] && this.nodeName[item.nodeId].name) || '') + ' 会话已经关闭[tail-log]-'
+          message:
+            ((this.nodeName[item.nodeId] && this.nodeName[item.nodeId].name) || '') +
+            ` ${this.$t('i18n_ab3725d06b')}[tail-log]`
         })
         clearInterval(this.socketCache[id].heart)
       }
@@ -421,7 +452,7 @@ export default {
           this.sendSearchLog()
         } else {
           //
-          $message.error('当前文件不可读,需要配置可读文件授权')
+          $message.error(this.$t('i18n_765d09eea5'))
         }
       }
     },
@@ -461,36 +492,39 @@ export default {
     // 加载子节点
     loadNode(data, resolve) {
       this.tempNode = data
+      if (data.children) {
+        resolve()
+        return
+      }
       // 如果是目录
       if (data.isDirectory) {
-        setTimeout(() => {
-          // 请求参数
-          const cacheData = this.temp.cacheData
+        // 请求参数
+        const cacheData = this.temp.cacheData
 
-          const params = {
-            nodeId: cacheData.useNodeId,
-            id: cacheData.useProjectId,
-            path: this.selectPath
+        const params = {
+          nodeId: cacheData.useNodeId,
+          id: cacheData.useProjectId,
+          path: this.selectPath
+        }
+
+        // 加载文件
+        getFileList(params).then((res) => {
+          if (res.code === 200) {
+            data.children = res.data.map((ele) => {
+              ele.isLeaf = !ele.isDirectory
+              ele.key = ele.filename + '-' + new Date().getTime()
+              //ele.disabled = ele.textFileEdit;
+
+              return ele
+            })
+
+            this.treeList = [...this.treeList]
+
+            resolve()
+          } else {
+            resolve()
           }
-
-          // 加载文件
-          getFileList(params).then((res) => {
-            if (res.code === 200) {
-              data.children = res.data.map((ele) => {
-                ele.isLeaf = !ele.isDirectory
-                ele.key = ele.filename + '-' + new Date().getTime()
-                //ele.disabled = ele.textFileEdit;
-
-                return ele
-              })
-
-              this.treeList = [...this.treeList]
-              resolve()
-            } else {
-              resolve()
-            }
-          })
-        }, 500)
+        })
       } else {
         resolve()
       }
@@ -510,7 +544,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .sider {
   border: 1px solid #e2e2e2;

@@ -8,42 +8,36 @@
       <log-view1 :ref="`logView`" height="calc(100vh - 140px)">
         <template #before>
           <a-space>
-            <a-button size="small" :loading="btnLoading" :disabled="scriptStatus !== 0" type="primary" @click="start"
-              >执行</a-button
-            >
-            <a-button size="small" :loading="btnLoading" :disabled="scriptStatus !== 1" type="primary" @click="stop"
-              >停止</a-button
-            >
+            <a-button size="small" :loading="btnLoading" :disabled="scriptStatus !== 0" type="primary" @click="start">{{
+              $t('i18n_1a6aa24e76')
+            }}</a-button>
+            <a-button size="small" :loading="btnLoading" :disabled="scriptStatus !== 1" type="primary" @click="stop">{{
+              $t('i18n_095e938e2a')
+            }}</a-button>
           </a-space>
         </template>
       </log-view1>
     </div>
 
     <!--运行  -->
-    <a-modal
+    <CustomModal
+      v-if="editArgs"
       v-model:open="editArgs"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="新增运行参数"
+      :title="$t('i18n_43886d7ac3')"
       :mask-closable="false"
       @ok="startExecution"
     >
       <a-form ref="ruleForm" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-        <a-form-item
-          label="命令参数"
-          :help="`${
-            commandParams.length
-              ? '所有参数将拼接成字符串以空格分隔形式执行脚本,需要注意参数顺序和未填写值的参数将自动忽略'
-              : ''
-          }`"
-        >
+        <a-form-item :label="$t('i18n_abba4775e1')" :help="`${commandParams.length ? $t('i18n_916cde39c4') : ''}`">
           <a-space direction="vertical" style="width: 100%">
             <a-row v-for="(item, index) in commandParams" :key="item.key">
               <a-col :span="22">
                 <a-input
                   v-model:value="item.value"
-                  :addon-before="`参数${index + 1}值`"
-                  :placeholder="`参数值 ${item.desc ? ',' + item.desc : ''}`"
+                  :addon-before="`${$t('i18n_3d0a2df9ec')}${index + 1}${$t('i18n_fe7509e0ed')}`"
+                  :placeholder="`${$t('i18n_3d0a2df9ec')}${$t('i18n_fe7509e0ed')} ${item.desc ? ',' + item.desc : ''}`"
                 >
                   <template #suffix>
                     <a-tooltip v-if="item.desc" :title="item.desc">
@@ -61,14 +55,15 @@
                 </a-row>
               </a-col>
             </a-row>
-            <a-button type="primary" size="small" @click="() => commandParams.push({})">新增参数</a-button>
+            <a-button type="primary" size="small" @click="() => commandParams.push({})">{{
+              $t('i18n_4c0eead6ff')
+            }}</a-button>
           </a-space>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import { useUserStore } from '@/stores/user'
@@ -159,7 +154,7 @@ export default {
       this.socket.onerror = (err) => {
         console.error(err)
         $notification.error({
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
         clearInterval(this.heart)
         this.btnLoading = true
@@ -169,7 +164,7 @@ export default {
         console.error(err)
         clearInterval(this.heart)
         this.btnLoading = true
-        $message.warning('会话已经关闭[node-script-consloe]')
+        $message.warning(this.$t('i18n_5fafcadc2d'))
       }
       this.socket.onmessage = (msg) => {
         if (msg.data.indexOf('JPOM_MSG') > -1 && msg.data.indexOf('op') > -1) {
@@ -231,7 +226,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .script-console-layout {
   padding: 0;

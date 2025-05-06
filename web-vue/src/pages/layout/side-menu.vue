@@ -11,14 +11,18 @@
     >
       <a-menu-item key="admin-manager">
         <template v-if="mode === 'normal'">
-          <SettingOutlined :style="{ fontSize: '18px' }" />
+          <a-tooltip :title="$t('i18n_4d85ac1250')" color="cyan">
+            <SettingOutlined :style="{ fontSize: '18px' }" />
 
-          <span>系统管理</span>
+            <span>{{ $t('i18n_4d85ac1250') }}</span>
+          </a-tooltip>
         </template>
         <template v-if="mode === 'management'">
-          <DesktopOutlined :style="{ fontSize: '18px' }" />
+          <a-tooltip :title="$t('i18n_d9c28e376c')" color="cyan">
+            <DesktopOutlined :style="{ fontSize: '18px' }" />
 
-          <span>功能管理</span>
+            <span>{{ $t('i18n_d9c28e376c') }}</span>
+          </a-tooltip>
         </template>
       </a-menu-item>
     </a-menu>
@@ -34,10 +38,10 @@
         <template v-if="menu.childs && menu.childs.length">
           <a-sub-menu :key="menu.id">
             <template #title>
-              <span>
+              <a-tooltip :title="menu.title" color="cyan">
                 <icon :type="menu.icon_v3" :style="{ fontSize: '18px' }" />
                 <span>{{ menu.title }}</span>
-              </span>
+              </a-tooltip>
             </template>
             <a-menu-item
               v-for="subMenu in menu.childs"
@@ -45,21 +49,22 @@
               :p="(subMenu.parent = menu)"
               @click="handleClick(subMenu)"
             >
-              <span>{{ subMenu.title }}</span>
+              <a-tooltip :title="subMenu.title" color="cyan">{{ subMenu.title }}</a-tooltip>
             </a-menu-item>
           </a-sub-menu>
         </template>
         <template v-else>
           <a-menu-item :key="menu.id" @click="handleClick(menu)">
-            <icon :type="menu.icon_v3" :style="{ fontSize: '18px' }" />
-            <span>{{ menu.title }}</span>
+            <a-tooltip :title="menu.title" color="cyan">
+              <icon :type="menu.icon_v3" :style="{ fontSize: '18px' }" />
+              <span>{{ menu.title }}</span>
+            </a-tooltip>
           </a-menu-item>
         </template>
       </template>
     </a-menu>
   </div>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import Icon from '@/components/Icon'
@@ -137,7 +142,7 @@ export default {
       // 如果路由不存在
       if (!subMenu.path) {
         $notification.error({
-          message: '路由无效，无法跳转'
+          message: this.$t('i18n_130318a2a1')
         })
         return false
       }

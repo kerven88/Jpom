@@ -5,7 +5,7 @@
       height: height
     }"
   >
-    <a-spin v-if="loading" tip="加载编辑器中" :spinning="loading">
+    <a-spin v-if="loading" :tip="$t('i18n_6a8c30bd06')" :spinning="loading">
       <a-skeleton />
     </a-spin>
     <template v-else>
@@ -14,8 +14,8 @@
 
         <a-space class="tool-bar-end">
           <div>
-            皮肤：
-            <a-select
+            {{ $t('i18n_08902526f1')
+            }}<a-select
               v-model:value="cmOptions.theme"
               show-search
               :filter-option="
@@ -28,7 +28,7 @@
                   )
                 }
               "
-              placeholder="请选择皮肤"
+              :placeholder="$t('i18n_37b30fc862')"
               style="width: 150px"
               @select="handleSelectTheme"
             >
@@ -36,8 +36,8 @@
             </a-select>
           </div>
           <div>
-            语言：
-            <a-select
+            {{ $t('i18n_117a9cbc8d')
+            }}<a-select
               v-model:value="cmOptions.mode"
               show-search
               :filter-option="
@@ -50,11 +50,11 @@
                   )
                 }
               "
-              placeholder="请选择语言模式"
+              :placeholder="$t('i18n_773b1a5ef6')"
               style="width: 150px"
               @select="handleSelectMode"
             >
-              <a-select-option value="">请选择语言模式</a-select-option>
+              <a-select-option value="">{{ $t('i18n_773b1a5ef6') }}</a-select-option>
               <a-select-option v-for="item in modeList" :key="item.mode">{{ item.name }}</a-select-option>
             </a-select>
           </div>
@@ -62,15 +62,13 @@
           <a-tooltip>
             <template #title>
               <ul>
-                <li>Ctrl-F / Cmd-F Start searching</li>
-                <li>Ctrl-G / Cmd-G Find next</li>
-                <li>Shift-Ctrl-G / Shift-Cmd-G Find previous</li>
-                <li>Shift-Ctrl-F / Cmd-Option-F Replace</li>
-                <li>Shift-Ctrl-R / Shift-Cmd-Option-F Replace all</li>
-                <li>
-                  Alt-F Persistent search (dialog doesn't autoclose, enter to find next, Shift-Enter to find previous)
-                </li>
-                <li>Alt-G Jump to line</li>
+                <li><b>Ctrl-F / Cmd-F</b>&nbsp;{{ $t('i18n_99d3e5c718') }}</li>
+                <li><b>Ctrl-G / Cmd-G</b>&nbsp;{{ $t('i18n_6292498392') }}</li>
+                <li><b>Shift-Ctrl-G / Shift-Cmd-G</b>&nbsp;{{ $t('i18n_11e88c95ee') }}</li>
+                <li><b>Shift-Ctrl-F / Cmd-Option-F</b>&nbsp;{{ $t('i18n_d324f8b5c9') }}</li>
+                <li><b>Shift-Ctrl-R / Shift-Cmd-Option-F</b>&nbsp;{{ $t('i18n_b9c4cf7483') }}</li>
+                <li><b>Alt-F</b>&nbsp;{{ $t('i18n_9402665a2c') }}</li>
+                <li><b>Alt-G</b>&nbsp;{{ $t('i18n_5fc6c33832') }}</li>
               </ul>
             </template>
             <QuestionCircleOutlined />
@@ -89,7 +87,6 @@
     </template>
   </div>
 </template>
-
 <script>
 import Codemirror from 'codemirror-editor-vue3'
 import 'codemirror/lib/codemirror.css'
@@ -144,6 +141,7 @@ const modes = [
   { name: 'groovy', mode: 'groovy' },
   { name: 'cmake', mode: 'cmake' }
 ]
+
 //
 
 // theme
@@ -212,86 +210,7 @@ import 'codemirror/theme/xq-light.css'
 import 'codemirror/theme/yeti.css'
 import 'codemirror/theme/yonce.css'
 import 'codemirror/theme/zenburn.css'
-const theme = [
-  // { name: '深色', theme: 'dracula' },
-  // { name: '浅色', theme: 'eclipse' },
-  // { name: '深色2', theme: 'blackboard' },
-  // { name: '', theme: 'abbott' },
-  // { name: '深白', theme: 'abcdef' },
-  // { name: '黑白', theme: 'ambiance' },
-  // { name: 'ayu深', theme: 'ayu-dark' },
-  // { name: 'ayu深2', theme: 'ayu-mirage' },
-  // { name: '浅灰', theme: 'bespin' }
 
-  { name: '灰绿 abbott', theme: 'abbott' },
-  { name: '灰绿 abcdef', theme: 'abcdef' },
-  { name: '黑白 ambiance-mobile', theme: 'ambiance-mobile' },
-  { name: '黑白 ambiance', theme: 'ambiance' },
-  { name: '深色 dracula', theme: 'dracula' },
-  { name: '浅色 eclipse', theme: 'eclipse' },
-  { name: '深色2 blackboard', theme: 'blackboard' },
-  { name: '浅色 idea', theme: 'idea' },
-  { name: 'ayu-dark', theme: 'ayu-dark' },
-  { name: 'ayu-mirage', theme: 'ayu-mirage' },
-  { name: 'base16-dark', theme: 'base16-dark' },
-  { name: 'base16-light', theme: 'base16-light' },
-  { name: 'bespin', theme: 'bespin' },
-
-  { name: 'cobalt', theme: 'cobalt' },
-  { name: 'colorforth', theme: 'colorforth' },
-
-  { name: 'duotone-dark', theme: 'duotone-dark' },
-  { name: 'duotone-light', theme: 'duotone-light' },
-
-  { name: 'elegant', theme: 'elegant' },
-  { name: 'erlang-dark', theme: 'erlang-dark' },
-  { name: 'gruvbox-dark', theme: 'gruvbox-dark' },
-  { name: 'hopscotch', theme: 'hopscotch' },
-  { name: 'icecoder', theme: 'icecoder' },
-
-  { name: 'isotope', theme: 'isotope' },
-  { name: 'juejin', theme: 'juejin' },
-  { name: 'lesser-dark', theme: 'lesser-dark' },
-  { name: 'liquibyte', theme: 'liquibyte' },
-  { name: 'lucario', theme: 'lucario' },
-  { name: 'material-darker', theme: 'material-darker' },
-  { name: 'material-ocean', theme: 'material-ocean' },
-  { name: 'material-palenight', theme: 'material-palenight' },
-  { name: 'material', theme: 'material' },
-  { name: 'mbo', theme: 'mbo' },
-  { name: 'mdn-like', theme: 'mdn-like' },
-  { name: 'midnight', theme: 'midnight' },
-  { name: 'monokai', theme: 'monokai' },
-  { name: 'moxer', theme: 'moxer' },
-  { name: 'neat', theme: 'neat' },
-  { name: 'neo', theme: 'neo' },
-  { name: 'night', theme: 'night' },
-  { name: 'nord', theme: 'nord' },
-  { name: 'oceanic-next', theme: 'oceanic-next' },
-  { name: 'panda-syntax', theme: 'panda-syntax' },
-  { name: 'paraiso-dark', theme: 'paraiso-dark' },
-  { name: 'paraiso-light', theme: 'paraiso-light' },
-  { name: 'pastel-on-dark', theme: 'pastel-on-dark' },
-  { name: 'railscasts', theme: 'railscasts' },
-  { name: 'rubyblue', theme: 'rubyblue' },
-  { name: 'seti', theme: 'seti' },
-  { name: 'shadowfox', theme: 'shadowfox' },
-  { name: 'solarized', theme: 'solarized' },
-  { name: 'ssms', theme: 'ssms' },
-  { name: 'the-matrix', theme: 'the-matrix' },
-  { name: 'tomorrow-night-bright', theme: 'tomorrow-night-bright' },
-  { name: 'tomorrow-night-eighties', theme: 'tomorrow-night-eighties' },
-  { name: 'ttcn', theme: 'ttcn' },
-  { name: 'twilight', theme: 'twilight' },
-  { name: 'vibrant-ink', theme: 'vibrant-ink' },
-  { name: 'xq-dark', theme: 'xq-dark' },
-  { name: 'xq-light', theme: 'xq-light' },
-  { name: 'yeti', theme: 'yeti' },
-  { name: 'yonce', theme: 'yonce' },
-  { name: 'zenburn', theme: 'zenburn' },
-  { name: '3024-day', theme: '3024-day' },
-  { name: '3024-night', theme: '3024-night' }
-]
 //
 //
 //
@@ -338,6 +257,7 @@ import 'codemirror/addon/search/search.js'
 import 'codemirror/addon/display/autorefresh.js'
 import 'codemirror/addon/selection/mark-selection.js'
 import 'codemirror/addon/search/match-highlighter.js'
+import { t } from '@/i18n/index'
 
 // 文件后缀与语言对应表
 const fileSuffixToModeMap = {
@@ -386,7 +306,9 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '请输入内容'
+      default: function () {
+        return t('i18n_a11cc7a65b')
+      }
     }
   },
   emits: ['update:content'],
@@ -442,7 +364,87 @@ export default {
         defaultJsonIndentation: 2
       },
       modeList: modes,
-      themeList: theme,
+      themeList: [
+        // { name: '深色', theme: 'dracula' },
+        // { name: '浅色', theme: 'eclipse' },
+        // { name: '深色2', theme: 'blackboard' },
+        // { name: '', theme: 'abbott' },
+        // { name: '深白', theme: 'abcdef' },
+        // { name: '黑白', theme: 'ambiance' },
+        // { name: 'ayu深', theme: 'ayu-dark' },
+        // { name: 'ayu深2', theme: 'ayu-mirage' },
+        // { name: '浅灰', theme: 'bespin' }
+
+        { name: this.$t('i18n_72eae3107e'), theme: 'abbott' },
+        { name: this.$t('i18n_96c1c8f4ee'), theme: 'abcdef' },
+        { name: this.$t('i18n_cad01fe13c'), theme: 'ambiance-mobile' },
+        { name: this.$t('i18n_1880b85dc5'), theme: 'ambiance' },
+        { name: this.$t('i18n_50ed14e70b'), theme: 'dracula' },
+        { name: this.$t('i18n_d937a135b9'), theme: 'eclipse' },
+        { name: this.$t('i18n_be1956b246'), theme: 'blackboard' },
+        { name: this.$t('i18n_8cae9cb626'), theme: 'idea' },
+        { name: 'ayu-dark', theme: 'ayu-dark' },
+        { name: 'ayu-mirage', theme: 'ayu-mirage' },
+        { name: 'base16-dark', theme: 'base16-dark' },
+        { name: 'base16-light', theme: 'base16-light' },
+        { name: 'bespin', theme: 'bespin' },
+
+        { name: 'cobalt', theme: 'cobalt' },
+        { name: 'colorforth', theme: 'colorforth' },
+
+        { name: 'duotone-dark', theme: 'duotone-dark' },
+        { name: 'duotone-light', theme: 'duotone-light' },
+
+        { name: 'elegant', theme: 'elegant' },
+        { name: 'erlang-dark', theme: 'erlang-dark' },
+        { name: 'gruvbox-dark', theme: 'gruvbox-dark' },
+        { name: 'hopscotch', theme: 'hopscotch' },
+        { name: 'icecoder', theme: 'icecoder' },
+
+        { name: 'isotope', theme: 'isotope' },
+        { name: 'juejin', theme: 'juejin' },
+        { name: 'lesser-dark', theme: 'lesser-dark' },
+        { name: 'liquibyte', theme: 'liquibyte' },
+        { name: 'lucario', theme: 'lucario' },
+        { name: 'material-darker', theme: 'material-darker' },
+        { name: 'material-ocean', theme: 'material-ocean' },
+        { name: 'material-palenight', theme: 'material-palenight' },
+        { name: 'material', theme: 'material' },
+        { name: 'mbo', theme: 'mbo' },
+        { name: 'mdn-like', theme: 'mdn-like' },
+        { name: 'midnight', theme: 'midnight' },
+        { name: 'monokai', theme: 'monokai' },
+        { name: 'moxer', theme: 'moxer' },
+        { name: 'neat', theme: 'neat' },
+        { name: 'neo', theme: 'neo' },
+        { name: 'night', theme: 'night' },
+        { name: 'nord', theme: 'nord' },
+        { name: 'oceanic-next', theme: 'oceanic-next' },
+        { name: 'panda-syntax', theme: 'panda-syntax' },
+        { name: 'paraiso-dark', theme: 'paraiso-dark' },
+        { name: 'paraiso-light', theme: 'paraiso-light' },
+        { name: 'pastel-on-dark', theme: 'pastel-on-dark' },
+        { name: 'railscasts', theme: 'railscasts' },
+        { name: 'rubyblue', theme: 'rubyblue' },
+        { name: 'seti', theme: 'seti' },
+        { name: 'shadowfox', theme: 'shadowfox' },
+        { name: 'solarized', theme: 'solarized' },
+        { name: 'ssms', theme: 'ssms' },
+        { name: 'the-matrix', theme: 'the-matrix' },
+        { name: 'tomorrow-night-bright', theme: 'tomorrow-night-bright' },
+        { name: 'tomorrow-night-eighties', theme: 'tomorrow-night-eighties' },
+        { name: 'ttcn', theme: 'ttcn' },
+        { name: 'twilight', theme: 'twilight' },
+        { name: 'vibrant-ink', theme: 'vibrant-ink' },
+        { name: 'xq-dark', theme: 'xq-dark' },
+        { name: 'xq-light', theme: 'xq-light' },
+        { name: 'yeti', theme: 'yeti' },
+        { name: 'yonce', theme: 'yonce' },
+        { name: 'zenburn', theme: 'zenburn' },
+        { name: '3024-day', theme: '3024-day' },
+        { name: '3024-night', theme: '3024-night' }
+      ],
+
       loading: true
     }
   },
@@ -560,14 +562,12 @@ export default {
   }
 }
 </script>
-
 <style>
 .CodeMirror {
   height: 100%;
   min-height: 200px;
 }
 </style>
-
 <style scoped>
 /* .CodeMirror-hints {
   z-index: 3330 !important;

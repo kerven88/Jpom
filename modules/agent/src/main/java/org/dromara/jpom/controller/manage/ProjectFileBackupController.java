@@ -19,6 +19,7 @@ import cn.keepbx.jpom.model.JsonMessage;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.jpom.common.BaseAgentController;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.validator.ValidatorItem;
 import org.dromara.jpom.model.data.NodeProjectInfoModel;
 import org.dromara.jpom.service.ProjectFileBackupService;
@@ -75,14 +76,14 @@ public class ProjectFileBackupController extends BaseAgentController {
             .filter(FileUtil::isDirectory)
             .collect(Collectors.toList());
         if (CollUtil.isEmpty(collect)) {
-            return JsonMessage.success("查询成功");
+            return JsonMessage.success(I18nMessageUtil.get("i18n.query_success.d72b"));
         }
-        List<JSONObject> arrayFile = FileUtils.parseInfo(collect, true, path.getAbsolutePath());
+        List<JSONObject> arrayFile = FileUtils.parseInfo(collect, true, path.getAbsolutePath(), projectInfoModel.isDisableScanDir());
         //
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("path", FileUtil.getAbsolutePath(path));
         jsonObject.put("list", arrayFile);
-        return JsonMessage.success("查询成功", jsonObject);
+        return JsonMessage.success(I18nMessageUtil.get("i18n.query_success.d72b"), jsonObject);
     }
 
     /**
@@ -94,7 +95,7 @@ public class ProjectFileBackupController extends BaseAgentController {
      * @return list
      */
     @RequestMapping(value = "backup-item-files", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public IJsonMessage<List<JSONObject>> backupItemFiles(String id, String path, @ValidatorItem String backupId) {
+    public IJsonMessage<List<JSONObject>> backupItemFiles(String id, String path, @ValidatorItem(msg = "i18n.backup_id_missing.eaa2") String backupId) {
         // 查询项目路径
         NodeProjectInfoModel projectInfoModel = super.getProjectInfoModel();
         File lib = projectFileBackupService.pathProjectBackup(projectInfoModel, backupId);
@@ -102,10 +103,10 @@ public class ProjectFileBackupController extends BaseAgentController {
         //
         File[] filesAll = FileUtil.exist(fileDir) ? fileDir.listFiles() : new File[]{};
         if (ArrayUtil.isEmpty(filesAll)) {
-            return JsonMessage.success("查询成功", Collections.emptyList());
+            return JsonMessage.success(I18nMessageUtil.get("i18n.query_success.d72b"), Collections.emptyList());
         }
-        List<JSONObject> arrayFile = FileUtils.parseInfo(filesAll, false, lib.getAbsolutePath());
-        return JsonMessage.success("查询成功", arrayFile);
+        List<JSONObject> arrayFile = FileUtils.parseInfo(filesAll, false, lib.getAbsolutePath(), projectInfoModel.isDisableScanDir());
+        return JsonMessage.success(I18nMessageUtil.get("i18n.query_success.d72b"), arrayFile);
     }
 
     /**
@@ -117,19 +118,19 @@ public class ProjectFileBackupController extends BaseAgentController {
      * @param backupId  备份id
      */
     @GetMapping(value = "backup-download", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void download(String id, @ValidatorItem String backupId, @ValidatorItem String filename, String levelName, HttpServletResponse response) {
+    public void download(String id, @ValidatorItem(msg = "i18n.backup_id_missing.eaa2") String backupId, @ValidatorItem String filename, String levelName, HttpServletResponse response) {
         try {
             NodeProjectInfoModel projectInfoModel = super.getProjectInfoModel();
             File lib = projectFileBackupService.pathProjectBackup(projectInfoModel, backupId);
             File file = FileUtil.file(lib, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR), filename);
             if (file.isDirectory()) {
-                ServletUtil.write(response, "暂不支持下载文件夹", MediaType.TEXT_HTML_VALUE);
+                ServletUtil.write(response, I18nMessageUtil.get("i18n.folder_download_not_supported.c3b7"), MediaType.TEXT_HTML_VALUE);
                 return;
             }
             ServletUtil.write(response, file);
         } catch (Exception e) {
-            log.error("下载文件异常", e);
-            ServletUtil.write(response, "下载文件异常:" + e.getMessage(), MediaType.TEXT_HTML_VALUE);
+            log.error(I18nMessageUtil.get("i18n.download_exception.e616"), e);
+            ServletUtil.write(response, I18nMessageUtil.get("i18n.download_file_error.5bcd") + e.getMessage(), MediaType.TEXT_HTML_VALUE);
         }
     }
 
@@ -143,12 +144,12 @@ public class ProjectFileBackupController extends BaseAgentController {
      * @return msg
      */
     @RequestMapping(value = "backup-delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public IJsonMessage<Object> deleteFile(String id, @ValidatorItem String backupId, @ValidatorItem String filename, String levelName) {
+    public IJsonMessage<Object> deleteFile(String id, @ValidatorItem(msg = "i18n.backup_id_missing.eaa2") String backupId, @ValidatorItem String filename, String levelName) {
         NodeProjectInfoModel projectInfoModel = super.getProjectInfoModel();
         File lib = projectFileBackupService.pathProjectBackup(projectInfoModel, backupId);
         File file = FileUtil.file(lib, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR), filename);
         CommandUtil.systemFastDel(file);
-        return JsonMessage.success("删除成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.delete_success.0007"));
     }
 
     /**
@@ -172,7 +173,7 @@ public class ProjectFileBackupController extends BaseAgentController {
         if (StrUtil.isEmpty(filename)) {
             // 目录
             backupFile = FileUtil.file(backupPath, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR));
-            Assert.state(FileUtil.exist(backupFile), "对应的文件不存在");
+            Assert.state(FileUtil.exist(backupFile), I18nMessageUtil.get("i18n.file_not_exist.5091"));
             projectFile = FileUtil.file(projectPath, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR));
             // 创建文件
             FileUtil.mkdir(projectFile);
@@ -185,11 +186,11 @@ public class ProjectFileBackupController extends BaseAgentController {
         } else {
             // 文件
             backupFile = FileUtil.file(backupPath, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR), filename);
-            Assert.state(FileUtil.exist(backupFile), "对应的文件不存在");
+            Assert.state(FileUtil.exist(backupFile), I18nMessageUtil.get("i18n.file_not_exist.5091"));
             projectFile = FileUtil.file(projectPath, StrUtil.emptyToDefault(levelName, FileUtil.FILE_SEPARATOR), filename);
             FileUtil.copy(backupFile, projectFile, true);
         }
-        return JsonMessage.success("还原成功");
+        return JsonMessage.success(I18nMessageUtil.get("i18n.restore_success.4c7f"));
     }
 
 

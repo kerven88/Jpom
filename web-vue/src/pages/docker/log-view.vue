@@ -3,7 +3,7 @@
   <div>
     <log-view2
       ref="logView"
-      title-name="容器日志"
+      :title-name="$t('i18n_cac26240b5')"
       :visible="visible"
       @close="
         () => {
@@ -14,23 +14,26 @@
       <template #before>
         <a-space>
           <div>
-            <a-input-number v-model:value="tail" placeholder="读取行数" style="width: 150px">
+            <a-input-number v-model:value="tail" :placeholder="$t('i18n_5734b2db4e')" style="width: 150px">
               <template #addonBefore>
-                <a-tooltip
-                  title="为避免显示内容太多而造成浏览器卡顿,读取日志最后多少行日志。修改后需要回车才能重新读取，小于 1 则读取所有"
-                  >行数：
-                </a-tooltip>
+                <a-tooltip :title="$t('i18n_25b6c22d8a')">{{ $t('i18n_87eb55155a') }} </a-tooltip>
               </template>
             </a-input-number>
           </div>
           <div>
-            时间戳：
-            <a-switch v-model:checked="timestamps" checked-children="显示" un-checked-children="不显示" />
+            {{ $t('i18n_d731dc9325') }}
+            <a-switch
+              v-model:checked="timestamps"
+              :checked-children="$t('i18n_4d775d4cd7')"
+              :un-checked-children="$t('i18n_2064fc6808')"
+            />
           </div>
-          <a-button type="primary" size="small" @click="initWebSocket"><ReloadOutlined /> 刷新 </a-button>
+          <a-button type="primary" size="small" @click="initWebSocket"
+            ><ReloadOutlined /> {{ $t('i18n_694fc5efa9') }}
+          </a-button>
           |
           <a-button type="primary" :disabled="!logId" size="small" @click="download">
-            <DownloadOutlined /> 下载
+            <DownloadOutlined /> {{ $t('i18n_f26ef91424') }}
           </a-button>
           |
         </a-space>
@@ -38,7 +41,6 @@
     </log-view2>
   </div>
 </template>
-
 <script>
 import { mapState } from 'pinia'
 import { getWebSocketUrl } from '@/api/config'
@@ -123,7 +125,7 @@ export default {
       this.socket.onerror = (err) => {
         console.error(err)
         $notification.error({
-          message: 'web socket 错误,请检查是否开启 ws 代理'
+          message: `web socket ${this.$t('i18n_7030ff6470')},${this.$t('i18n_226a6f9cdd')}`
         })
         clearInterval(this.heart)
       }
@@ -131,7 +133,7 @@ export default {
         //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
         console.error(err)
         clearInterval(this.heart)
-        $message.warning('会话已经关闭[docker-log]')
+        $message.warning(this.$t('i18n_948171025e'))
       }
       this.socket.onmessage = (msg) => {
         if (msg.data.indexOf('code') > -1 && msg.data.indexOf('msg') > -1) {

@@ -16,37 +16,50 @@
           <a-space>
             <a-input
               v-model:value="listQuery['name']"
-              placeholder="名称"
+              :placeholder="$t('i18n_d7ec2d3fea')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['containerId']"
-              placeholder="容器id"
+              :placeholder="$t('i18n_74dc77d4f7')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['imageId']"
-              placeholder="镜像id"
+              :placeholder="$t('i18n_72e7a5d105')"
               class="search-input-item"
               @keyup.enter="loadData"
             />
             <div>
-              查看
-              <a-switch v-model:checked="listQuery['showAll']" checked-children="所有" un-checked-children="运行中" />
+              {{ $t('i18n_607e7a4f37') }}
+              <a-switch
+                v-model:checked="listQuery['showAll']"
+                :checked-children="$t('i18n_9a7b52fc86')"
+                :un-checked-children="$t('i18n_d679aea3aa')"
+              />
             </div>
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
-            <a-statistic-countdown format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="autoUpdate" />
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
+            <a-statistic-countdown
+              format="s"
+              :title="$t('i18n_0f8403d07e') + ' '"
+              :value="countdownTime"
+              @finish="autoUpdate"
+            >
+              <template #suffix>
+                <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
+              </template>
+            </a-statistic-countdown>
           </a-space>
         </template>
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'names'">
-            <a-popover :title="`容器名称：${(text || []).join(',')}`">
+            <a-popover :title="`${$t('i18n_0c256f73b8')}${(text || []).join(',')}`">
               <template #content>
-                <p>容器Id: {{ record.id }}</p>
-                <p>镜像：{{ record.image }}</p>
-                <p>镜像Id: {{ record.imageId }}</p>
+                <p>{{ $t('i18n_abee751418') }}{{ record.id }}</p>
+                <p>{{ $t('i18n_26eccfaad1') }}{{ record.image }}</p>
+                <p>{{ $t('i18n_c87bd94cd7') }}{{ record.imageId }}</p>
               </template>
 
               <span>{{ (text || []).join(',') }}</span>
@@ -54,7 +67,7 @@
           </template>
 
           <template v-else-if="column.dataIndex === 'labels'">
-            <a-popover :title="`容器名标签`">
+            <a-popover :title="`${$t('i18n_89cfb655e0')}`">
               <template #content>
                 <template v-if="record.labels">
                   <p v-for="(value, key) in record.labels" :key="key">
@@ -72,15 +85,15 @@
             </a-popover>
           </template>
           <template v-else-if="column.dataIndex === 'mounts'">
-            <a-popover :title="`挂载`">
+            <a-popover :title="`${$t('i18n_9964d6ed3f')}`">
               <template #content>
                 <template v-if="record.mounts">
                   <div v-for="(item, index) in record.mounts" :key="index">
                     <p>
-                      名称：{{ item.name }}
-                      <a-tag>{{ item.rw ? '读写' : '读' }}</a-tag>
+                      {{ $t('i18n_5b47861521') }}{{ item.name }}
+                      <a-tag>{{ item.rw ? $t('i18n_2300ad28b8') : $t('i18n_75769d1ac8') }}</a-tag>
                     </p>
-                    <p>路径：{{ item.source }}(宿主机) => {{ item.destination }}(容器)</p>
+                    <p>{{ $t('i18n_e362bc0e8a') }}</p>
                     <a-divider></a-divider>
                   </div>
                 </template>
@@ -108,7 +121,7 @@
           <template v-else-if="column.dataIndex === 'ports'">
             <a-popover placement="topLeft">
               <template #title>
-                网络端口
+                {{ $t('i18n_d94167ab19') }}
                 <ul>
                   <li v-for="(item, index) in text || []" :key="index">
                     {{ item.type + ' ' + (item.ip || '') + ':' + (item.publicPort || '') + ':' + item.privatePort }}
@@ -119,7 +132,7 @@
                 <template v-if="record.networkSettings">
                   <template v-if="record.networkSettings.networks">
                     <template v-if="record.networkSettings.networks.bridge">
-                      桥接模式：
+                      {{ $t('i18n_71ee088528') }}
                       <p v-if="record.networkSettings.networks.bridge.ipAddress">
                         IP:
                         <a-tag>{{ record.networkSettings.networks.bridge.ipAddress }}</a-tag>
@@ -129,7 +142,7 @@
                         <a-tag>{{ record.networkSettings.networks.bridge.macAddress }}</a-tag>
                       </p>
                       <p v-if="record.networkSettings.networks.bridge.gateway">
-                        网关:
+                        {{ $t('i18n_f332f2c8df') }}:
                         <a-tag>{{ record.networkSettings.networks.bridge.gateway }}</a-tag>
                       </p>
                       <p v-if="record.networkSettings.networks.bridge.networkID">
@@ -151,7 +164,7 @@
                         <a-tag>{{ record.networkSettings.networks.ingress.macAddress }}</a-tag>
                       </p>
                       <p v-if="record.networkSettings.networks.ingress.gateway">
-                        网关:
+                        {{ $t('i18n_f332f2c8df') }}:
                         <a-tag>{{ record.networkSettings.networks.ingress.gateway }}</a-tag>
                       </p>
                       <p v-if="record.networkSettings.networks.ingress.networkID">
@@ -178,7 +191,7 @@
           </template>
 
           <template v-else-if="column.dataIndex === 'state'">
-            <a-tooltip :title="(record.status || '') + ' 点击查看日志'" @click="viewLog(record)">
+            <a-tooltip :title="(record.status || '') + $t('i18n_aac62bc255')" @click="viewLog(record)">
               <a-switch :checked="text === 'running'" :disabled="true">
                 <template #checkedChildren>
                   <CheckCircleOutlined />
@@ -192,7 +205,7 @@
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
               <template v-if="record.state === 'running'">
-                <a-tooltip title="容器是运行中可以进入终端">
+                <a-tooltip :title="$t('i18n_4fb2400af7')">
                   <a-button
                     size="small"
                     type="link"
@@ -201,23 +214,23 @@
                     ><CodeOutlined
                   /></a-button>
                 </a-tooltip>
-                <a-tooltip title="停止">
+                <a-tooltip :title="$t('i18n_095e938e2a')">
                   <a-button size="small" type="link" @click="doAction(record, 'stop')"><StopOutlined /></a-button>
                 </a-tooltip>
-                <a-tooltip title="重启">
+                <a-tooltip :title="$t('i18n_01b4e06f39')">
                   <a-button size="small" type="link" @click="doAction(record, 'restart')"><ReloadOutlined /></a-button>
                 </a-tooltip>
               </template>
               <template v-else>
-                <a-tooltip title="启动">
+                <a-tooltip :title="$t('i18n_8e54ddfe24')">
                   <a-button size="small" type="link" @click="doAction(record, 'start')">
                     <PlayCircleOutlined />
                   </a-button>
                 </a-tooltip>
-                <a-tooltip title="停止">
+                <a-tooltip :title="$t('i18n_095e938e2a')">
                   <a-button size="small" type="link" :disabled="true"><StopOutlined /></a-button>
                 </a-tooltip>
-                <a-tooltip title="重启">
+                <a-tooltip :title="$t('i18n_01b4e06f39')">
                   <a-button size="small" type="link" :disabled="true"><ReloadOutlined /></a-button>
                 </a-tooltip>
               </template>
@@ -229,31 +242,35 @@
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a-tooltip title="修改容器配置，重新运行">
-                        <a-button size="small" type="link" @click="rebuild(record)"><RedoOutlined />重建</a-button>
+                      <a-tooltip :title="$t('i18n_48a536d0bb')">
+                        <a-button size="small" type="link" @click="rebuild(record)"
+                          ><RedoOutlined />{{ $t('i18n_9e09315960') }}</a-button
+                        >
                       </a-tooltip>
                     </a-menu-item>
                     <a-menu-item>
-                      <a-tooltip title="编辑容器的一些基础参数">
+                      <a-tooltip :title="$t('i18n_211a60b1d6')">
                         <a-button
                           size="small"
                           type="link"
                           :disabled="record.state !== 'running'"
                           @click="editContainer(record)"
                         >
-                          <EditOutlined />编辑
+                          <EditOutlined />{{ $t('i18n_95b351c862') }}
                         </a-button>
                       </a-tooltip>
                     </a-menu-item>
                     <a-menu-item>
-                      <a-tooltip title="点击查看日志">
-                        <a-button size="small" type="link" @click="viewLog(record)"><MessageOutlined />日志</a-button>
+                      <a-tooltip :title="$t('i18n_aac62bc255')">
+                        <a-button size="small" type="link" @click="viewLog(record)"
+                          ><MessageOutlined />{{ $t('i18n_456d29ef8b') }}</a-button
+                        >
                       </a-tooltip>
                     </a-menu-item>
                     <a-menu-item>
-                      <a-tooltip title="强制删除">
+                      <a-tooltip :title="$t('i18n_ba20f0444c')">
                         <a-button size="small" type="link" @click="doAction(record, 'remove')">
-                          <DeleteOutlined />删除
+                          <DeleteOutlined />{{ $t('i18n_2f4aaddde3') }}
                         </a-button>
                       </a-tooltip>
                     </a-menu-item>
@@ -271,28 +288,41 @@
           <a-space>
             <a-input
               v-model:value="listQuery['name']"
-              placeholder="名称"
+              :placeholder="$t('i18n_d7ec2d3fea')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['containerId']"
-              placeholder="容器id"
+              :placeholder="$t('i18n_74dc77d4f7')"
               class="search-input-item"
               @press-enter="loadData"
             />
             <a-input
               v-model:value="listQuery['imageId']"
-              placeholder="镜像id"
+              :placeholder="$t('i18n_72e7a5d105')"
               class="search-input-item"
               @keyup.enter="loadData"
             />
             <div>
-              查看
-              <a-switch v-model:checked="listQuery['showAll']" checked-children="所有" un-checked-children="运行中" />
+              {{ $t('i18n_607e7a4f37') }}
+              <a-switch
+                v-model:checked="listQuery['showAll']"
+                :checked-children="$t('i18n_9a7b52fc86')"
+                :un-checked-children="$t('i18n_d679aea3aa')"
+              />
             </div>
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
-            <a-statistic-countdown format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="autoUpdate" />
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
+            <a-statistic-countdown
+              format="s"
+              :title="$t('i18n_0f8403d07e') + ' '"
+              :value="countdownTime"
+              @finish="autoUpdate"
+            >
+              <template #suffix>
+                <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
+              </template>
+            </a-statistic-countdown>
           </a-space>
         </template>
         <a-collapse v-if="list && list.length">
@@ -335,11 +365,11 @@
             >
               <template #bodyCell="{ column, text, record }">
                 <template v-if="column.dataIndex === 'names'">
-                  <a-popover :title="`容器名称：${(text || []).join(',')}`">
+                  <a-popover :title="`${$t('i18n_0c256f73b8')}${(text || []).join(',')}`">
                     <template #content>
-                      <p>容器Id: {{ record.id }}</p>
-                      <p>镜像：{{ record.image }}</p>
-                      <p>镜像Id: {{ record.imageId }}</p>
+                      <p>{{ $t('i18n_abee751418') }}{{ record.id }}</p>
+                      <p>{{ $t('i18n_26eccfaad1') }}{{ record.image }}</p>
+                      <p>{{ $t('i18n_c87bd94cd7') }}{{ record.imageId }}</p>
                     </template>
 
                     <span>{{ (text || []).join(',') }}</span>
@@ -347,7 +377,7 @@
                 </template>
 
                 <template v-else-if="column.dataIndex === 'labels'">
-                  <a-popover :title="`容器名标签`">
+                  <a-popover :title="`${$t('i18n_89cfb655e0')}`">
                     <template #content>
                       <template v-if="record.labels">
                         <p v-for="(value, key) in record.labels" :key="key">
@@ -365,15 +395,17 @@
                   </a-popover>
                 </template>
                 <template v-else-if="column.dataIndex === 'mounts'">
-                  <a-popover :title="`挂载`">
+                  <a-popover :title="`${$t('i18n_9964d6ed3f')}`">
                     <template #content>
                       <template v-if="record.mounts">
                         <div v-for="(item, idx) in record.mounts" :key="idx">
                           <p>
-                            名称：{{ item.name }}
-                            <a-tag>{{ item.rw ? '读写' : '读' }}</a-tag>
+                            {{ $t('i18n_5b47861521') }}{{ item.name }}
+                            <a-tag>{{ item.rw ? $t('i18n_2300ad28b8') : $t('i18n_75769d1ac8') }}</a-tag>
                           </p>
-                          <p>路径：{{ item.source }}(宿主机) => {{ item.destination }}(容器)</p>
+                          <p>
+                            {{ $t('i18n_e362bc0e8a', { source: item.source, destination: item.destination }) }}
+                          </p>
                           <a-divider></a-divider>
                         </div>
                       </template>
@@ -401,7 +433,7 @@
                 <template v-else-if="column.dataIndex === 'ports'">
                   <a-popover placement="topLeft">
                     <template #title>
-                      网络端口
+                      {{ $t('i18n_d94167ab19') }}
                       <ul>
                         <li v-for="(item, idx) in text || []" :key="idx">
                           {{
@@ -414,7 +446,7 @@
                       <template v-if="record.networkSettings">
                         <template v-if="record.networkSettings.networks">
                           <template v-if="record.networkSettings.networks.bridge">
-                            桥接模式：
+                            {{ $t('i18n_71ee088528') }}
                             <p v-if="record.networkSettings.networks.bridge.ipAddress">
                               IP:
                               <a-tag>{{ record.networkSettings.networks.bridge.ipAddress }}</a-tag>
@@ -424,7 +456,7 @@
                               <a-tag>{{ record.networkSettings.networks.bridge.macAddress }}</a-tag>
                             </p>
                             <p v-if="record.networkSettings.networks.bridge.gateway">
-                              网关:
+                              {{ $t('i18n_f332f2c8df') }}:
                               <a-tag>{{ record.networkSettings.networks.bridge.gateway }}</a-tag>
                             </p>
                             <p v-if="record.networkSettings.networks.bridge.networkID">
@@ -446,7 +478,7 @@
                               <a-tag>{{ record.networkSettings.networks.ingress.macAddress }}</a-tag>
                             </p>
                             <p v-if="record.networkSettings.networks.ingress.gateway">
-                              网关:
+                              {{ $t('i18n_f332f2c8df') }}:
                               <a-tag>{{ record.networkSettings.networks.ingress.gateway }}</a-tag>
                             </p>
                             <p v-if="record.networkSettings.networks.ingress.networkID">
@@ -472,7 +504,7 @@
                 </template>
 
                 <template v-else-if="column.dataIndex === 'state'">
-                  <a-tooltip :title="(record.status || '') + ' 点击查看日志'" @click="viewLog(record)">
+                  <a-tooltip :title="(record.status || '') + $t('i18n_aac62bc255')" @click="viewLog(record)">
                     <a-switch :checked="record.state === 'running'" :disabled="true">
                       <template #checkedChildren>
                         <CheckCircleOutlined />
@@ -486,28 +518,28 @@
                 <template v-else-if="column.dataIndex === 'operation'">
                   <a-space>
                     <template v-if="record.state === 'running'">
-                      <a-tooltip title="容器是运行中可以进入终端">
+                      <a-tooltip :title="$t('i18n_4fb2400af7')">
                         <a-button size="small" type="link" @click="handleTerminal(record)"><CodeOutlined /></a-button>
                       </a-tooltip>
-                      <a-tooltip title="停止">
+                      <a-tooltip :title="$t('i18n_095e938e2a')">
                         <a-button size="small" type="link" @click="doAction(record, 'stop')"><StopOutlined /></a-button>
                       </a-tooltip>
-                      <a-tooltip title="重启">
+                      <a-tooltip :title="$t('i18n_01b4e06f39')">
                         <a-button size="small" type="link" @click="doAction(record, 'restart')">
                           <ReloadOutlined />
                         </a-button>
                       </a-tooltip>
                     </template>
                     <template v-else>
-                      <a-tooltip title="启动">
+                      <a-tooltip :title="$t('i18n_8e54ddfe24')">
                         <a-button size="small" type="link" @click="doAction(record, 'start')">
                           <PlayCircleOutlined />
                         </a-button>
                       </a-tooltip>
-                      <a-tooltip title="停止">
+                      <a-tooltip :title="$t('i18n_095e938e2a')">
                         <a-button size="small" type="link" :disabled="true"><StopOutlined /></a-button>
                       </a-tooltip>
-                      <a-tooltip title="重启">
+                      <a-tooltip :title="$t('i18n_01b4e06f39')">
                         <a-button size="small" type="link" :disabled="true"><ReloadOutlined /></a-button>
                       </a-tooltip>
                     </template>
@@ -519,35 +551,35 @@
                       <template #overlay>
                         <a-menu>
                           <a-menu-item>
-                            <a-tooltip title="修改容器配置，重新运行">
+                            <a-tooltip :title="$t('i18n_48a536d0bb')">
                               <a-button size="small" type="link" @click="rebuild(record)"
-                                ><RedoOutlined />重建</a-button
+                                ><RedoOutlined />{{ $t('i18n_9e09315960') }}</a-button
                               >
                             </a-tooltip>
                           </a-menu-item>
                           <a-menu-item>
-                            <a-tooltip title="编辑容器的一些基础参数">
+                            <a-tooltip :title="$t('i18n_211a60b1d6')">
                               <a-button
                                 size="small"
                                 type="link"
                                 :disabled="record.state !== 'running'"
                                 @click="editContainer(record)"
                               >
-                                <EditOutlined />编辑
+                                <EditOutlined />{{ $t('i18n_95b351c862') }}
                               </a-button>
                             </a-tooltip>
                           </a-menu-item>
                           <a-menu-item>
-                            <a-tooltip title="点击查看日志">
+                            <a-tooltip :title="$t('i18n_aac62bc255')">
                               <a-button size="small" type="link" @click="viewLog(record)">
-                                <MessageOutlined />日志
+                                <MessageOutlined />{{ $t('i18n_456d29ef8b') }}
                               </a-button>
                             </a-tooltip>
                           </a-menu-item>
                           <a-menu-item>
-                            <a-tooltip title="强制删除">
+                            <a-tooltip :title="$t('i18n_ba20f0444c')">
                               <a-button size="small" type="link" @click="doAction(record, 'remove')">
-                                <DeleteOutlined />删除
+                                <DeleteOutlined />{{ $t('i18n_2f4aaddde3') }}
                               </a-button>
                             </a-tooltip>
                           </a-menu-item>
@@ -561,7 +593,7 @@
           </a-collapse-panel>
         </a-collapse>
         <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE">
-          <template #description>暂无数据</template>
+          <template #description>{{ $t('i18n_21efd88b67') }}</template>
         </a-empty>
       </a-card>
 
@@ -603,7 +635,8 @@
     />
 
     <!-- Terminal -->
-    <a-modal
+    <CustomModal
+      v-if="terminalVisible"
       v-model:open="terminalVisible"
       width="80vw"
       :body-style="{
@@ -617,14 +650,15 @@
       :mask-closable="false"
     >
       <terminal2 v-if="terminalVisible" :id="id" :machine-docker-id="machineDockerId" :container-id="temp.id" />
-    </a-modal>
+    </CustomModal>
     <!-- 编辑容器配置 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="60vw"
-      title="配置容器"
+      :title="$t('i18n_1ba584c974')"
       :mask-closable="false"
       @ok="
         () => {
@@ -647,7 +681,7 @@
         :url-prefix="urlPrefix"
         :container-id="temp.id"
       ></editContainer>
-    </a-modal>
+    </CustomModal>
     <!-- rebuild container -->
 
     <BuildContainer
@@ -672,7 +706,6 @@
     />
   </div>
 </template>
-
 <script>
 import { parseTime } from '@/utils/const'
 import {
@@ -733,34 +766,34 @@ export default {
       confirmLoading: false,
       columns: [
         {
-          title: '序号',
+          title: this.$t('i18n_faaadc447b'),
           width: '60px',
           // ellipsis: true,
           align: 'center',
           customRender: ({ index }) => `${index + 1}`
         },
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'names',
           ellipsis: true
           // width: 150
         },
         {
-          title: '容器ID',
+          title: this.$t('i18n_87d50f8e03'),
           dataIndex: 'id',
           ellipsis: true,
           width: '10px',
           showid: true
         },
         {
-          title: '镜像ID',
+          title: this.$t('i18n_40aff14380'),
           dataIndex: 'imageId',
           ellipsis: true,
           width: '130px',
           showid: true
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: 'state',
           // ellipsis: true,
           align: 'center',
@@ -768,33 +801,33 @@ export default {
         },
 
         {
-          title: '端口',
+          title: this.$t('i18n_c76cfefe72'),
           dataIndex: 'ports',
           ellipsis: true,
           width: '100px'
         },
 
         {
-          title: '标签',
+          title: this.$t('i18n_14d342362f'),
           dataIndex: 'labels',
           ellipsis: true,
           width: '50px'
         },
         {
-          title: '挂载',
+          title: this.$t('i18n_9964d6ed3f'),
           dataIndex: 'mounts',
           ellipsis: true,
           width: '50px'
         },
         {
-          title: '命令',
+          title: this.$t('i18n_ddf7d2a5ce'),
           dataIndex: 'command',
           ellipsis: true,
           width: 150,
           tooltip: true
         },
         {
-          title: '创建时间',
+          title: this.$t('i18n_eca37cb072'),
           dataIndex: 'created',
           ellipsis: true,
           sorter: (a, b) => Number(a.created) - new Number(b.created),
@@ -804,13 +837,14 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
 
           width: '160px'
         }
       ],
+
       // parentColumns: [
       //   {
       //     title: '序号',
@@ -840,19 +874,19 @@ export default {
       // ],
       action: {
         remove: {
-          msg: '您确定要删除当前容器吗？',
+          msg: this.$t('i18n_c469afafe0'),
           api: dockerContainerRemove
         },
         stop: {
-          msg: '您确定要停止当前容器吗？',
+          msg: this.$t('i18n_60b4c08f5c'),
           api: dockerContainerStop
         },
         restart: {
-          msg: '您确定要重启当前容器吗？',
+          msg: this.$t('i18n_bf77165638'),
           api: dockerContainerRestart
         },
         start: {
-          msg: '您确定要启动当前容器吗？',
+          msg: this.$t('i18n_2b0aa77353'),
           api: dockerContainerStart
         }
       },
@@ -925,11 +959,11 @@ export default {
         return
       }
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
         content: action.msg,
-        okText: '确认',
-        cancelText: '取消',
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return action
             .api(this.urlPrefix, {
@@ -969,7 +1003,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 :deep(.ant-statistic div) {
   display: inline-block;

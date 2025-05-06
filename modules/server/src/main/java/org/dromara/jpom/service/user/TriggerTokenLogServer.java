@@ -11,7 +11,6 @@ package org.dromara.jpom.service.user;
 
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.date.BetweenFormatter;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.SystemClock;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
@@ -21,11 +20,13 @@ import cn.hutool.db.Page;
 import cn.keepbx.jpom.event.ISystemTask;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.model.PageResultDto;
 import org.dromara.jpom.model.user.TriggerTokenLogBean;
 import org.dromara.jpom.model.user.UserModel;
 import org.dromara.jpom.service.ITriggerToken;
 import org.dromara.jpom.service.h2db.BaseDbService;
+import org.dromara.jpom.util.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -76,7 +77,7 @@ public class TriggerTokenLogServer extends BaseDbService<TriggerTokenLogBean> im
         ITriggerToken token = triggerTokens.stream()
             .filter(iTriggerToken -> StrUtil.equals(iTriggerToken.typeName(), tokenLogBean.getType()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("没有对应的触发器类型：" + tokenLogBean.getType()));
+            .orElseThrow(() -> new IllegalArgumentException(I18nMessageUtil.get("i18n.no_trigger_type_specified.5628") + tokenLogBean.getType()));
         String sql = "update " + tokenLogBean.getType() + " set triggerToken='' where id=?";
         this.execute(sql, tokenLogBean.getDataId());
         this.delByKey(id);
@@ -122,7 +123,7 @@ public class TriggerTokenLogServer extends BaseDbService<TriggerTokenLogBean> im
             UserModel userModel = userService.getByKey(tokenLogBean.getUserId());
             if (userModel != null && StrUtil.equals(type, tokenLogBean.getType())) {
                 boolean demoUser = userModel.isDemoUser();
-                Assert.state(!demoUser, "当前用户触发器不可用");
+                Assert.state(!demoUser, I18nMessageUtil.get("i18n.user_trigger_unavailable.9866"));
                 // 修改触发次数
                 String sql = "update " + this.getTableName() + " set triggerCount=ifnull(triggerCount,0)+1 where id=?";
                 int execute = this.execute(sql, tokenLogBean.getId());
@@ -179,7 +180,7 @@ public class TriggerTokenLogServer extends BaseDbService<TriggerTokenLogBean> im
         long start = SystemClock.now();
         // 调用方法处理逻辑
         cleanTriggerToken();
-        log.debug("clean trigger token end... cost time: {}", DateUtil.formatBetween(SystemClock.now() - start, BetweenFormatter.Level.MILLISECOND));
+        log.debug("clean trigger token end... cost time: {}", StringUtil.formatBetween(SystemClock.now() - start, BetweenFormatter.Level.MILLISECOND));
     }
 
     /**
@@ -223,7 +224,7 @@ public class TriggerTokenLogServer extends BaseDbService<TriggerTokenLogBean> im
                     delCount += ids.size();
                 }
             } catch (Exception e) {
-                log.error("执行清理 token[{}] 异常", triggerToken.typeName(), e);
+                log.error(I18nMessageUtil.get("i18n.cleanup_token_exception.760e"), triggerToken.typeName(), e);
             }
         }
         if (delCount > 0) {

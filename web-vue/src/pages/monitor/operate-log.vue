@@ -16,18 +16,23 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="监控名称"
+            :placeholder="$t('i18n_f976e8fcf4')"
             class="search-input-item"
             @press-enter="loadData"
           />
-          <a-select v-model:value="listQuery.status" allow-clear placeholder="开启状态" class="search-input-item">
-            <a-select-option :value="1">开启</a-select-option>
-            <a-select-option :value="0">关闭</a-select-option>
+          <a-select
+            v-model:value="listQuery.status"
+            allow-clear
+            :placeholder="$t('i18n_a4f5cae8d2')"
+            class="search-input-item"
+          >
+            <a-select-option :value="1">{{ $t('i18n_cc42dd3170') }}</a-select-option>
+            <a-select-option :value="0">{{ $t('i18n_b15d91274e') }}</a-select-option>
           </a-select>
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
-          <a-button type="primary" @click="handleAdd">新增</a-button>
+          <a-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</a-button>
         </a-space>
       </template>
       <template #bodyCell="{ column, text, record }">
@@ -37,74 +42,93 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'status'">
-          <a-switch size="small" :checked="text" checked-children="开启" un-checked-children="关闭" />
+          <a-switch
+            size="small"
+            :checked="text"
+            :checked-children="$t('i18n_cc42dd3170')"
+            :un-checked-children="$t('i18n_b15d91274e')"
+          />
         </template>
 
         <template v-else-if="column.dataIndex === 'operation'">
           <a-space>
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </a-table>
     <!-- 编辑区 -->
-    <a-modal
+    <CustomModal
+      v-if="editOperateMonitorVisible"
       v-model:open="editOperateMonitorVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
       width="50vw"
-      title="编辑监控"
+      :title="$t('i18n_ebc2a1956b')"
       :mask-closable="false"
       @ok="handleEditOperateMonitorOk"
     >
       <a-form ref="editMonitorForm" :rules="rules" :model="temp" :label-col="{ span: 5 }" :wrapper-col="{ span: 17 }">
-        <a-form-item label="监控名称" name="name">
-          <a-input v-model:value="temp.name" :max-length="50" placeholder="监控名称" />
+        <a-form-item :label="$t('i18n_f976e8fcf4')" name="name">
+          <a-input v-model:value="temp.name" :max-length="50" :placeholder="$t('i18n_f976e8fcf4')" />
         </a-form-item>
-        <a-form-item label="开启状态" name="status">
-          <a-switch v-model:checked="temp.start" checked-children="开" un-checked-children="关" />
+        <a-form-item :label="$t('i18n_a4f5cae8d2')" name="status">
+          <a-switch
+            v-model:checked="temp.start"
+            :checked-children="$t('i18n_8493205602')"
+            :un-checked-children="$t('i18n_d58a55bcee')"
+          />
         </a-form-item>
-        <a-form-item label="监控用户" name="monitorUser">
+        <a-form-item :label="$t('i18n_5e46f842d8')" name="monitorUser">
           <a-transfer
             :data-source="monitorUserList"
             :lazy="false"
             show-search
             :filter-option="filterOption"
             :target-keys="monitorUserKeys"
-            :render="(item) => item.title"
             @change="handleMonitorUserChange"
-          />
+          >
+            <template #render="item">
+              <a-tooltip :title="item.title">{{ item.title }} </a-tooltip>
+            </template>
+          </a-transfer>
         </a-form-item>
-        <a-form-item label="监控功能" name="monitorOpt">
+        <a-form-item :label="$t('i18n_5cb39287a8')" name="monitorOpt">
           <a-transfer
             :data-source="classFeature"
             :lazy="false"
             show-search
             :filter-option="filterOption"
             :target-keys="classFeatureKeys"
-            :render="(item) => item.title"
             @change="handleClassFeatureChange"
-          />
+          >
+            <template #render="item">
+              <a-tooltip :title="item.title">{{ item.title }} </a-tooltip>
+            </template>
+          </a-transfer>
         </a-form-item>
-        <a-form-item label="监控操作" name="monitorOpt">
+        <a-form-item :label="$t('i18n_3e7ef69c98')" name="monitorOpt">
           <a-transfer
             :data-source="methodFeature"
             :lazy="false"
             show-search
             :filter-option="filterOption"
             :target-keys="methodFeatureKeys"
-            :render="(item) => item.title"
             @change="handleMethodFeatureChange"
-          />
+          >
+            <template #render="item">
+              <a-tooltip :title="item.title">{{ item.title }} </a-tooltip>
+            </template>
+          </a-transfer>
         </a-form-item>
         <a-form-item name="notifyUser" class="jpom-monitor-notify">
           <template #label>
             <a-tooltip>
-              报警联系人
-              <template #title>
-                如果这里的报警联系人无法选择，说明这里面的管理员没有设置邮箱，在右上角下拉菜单里面的用户资料里可以设置。
-              </template>
+              {{ $t('i18n_09723d428d') }}
+              <template #title> {{ $t('i18n_067eb0fa04') }} </template>
               <QuestionCircleOutlined v-show="!temp.id" />
             </a-tooltip>
           </template>
@@ -114,15 +138,17 @@
             show-search
             :filter-option="filterOption"
             :target-keys="notifyUserKeys"
-            :render="(item) => item.title"
             @change="handleNotifyUserChange"
-          />
+          >
+            <template #render="item">
+              <a-tooltip :title="item.title">{{ item.title }} </a-tooltip>
+            </template>
+          </a-transfer>
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
   </div>
 </template>
-
 <script>
 import {
   deleteMonitorOperate,
@@ -152,19 +178,19 @@ export default {
       editOperateMonitorVisible: false,
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name'
         },
         {
-          title: '开启状态',
+          title: this.$t('i18n_a4f5cae8d2'),
           dataIndex: 'status'
         },
         {
-          title: '修改人',
+          title: this.$t('i18n_9baca0054e'),
           dataIndex: 'modifyUser'
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           customRender: ({ text }) => {
@@ -176,18 +202,19 @@ export default {
           width: 180
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           align: 'center',
           fixed: 'right',
           width: '120px'
         }
       ],
+
       rules: {
         name: [
           {
             required: true,
-            message: '请输入监控名称',
+            message: this.$t('i18n_c68dc88c51'),
             trigger: 'blur'
           }
         ]
@@ -302,25 +329,25 @@ export default {
       this.$refs['editMonitorForm'].validate().then(() => {
         if (this.monitorUserKeys.length === 0) {
           $notification.error({
-            message: '请选择监控用户'
+            message: this.$t('i18n_83c61f7f9e')
           })
           return false
         }
         if (this.methodFeatureKeys.length === 0) {
           $notification.error({
-            message: '请选择监控操作'
+            message: this.$t('i18n_fabc07a4f1')
           })
           return false
         }
         if (this.classFeatureKeys.length === 0) {
           $notification.error({
-            message: '请选择监控的功能'
+            message: this.$t('i18n_c6e4cddba0')
           })
           return false
         }
         if (this.notifyUserKeys.length === 0) {
           $notification.error({
-            message: '请选择报警联系人'
+            message: this.$t('i18n_d02a9a85df')
           })
           return false
         }
@@ -351,11 +378,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除操作监控么？',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_b63c057330'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return deleteMonitorOperate(record.id).then((res) => {
             if (res.code === 200) {

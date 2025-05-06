@@ -3,89 +3,64 @@
     <a-row justify="center" type="flex">
       <a-col :span="18">
         <a-space direction="vertical" style="width: 100%">
-          <a-alert message="此工具用于检查 cron 表达式是否正确,以及计划运行时间" type="info" />
+          <a-alert :message="$t('i18n_9880bd3ba1')" type="info" />
           <a-collapse>
-            <a-collapse-panel key="1" header="更多说明">
-              定时任务表达式<br />
-              表达式类似于Linux的crontab表达式，表达式使用空格分成5个部分，按顺序依次为：
+            <a-collapse-panel key="1" :header="$t('i18n_ef734bf850')"
+              >{{ $t('i18n_71c6871780') }}<br />{{ $t('i18n_e930e7890f') }}
               <ol>
-                <li><strong>分</strong> ：范围：0~59</li>
-                <li><strong>时</strong> ：范围：0~23</li>
                 <li>
-                  <strong>日</strong> ：范围：1~31，<strong>"L"</strong>
-                  表示月的最后一天
+                  <strong>{{ $t('i18n_daf783c8cd') }}</strong
+                  >{{ $t('i18n_d57796d6ac') }}
                 </li>
                 <li>
-                  <strong>月</strong>
-                  ：范围：1~12，同时支持不区分大小写的别名："jan","feb", "mar", "apr", "may","jun", "jul", "aug",
-                  "sep","oct", "nov", "dec"
+                  <strong>{{ $t('i18n_609b5f0a08') }}</strong
+                  >{{ $t('i18n_867cc1aac4') }}
                 </li>
                 <li>
-                  <strong>周</strong> ：范围：0
-                  (Sunday)~6(Saturday)，7也可以表示周日，同时支持不区分大小写的别名："sun","mon", "tue", "wed",
-                  "thu","fri", "sat"，<strong>"L"</strong>
-                  表示周六
+                  <strong>{{ $t('i18n_3edddd85ac') }}</strong
+                  >{{ $t('i18n_9b7ada2613') }}<strong>"L"</strong>{{ $t('i18n_7b961e05d0') }}
+                </li>
+                <li>
+                  <strong>{{ $t('i18n_e42b99d599') }}</strong
+                  >{{ $t('i18n_ffd67549cf') }}
+                </li>
+                <li>
+                  <strong>{{ $t('i18n_a657f46f5b') }}</strong
+                  >{{ $t('i18n_312e044529') }}<strong>"L"</strong>{{ $t('i18n_207d9580c1') }}
                 </li>
               </ol>
-              <p>为了兼容Quartz表达式，同时支持6位和7位表达式，其中：<br /></p>
+              <p>{{ $t('i18n_f6d96c1c8c') }}<br /></p>
 
-              <pre>
-    当为6位时，第一位表示<strong>秒</strong> ，范围0~59，但是第一位不做匹配
-    当为7位时，最后一位表示<strong>年</strong> ，范围1970~2099，但是第7位不做解析，也不做匹配
-    </pre
-              >
-              <p>
-                当定时任务运行到的时间匹配这些表达式后，任务被启动。<br />
-                注意：
-              </p>
+              <pre>{{$t('i18n_0c4eef1b88')}}<strong >{{$t('i18n_0c1fec657f')}}</strong>{{$t('i18n_55da97b631')}}<strong >{{$t('i18n_465260fe80')}}</strong>{{$t('i18n_9443399e7d')}}</pre>
+              <p>{{ $t('i18n_3ae4c953fe') }}<br />{{ $t('i18n_ba8d1dca4a') }}</p>
 
-              <pre>
-    当isMatchSecond为 true 时才会匹配秒部分
-    默认都是关闭的
-    </pre
-              >
-              <p>对于每一个子表达式，同样支持以下形式：</p>
+              <pre>{{ $t('i18n_674a284936') }}</pre>
+              <p>{{ $t('i18n_01226f48fc') }}</p>
 
               <ul>
-                <li><strong>*</strong> ：表示匹配这个位置所有的时间</li>
-                <li>
-                  <strong>?</strong>
-                  ：表示匹配这个位置任意的时间（与"*"作用一致）
-                </li>
-                <li>
-                  <strong>*&#47;2</strong>
-                  ：表示间隔时间，例如在分上，表示每两分钟，同样*可以使用数字列表代替，逗号分隔
-                </li>
-                <li>
-                  <strong>2-8</strong>
-                  ：表示连续区间，例如在分上，表示2,3,4,5,6,7,8分
-                </li>
-                <li><strong>2,3,5,8</strong> ：表示列表</li>
-                <li><strong>cronA | cronB</strong> ：表示多个定时表达式</li>
+                <li><strong>*</strong>{{ $t('i18n_0ccaa1c8b2') }}</li>
+                <li><strong>?</strong>{{ $t('i18n_6470685fcd') }}</li>
+                <li><strong>*&#47;2</strong>{{ $t('i18n_d0be2fcd05') }}</li>
+                <li><strong>2-8</strong>{{ $t('i18n_8c0283435b') }}</li>
+                <li><strong>2,3,5,8</strong>{{ $t('i18n_61341628ab') }}</li>
+                <li><strong>cronA | cronB</strong>{{ $t('i18n_ed6a8ee039') }}</li>
               </ul>
-              注意：在每一个子表达式中优先级：
-
-              <pre>
-    间隔（/） &gt; 区间（-） &gt; 列表（,）
-    </pre
-              >
+              {{ $t('i18n_932b4b7f79') }}
+              <pre>{{ $t('i18n_8724641ba8') }}</pre>
               <p>
-                例如 2,3,6/3中，由于“/”优先级高，因此相当于2,3,(6/3)，结果与 2,3,6等价<br />
+                {{ $t('i18n_3c99ea4ec2') }}<br />
                 <br />
               </p>
 
-              <p>一些例子：</p>
+              <p>{{ $t('i18n_c2add44a1d') }}</p>
 
               <ul>
-                <li><strong>5 * * * *</strong> ：每个点钟的5分执行，00:05,01:05……</li>
-                <li><strong>* * * * *</strong> ：每分钟执行</li>
-                <li><strong>*&#47;2 * * * *</strong> ：每两分钟执行</li>
-                <li><strong>* 12 * * *</strong> ：12点的每分钟执行</li>
-                <li><strong>59 11 * * 1,2</strong> ：每周一和周二的11:59执行</li>
-                <li>
-                  <strong>3-18&#47;5 * * * *</strong>
-                  ：3~18分，每5分钟执行一次，即0:03, 0:08, 0:13, 0:18, 1:03, 1:08……
-                </li>
+                <li><strong>5 * * * *</strong>{{ $t('i18n_4a6f3aa451') }}</li>
+                <li><strong>* * * * *</strong>{{ $t('i18n_1f0c93d776') }}</li>
+                <li><strong>*&#47;2 * * * *</strong>{{ $t('i18n_e97a16a6d7') }}</li>
+                <li><strong>* 12 * * *</strong>{{ $t('i18n_a3751dc408') }}</li>
+                <li><strong>59 11 * * 1,2</strong>{{ $t('i18n_c0996d0a94') }}</li>
+                <li><strong>3-18&#47;5 * * * *</strong>{{ $t('i18n_b3f9beb536') }}</li>
               </ul>
             </a-collapse-panel>
           </a-collapse>
@@ -97,32 +72,36 @@
             :wrapper-col="{ span: 18 }"
             @finish="onSubmit"
           >
-            <a-form-item label="cron表达式" name="cron">
-              <a-input v-model:value="temp.cron" placeholder="请输入要检查的 cron 表达式" />
+            <a-form-item :label="$t('i18n_3c6fa6f667')" name="cron">
+              <a-input v-model:value="temp.cron" :placeholder="$t('i18n_cfa72dd73a')" />
             </a-form-item>
-            <a-form-item label="计划次数" name="count">
+            <a-form-item :label="$t('i18n_d87940854f')" name="count">
               <a-input-number
                 v-model:value="temp.count"
                 :min="1"
-                placeholder="请输入获取的计划运行次数"
+                :placeholder="$t('i18n_25c6bd712c')"
                 style="width: 100%"
               />
             </a-form-item>
-            <a-form-item label="匹配秒">
-              <a-switch v-model:checked="temp.isMatchSecond" checked-children="是" un-checked-children="否" />
+            <a-form-item :label="$t('i18n_481ffce5a9')">
+              <a-switch
+                v-model:checked="temp.isMatchSecond"
+                :checked-children="$t('i18n_0a60ac8f02')"
+                :un-checked-children="$t('i18n_c9744f45e7')"
+              />
             </a-form-item>
-            <a-form-item label="时间范围" name="date" help="默认是当前时间到今年结束">
+            <a-form-item :label="$t('i18n_cd649f76d4')" name="date" :help="$t('i18n_07d2261f82')">
               <a-range-picker
                 v-model:value="temp.date"
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
-                separator="至"
+                :separator="$t('i18n_981cbe312b')"
                 style="width: 100%"
               />
             </a-form-item>
 
             <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-              <a-button type="primary" html-type="submit"> 检查 </a-button>
+              <a-button type="primary" html-type="submit">{{ $t('i18n_e26dcacfb1') }}</a-button>
             </a-form-item>
           </a-form>
         </a-space>
@@ -136,14 +115,13 @@
             </a-list-item>
           </template>
           <template #header>
-            <div>结果</div>
+            <div>{{ $t('i18n_5ad7f5a8b2') }}</div>
           </template>
         </a-list>
       </a-col>
     </a-row>
   </div>
 </template>
-
 <script>
 import { cronTools } from '@/api/tools'
 import { parseTime } from '@/utils/const'
@@ -154,7 +132,7 @@ export default {
         count: 10
       },
       locale: {
-        emptyText: '暂无数据'
+        emptyText: this.$t('i18n_21efd88b67')
       },
       resultList: [],
       // 表单校验规则
@@ -162,14 +140,15 @@ export default {
         cron: [
           {
             required: true,
-            message: '请输入要检查的 cron 表达式',
+            message: this.$t('i18n_cfa72dd73a'),
             trigger: 'blur'
           }
         ],
+
         count: [
           {
             required: true,
-            message: '请输入获取的计划运行次数',
+            message: this.$t('i18n_25c6bd712c'),
             trigger: 'blur'
           }
         ]
@@ -190,7 +169,7 @@ export default {
     onSubmit() {
       this.resultList = []
       this.locale = {
-        emptyText: '暂无数据'
+        emptyText: this.$t('i18n_21efd88b67')
       }
       const temp = {
         ...this.temp,

@@ -1,13 +1,10 @@
 <template>
   <div>
     <template v-if="useSuggestions">
-      <a-result
-        title="当前工作空间还没有 Docker 集群"
-        sub-title="请到【系统管理】-> 【资产管理】-> 【Docker管理】新增Docker并创建集群，或者将已存在的的 Docker 集群授权关联、分配到此工作空间"
-      >
+      <a-result :title="$t('i18n_55e690333a')" :sub-title="$t('i18n_9878af9db5')">
         <template #extra>
           <router-link to="/system/assets/docker-list">
-            <a-button key="console" type="primary">现在就去</a-button></router-link
+            <a-button key="console" type="primary">{{ $t('i18n_6dcf6175d8') }}</a-button></router-link
           >
         </template>
       </a-result>
@@ -18,7 +15,7 @@
       default-auto-refresh
       :auto-refresh-time="5"
       table-name="docker-swarm-list"
-      empty-description="没有docker集群"
+      :empty-description="$t('i18n_ab9c827798')"
       :active-page="activePage"
       size="middle"
       :data-source="list"
@@ -35,18 +32,18 @@
         <a-space wrap class="search-box">
           <a-input
             v-model:value="listQuery['%name%']"
-            placeholder="名称"
+            :placeholder="$t('i18n_d7ec2d3fea')"
             class="search-input-item"
             @press-enter="loadData"
           />
           <a-input
             v-model:value="listQuery['%tag%']"
-            placeholder="标签"
+            :placeholder="$t('i18n_14d342362f')"
             class="search-input-item"
             @press-enter="loadData"
           />
-          <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
-            <a-button type="primary" :loading="loading" @click="loadData">搜索</a-button>
+          <a-tooltip :title="$t('i18n_4838a3bd20')">
+            <a-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</a-button>
           </a-tooltip>
         </a-space>
       </template>
@@ -59,14 +56,14 @@
         </template>
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('status')">
           <template v-if="record.machineDocker">
-            <a-tag v-if="record.machineDocker.status === 1" color="green">正常</a-tag>
+            <a-tag v-if="record.machineDocker.status === 1" color="green">{{ $t('i18n_fd6e80f1e0') }}</a-tag>
             <a-tooltip v-else :title="record.machineDocker.failureMsg">
-              <a-tag color="red">无法连接</a-tag>
+              <a-tag color="red">{{ $t('i18n_757a730c9e') }}</a-tag>
             </a-tooltip>
           </template>
 
-          <a-tooltip v-else title="集群关联的 docker 信息丢失,不能继续使用管理功能">
-            <a-tag color="red">信息丢失</a-tag>
+          <a-tooltip v-else :title="$t('i18n_33675a9bb3')">
+            <a-tag color="red">{{ $t('i18n_5169b9af9d') }}</a-tag>
           </a-tooltip>
         </template>
 
@@ -78,49 +75,52 @@
                 :disabled="record.machineDocker.status !== 1"
                 type="primary"
                 @click="handleConsole(record, 'server')"
-                >服务</a-button
+                >{{ $t('i18n_47d68cd0f4') }}</a-button
               >
               <a-button
                 size="small"
                 :disabled="record.machineDocker.status !== 1"
                 type="primary"
                 @click="handleConsole(record, 'node')"
-                >节点</a-button
+                >{{ $t('i18n_3bf3c0a8d6') }}</a-button
               >
             </template>
             <template v-else>
-              <a-button size="small" :disabled="true" type="primary">服务</a-button>
-              <a-button size="small" :disabled="true" type="primary">节点</a-button>
+              <a-button size="small" :disabled="true" type="primary">{{ $t('i18n_47d68cd0f4') }}</a-button>
+              <a-button size="small" :disabled="true" type="primary">{{ $t('i18n_3bf3c0a8d6') }}</a-button>
             </template>
 
-            <a-button size="small" type="primary" @click="handleEdit(record)">编辑</a-button>
-            <a-button size="small" type="primary" danger @click="handleDelete(record)">删除</a-button>
+            <a-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</a-button>
+            <a-button size="small" type="primary" danger @click="handleDelete(record)">{{
+              $t('i18n_2f4aaddde3')
+            }}</a-button>
           </a-space>
         </template>
       </template>
     </CustomTable>
     <!-- 编辑集群区 -->
-    <a-modal
+    <CustomModal
+      v-if="editVisible"
       v-model:open="editVisible"
       destroy-on-close
       :confirm-loading="confirmLoading"
-      title="编辑 Docker 集群"
+      :title="$t('i18n_d8a36a8a25')"
       :mask-closable="false"
       @ok="handleEditOk"
     >
-      <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="集群名称" name="name">
-          <a-input v-model:value="temp.name" placeholder="容器名称" />
+      <a-form ref="editForm" :rules="rules" :model="temp" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+        <a-form-item :label="$t('i18n_c3f28b34bb')" name="name">
+          <a-input v-model:value="temp.name" :placeholder="$t('i18n_a51cd0898f')" />
         </a-form-item>
 
-        <a-form-item label="标签" name="tag"
-          ><a-input v-model:value="temp.tag" placeholder="关联容器标签" />
+        <a-form-item :label="$t('i18n_14d342362f')" name="tag"
+          ><a-input v-model:value="temp.tag" :placeholder="$t('i18n_77017a3140')" />
         </a-form-item>
       </a-form>
-    </a-modal>
+    </CustomModal>
 
     <!-- 控制台 -->
-    <!-- <a-drawer
+    <!-- <CustomDrawer
       destroyOnClose
       :title="`${temp.name} 控制台`"
       placement="right"
@@ -147,7 +147,6 @@
     <!-- </a-drawer> -->
   </div>
 </template>
-
 <script>
 import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
 import { dockerSwarmList, editDockerSwarm, delSwarm } from '@/api/docker-swarm'
@@ -170,40 +169,40 @@ export default {
       consoleVisible: false,
       columns: [
         {
-          title: '名称',
+          title: this.$t('i18n_d7ec2d3fea'),
           dataIndex: 'name',
           ellipsis: true,
           tooltip: true
         },
 
         {
-          title: '集群ID',
+          title: this.$t('i18n_7329a2637c'),
           dataIndex: 'swarmId',
           ellipsis: true,
           align: 'center',
           tooltip: true
         },
         {
-          title: '容器标签',
+          title: this.$t('i18n_a823cfa70c'),
           dataIndex: 'tag',
           ellipsis: true,
           tooltip: true
         },
         {
-          title: '状态',
+          title: this.$t('i18n_3fea7ca76c'),
           dataIndex: ['machineDocker', 'status'],
           ellipsis: true,
           align: 'center',
           width: '100px'
         },
         {
-          title: '最后修改人',
+          title: this.$t('i18n_3bcc1c7a20'),
           dataIndex: 'modifyUser',
           width: 120,
           ellipsis: true
         },
         {
-          title: '修改时间',
+          title: this.$t('i18n_1303e638b5'),
           dataIndex: 'modifyTimeMillis',
           sorter: true,
           ellipsis: true,
@@ -211,7 +210,7 @@ export default {
           width: '170px'
         },
         {
-          title: '集群创建时间',
+          title: this.$t('i18n_11724cd00b'),
           dataIndex: ['machineDocker', 'swarmCreatedAt'],
           sorter: true,
           ellipsis: true,
@@ -219,7 +218,7 @@ export default {
           width: '170px'
         },
         {
-          title: '集群修改时间',
+          title: this.$t('i18n_fe87269484'),
           dataIndex: ['machineDocker', 'swarmUpdatedAt'],
           sorter: true,
           ellipsis: true,
@@ -227,20 +226,21 @@ export default {
           width: '170px'
         },
         {
-          title: '操作',
+          title: this.$t('i18n_2b6bc0f293'),
           dataIndex: 'operation',
           fixed: 'right',
           align: 'center',
           width: '220px'
         }
       ],
+
       rules: {
         // id: [{ required: true, message: "Please input ID", trigger: "blur" }],
-        name: [{ required: true, message: '请填写集群名称', trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('i18n_5ca6c1b6c7'), trigger: 'blur' }],
 
         tag: [
-          { required: true, message: '请填写关联容器标签', trigger: 'blur' },
-          { pattern: /^\w{1,10}$/, message: '标签限制为字母数字且长度 1-10' }
+          { required: true, message: this.$t('i18n_3b9418269c'), trigger: 'blur' },
+          { pattern: /^\w{1,10}$/, message: this.$t('i18n_89944d6ccb') }
         ]
       },
       confirmLoading: false
@@ -331,11 +331,11 @@ export default {
     // 删除
     handleDelete(record) {
       $confirm({
-        title: '系统提示',
+        title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        content: '真的要删除该记录么？删除后构建关联的容器标签将无法使用',
-        okText: '确认',
-        cancelText: '取消',
+        content: this.$t('i18n_1593dc4920'),
+        okText: this.$t('i18n_e83a256e4f'),
+        cancelText: this.$t('i18n_625fb26b4b'),
         onOk: () => {
           return delSwarm({
             id: record.id

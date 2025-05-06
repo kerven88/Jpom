@@ -13,8 +13,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.ContentType;
+import cn.hutool.http.Method;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
+import org.dromara.jpom.common.i18n.I18nMessageUtil;
 import org.dromara.jpom.common.transport.BodyRewritingRequestWrapper;
 import org.dromara.jpom.common.transport.MultipartRequestWrapper;
 import org.dromara.jpom.common.transport.ParameterRequestWrapper;
@@ -56,12 +58,12 @@ public class ServerDecryptionFilter implements Filter {
                 try {
                     encryptor1 = EncryptFactory.createEncryptor(1);
                 } catch (Exception e) {
-                    log.error("获取解密实现失败", e);
+                    log.error(I18nMessageUtil.get("i18n.get_decrypt_implementation_failure.e77a"), e);
                     encryptor1 = null;
                 }
                 break;
             default:
-                log.warn("不支持的编码方式：{}", transportEncryption);
+                log.warn(I18nMessageUtil.get("i18n.unsupported_encoding_with_placeholder.3bd9"), transportEncryption);
                 encryptor1 = null;
                 break;
         }
@@ -75,8 +77,9 @@ public class ServerDecryptionFilter implements Filter {
             chain.doFilter(servletRequest, response);
             return;
         }
-        log.debug("当前请求需要解码：{}", encryptor.name());
+        log.debug(I18nMessageUtil.get("i18n.request_needs_decoding.d4d7"), encryptor.name());
         String contentType = request.getContentType();
+        String method = request.getMethod();
         if (ContentType.isDefault(contentType)) {
             // 普通表单
             HttpServletRequestWrapper wrapper = new ParameterRequestWrapper(request, encryptor);
@@ -87,17 +90,17 @@ public class ServerDecryptionFilter implements Filter {
             try {
                 temp = encryptor.decrypt(body);
             } catch (Exception e) {
-                log.error("解码失败", e);
+                log.error(I18nMessageUtil.get("i18n.decode_failure.822e"), e);
                 temp = body;
             }
             BodyRewritingRequestWrapper requestWrapper = new BodyRewritingRequestWrapper(request, temp.getBytes(StandardCharsets.UTF_8));
             chain.doFilter(requestWrapper, response);
-        } else if (ServletFileUpload.isMultipartContent(request)) {
+        } else if (StrUtil.equalsIgnoreCase(Method.POST.name(), method) && StrUtil.startWith(contentType, FileUploadBase.MULTIPART)) {
             // 文件上传
             HttpServletRequestWrapper wrapper = new MultipartRequestWrapper(request, encryptor);
             chain.doFilter(wrapper, response);
         } else {
-            log.warn("当前请求类型不支持解码：{}", contentType);
+            log.warn(I18nMessageUtil.get("i18n.request_type_not_supported_for_decoding.ea2e"), contentType);
             chain.doFilter(servletRequest, response);
         }
     }
